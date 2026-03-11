@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Menu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans pb-24">
+
+    <header class="bg-white shadow-sm p-4 sticky top-0 z-10">
+        <h1 class="text-xl font-bold text-gray-800 text-center" id="display-restaurant">Loading Menu...</h1>
+        <p class="text-sm text-gray-500 text-center">Table: <span id="display-table" class="font-semibold text-gray-800">-</span></p>
+    </header>
+
+    <main class="p-4 max-w-md mx-auto" id="menu-container">
+        </main>
+
+    <div class="fixed bottom-0 w-full bg-white border-t border-gray-200 p-4 shadow-lg max-w-md mx-auto left-0 right-0">
+        <div class="flex justify-between items-center mb-2">
+            <span class="font-bold text-gray-700">Total: <span id="cart-total">₹0</span></span>
+            <span class="text-sm text-gray-500" id="cart-items-count">0 items</span>
+        </div>
+        <button onclick="sendOrder()" id="order-btn" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400">
+            Place Order
+        </button>
+        <p id="status-msg" class="text-center text-sm font-bold mt-2 hidden"></p>
+    </div>
+
+    <script>
+      
+      // 1. SABHI RESTAURANTS KI LIST (Yahan add karte jao)
+const restaurantScripts = {
+    "R1": "https://script.google.com/macros/s/AKfycbweZSpENZBqf00yKHtJi2wOdy5sCDV4j8GzNOCDC_QgUHk3mECZoonXj_GlkPldMpRH/exec",
+    "sharma_dhaba": "PASTE_YOUR_SCRIPT_URL_FOR_SHARMA_HERE",
+    "gupta_sweets": "PASTE_YOUR_SCRIPT_URL_FOR_GUPTA_HERE"
+};
+
+// 2. URL se Details nikalna
+const urlParams = new URLSearchParams(window.location.search);
+const resParam = urlParams.get('res') || "R1"; // ?res=sharma_dhaba pakdega
+const tableId = urlParams.get('table') || "Unknown";
+
+// 3. Sahi Script aur ID set karna
+const SCRIPT_URL = restaurantScripts[resParam];
+const restaurantId = resParam; // Ye "sharma_dhaba" ya "R1" ban jayega  
+
+        document.getElementById('display-restaurant').innerText = "Restaurant: " + restaurantId;
+        document.getElementById('display-table').innerText = tableId;
+
+        // 2. Menu Items (Aap baad mein inhe badal sakte hain)
+        const menuItems = [
+            { id: 1, name: "Aloo Tikki Burger", price: 60 },
+            { id: 2, name: "Veg Cheese Burger", price: 90 },
+            { id: 3, name: "French Fries", price: 70 },
+            { id: 4, name: "Cold Coffee", price: 80 }
+        ];
+
+        let cart = {};
+
+        // 3. Menu ko screen par dikhana
+        function renderMenu() {
+            const container = document.getElementById('menu-container');
+            container.innerHTML = '';
+
+            menuItems.forEach(item => {
+                const qty = cart[item.id] ? cart[item.id].qty : 0;
+                container.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl shadow-sm mb-4 flex justify-between items-center border border-gray-100">
+                        <div>
+                            <h3 class="font-bold text-gray-800">${item.name}</h3>
+                            <p class="text-blue-600 font-semibold">₹${item.price}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="updateCart(${item.id}, -1)" class="w-8 h-8 bg-gray-100 rounded-full text-lg font-bold text-gray-600 hover:bg-gray-200">-</button>
+                            <span class="font-bold w-4 text-center">${qty}</span>
+                            <button onclick="updateCart(${item.id}, 1)" class="w-8 h-8 bg-blue-100 rounded-full text-lg font-bold text-blue-600 hover:bg-blue-200">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+            updateCartUI();
+        }
+
+        // 4. Cart Logic (+ / - button dabane par)
+        function updateCart(itemId, change) {
+            const item = menuItems.find(i => i.id === itemId);
+            if (!cart[itemId]) {
+                cart[itemId] = { name: item.name, price: item.price, qty: 0 };
+            }
+            
+            cart[itemId].qty += change;
+            
+            if (cart[itemId].qty <= 0) {
+                delete cart[itemId];
+            }
+            renderMenu();
+        }
+
+        function updateCartUI() {
+            let totalAmt = 0;
+            let totalQty = 0;
+            for (let id in cart) {
+                totalAmt += cart[id].price * cart[id].qty;
+                totalQty += cart[id].qty;
+            }
+            document.getElementById('cart-total').innerText = "₹" + totalAmt;
+            document.getElementById('cart-items-count').innerText = totalQty + " items";
+            document.getElementById('order-btn').disabled = totalQty === 0;
+        }
+
+       // 5. Order ko Google Sheet mein bhejna (Bullet-Proof Form Data)
+        function sendOrder() {
+            const btn = document.getElementById('order-btn');
+            const statusMsg = document.getElementById('status-msg');
+            
+            let finalDishNames = [];
+            let finalTotalQty = 0;
+            let finalTotalPrice = 0;
+
+            for (let id in cart) {
+                finalDishNames.push(`${cart[id].name} (x${cart[id].qty})`);
+                finalTotalQty += cart[id].qty;
+                finalTotalPrice += (cart[id].price * cart[id].qty);
+            }
+
+            // YAHAN CHANGE KIYA HAI: Normal Form Data format
+            const orderData = new URLSearchParams({
+                restaurantId: restaurantId,
+                dishName: finalDishNames.join(", "), 
+                qtySold: finalTotalQty,
+                totalPrice: finalTotalPrice
+            });
+
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+            statusMsg.classList.remove('hidden', 'text-green-600', 'text-red-600');
+            statusMsg.classList.add('text-blue-600', 'block');
+            statusMsg.innerText = "Sending order to kitchen...";
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors", 
+                body: orderData // Yahan ab sidha orderData bheja hai
+            })
+            .then(() => {
+                statusMsg.innerText = "Order Placed Successfully!";
+                statusMsg.classList.replace('text-blue-600', 'text-green-600');
+                btn.innerText = "Order Sent";
+                cart = {}; 
+                setTimeout(renderMenu, 2000); 
+            })
+            .catch(error => {
+                statusMsg.innerText = "Failed to send order. Try again.";
+                statusMsg.classList.replace('text-blue-600', 'text-red-600');
+                btn.innerText = "Place Order";
+                btn.disabled = false;
+            });
+        }
+         
+        
+        // Page load hote hi menu dikhana
+        renderMenu();
+    </script>
+</body>
+</html>
