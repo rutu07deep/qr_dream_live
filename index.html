@@ -30,23 +30,24 @@
     <script>
       
       // 1. SABHI RESTAURANTS KI LIST (Yahan add karte jao)
+// 1. SABHI RESTAURANTS KI LIST
 const restaurantScripts = {
-    "R1": "https://script.google.com/macros/s/AKfycbweZSpENZBqf00yKHtJi2wOdy5sCDV4j8GzNOCDC_QgUHk3mECZoonXj_GlkPldMpRH/exec",
-    "sharma_dhaba": "PASTE_YOUR_SCRIPT_URL_FOR_SHARMA_HERE",
-    "gupta_sweets": "PASTE_YOUR_SCRIPT_URL_FOR_GUPTA_HERE"
+    "R1": "https://script.google.com/macros/s/AKfycbweZSpENZBqf00yKHtJi2wOdy5sCDV4j8GzNO/exec"
+    // Abhi sirf R1 rakho testing ke liye
 };
 
 // 2. URL se Details nikalna
 const urlParams = new URLSearchParams(window.location.search);
-const resParam = urlParams.get('res') || "Unknown";
-const tableId = urlParams.get('table') || "0";
+const resParam = urlParams.get('res') || "R1"; 
+const tableId = urlParams.get('table') || "Unknown";
 
 // 3. Sahi Script aur ID set karna
-const SCRIPT_URL = restaurantScripts[resParam]||
-restaurantScripts["R1"] // Ye "sharma_dhaba" ya "R1" ban jayega  
+// Agar URL wala resParam list mein nahi hai, toh default R1 uthao
+const SCRIPT_URL = restaurantScripts[resParam] || restaurantScripts["R1"];
 
-        document.getElementById('display-restaurant').innerText = "Restaurant: " + restaurantId;
-        document.getElementById('display-table').innerText = tableId;
+// Display logic (Isse loading hat jayegi)
+document.getElementById('display-restaurant').innerText = "Restaurant: " + resParam;
+document.getElementById('display-table').innerText = tableId;
 
         // 2. Menu Items (Aap baad mein inhe badal sakte hain)
         const menuItems = [
