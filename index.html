@@ -38,12 +38,12 @@ const restaurantScripts = {
 
 // 2. URL se Details nikalna
 const urlParams = new URLSearchParams(window.location.search);
-const resParam = urlParams.get('res') || "R1"; // ?res=sharma_dhaba pakdega
-const tableId = urlParams.get('table') || "Unknown";
+const resParam = urlParams.get('res') || "Unknown";
+const tableId = urlParams.get('table') || "0";
 
 // 3. Sahi Script aur ID set karna
-const SCRIPT_URL = restaurantScripts[resParam];
-const restaurantId = resParam; // Ye "sharma_dhaba" ya "R1" ban jayega  
+const SCRIPT_URL = restaurantScripts[resParam]||
+restaurantScripts["R1"] // Ye "sharma_dhaba" ya "R1" ban jayega  
 
         document.getElementById('display-restaurant').innerText = "Restaurant: " + restaurantId;
         document.getElementById('display-table').innerText = tableId;
@@ -129,7 +129,8 @@ const restaurantId = resParam; // Ye "sharma_dhaba" ya "R1" ban jayega
                 restaurantId: resParam,
                 dishName: finalDishNames.join(", "), 
                 qtySold: finalTotalQty,
-                totalPrice: finalTotalPrice
+                totalPrice: finalTotalPrice,
+                tableNo: tableId
             });
 
             btn.innerText = "Processing...";
