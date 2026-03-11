@@ -32,7 +32,7 @@
       // 1. SABHI RESTAURANTS KI LIST (Yahan add karte jao)
 // 1. SABHI RESTAURANTS KI LIST
 const restaurantScripts = {
-    "R1": "https://script.google.com/macros/s/AKfycbweZSpENZBqf00yKHtJi2wOdy5sCDV4j8GzNO/exec"
+    "R1": "https://script.google.com/macros/s/AKfycbweZSpENZBqf00yKHtJi2wOdy5sCDV4j8GzNOCDC_QgUHk3mECZoonXj_GlkPldMpRH/exec"
     // Abhi sirf R1 rakho testing ke liye
 };
 
@@ -143,7 +143,7 @@ document.getElementById('display-table').innerText = tableId;
             fetch(SCRIPT_URL, {
                 method: "POST",
                 mode: "no-cors", 
-                body: orderData // Yahan ab sidha orderData bheja hai
+                body: orderData .toString()// Yahan ab sidha orderData bheja hai
             })
             .then(() => {
                 statusMsg.innerText = "Order Placed Successfully!";
