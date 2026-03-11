@@ -126,7 +126,7 @@ const restaurantId = resParam; // Ye "sharma_dhaba" ya "R1" ban jayega
 
             // YAHAN CHANGE KIYA HAI: Normal Form Data format
             const orderData = new URLSearchParams({
-                restaurantId: restaurantId,
+                restaurantId: resParam,
                 dishName: finalDishNames.join(", "), 
                 qtySold: finalTotalQty,
                 totalPrice: finalTotalPrice
