@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kitchen Display - SaaS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white font-sans p-6">
+    <div class="flex justify-between items-center border-b border-gray-700 pb-4 mb-6">
+        <h1 class="text-3xl font-black text-yellow-500">KITCHEN DASHBOARD</h1>
+        <div id="status" class="text-green-500">● Live Connection</div>
+    </div>
+
+    <div id="order-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        </div>
+
+    <audio id="order-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweZSpENZBqf00yKHtJi2wOdy5sCDV4j8GzNOCDC_QgUHk3mECZoonXj_GlkPldMpRH/exec"; // Naya URL dalo
+        let lastOrderCount = 0;
+
+        async function refreshOrders() {
+            try {
+                const res = await fetch(SCRIPT_URL + "?action=getOrders");
+                const orders = await res.json();
+                
+                if (orders.length > lastOrderCount) {
+                    document.getElementById('order-sound').play();
+                    lastOrderCount = orders.length;
+                }
+
+                const container = document.getElementById('order-container');
+                container.innerHTML = orders.map(order => `
+                    <div class="bg-gray-900 border-2 border-yellow-600 rounded-xl p-5 shadow-2xl">
+                        <div class="flex justify-between border-b border-gray-700 pb-2 mb-3">
+                            <span class="text-2xl font-bold">TABLE: ${order.table}</span>
+                            <span class="text-gray-400">${order.time}</span>
+                        </div>
+                        <p class="text-xl text-yellow-100 mb-4">${order.items}</p>
+                        <button onclick="this.parentElement.style.opacity='0.3'" class="w-full bg-green-600 py-2 rounded font-bold uppercase">Ready</button>
+                    </div>
+                `).join('');
+            } catch (e) { console.error("Error:", e); }
+        }
+
+        setInterval(refreshOrders, 5000); // Har 5 second mein check karega
+        refreshOrders();
+    </script>
+</body>
+</html>
