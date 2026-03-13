@@ -50,12 +50,30 @@ document.getElementById('display-restaurant').innerText = "Restaurant: " + resPa
 document.getElementById('display-table').innerText = tableId;
 
         // 2. Menu Items (Aap baad mein inhe badal sakte hain)
-        const menuItems = [
-            { id: 1, name: "Aloo Tikki Burger", price: 60 },
-            { id: 2, name: "Veg Cheese Burger", price: 90 },
-            { id: 3, name: "French Fries", price: 70 },
-            { id: 4, name: "Cold Coffee", price: 80 }
-        ];
+       // 2. Menu Items (Ab seedha Google Sheet se aayenge)
+let menuItems = [];
+
+async function loadMenuFromSheet() {
+    // resParam aur SCRIPT_URL aapke upar wale code se uthega
+    let url = SCRIPT_URL + "?action=getMenu&res=" + resParam;
+    
+    try {
+        let response = await fetch(url);
+        let rawData = await response.json();
+        
+        // Aapke cart system ko chalane ke liye auto-ID generate karna
+        menuItems = rawData.map((item, index) => {
+            return { id: index + 1, name: item.name, price: item.price };
+        });
+        
+        renderMenu(); // Data aane ke baad menu screen pe dikhao
+    } catch(error) {
+        console.log("Error:", error);
+        document.getElementById('menu-container').innerHTML = "<p class='text-center mt-10'>Menu load nahi ho paya. Refresh karein.</p>";
+    }
+}
+
+loadMenuFromSheet(); // Page khulte hi function chala do
 
         let cart = {};
 
