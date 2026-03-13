@@ -53,54 +53,64 @@ document.getElementById('display-table').innerText = tableId;
        // 2. Menu Items (Ab seedha Google Sheet se aayenge)
 let menuItems = [];
 
+let cart = {}; // Cart object ko wapas yahan set kar diya hai
+
 async function loadMenuFromSheet() {
-    // resParam aur SCRIPT_URL aapke upar wale code se uthega
     let url = SCRIPT_URL + "?action=getMenu&res=" + resParam;
-    
     try {
         let response = await fetch(url);
         let rawData = await response.json();
         
-        // Aapke cart system ko chalane ke liye auto-ID generate karna
+        // Image bhi utha rahe hain backend se
         menuItems = rawData.map((item, index) => {
-            return { id: index + 1, name: item.name, price: item.price };
+            return { id: index + 1, name: item.name, price: item.price, image: item.image };
         });
         
-        renderMenu(); // Data aane ke baad menu screen pe dikhao
+        renderMenu(); 
     } catch(error) {
         console.log("Error:", error);
-        document.getElementById('menu-container').innerHTML = "<p class='text-center mt-10'>Menu load nahi ho paya. Refresh karein.</p>";
+        document.getElementById('menu-container').innerHTML = "<p class='text-center mt-10 text-red-500 font-bold'>Menu load nahi ho paya.</p>";
     }
 }
 
-loadMenuFromSheet(); // Page khulte hi function chala do
+function renderMenu() {
+    const container = document.getElementById('menu-container');
+    container.innerHTML = '';
+    
+    menuItems.forEach(item => {
+        const qty = cart[item.id] ? cart[item.id].qty : 0;
+        
+        // Agar sheet me photo nahi hai, toh ek default khane ki photo dikhegi
+        const defaultImg = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=300&fit=crop";
+        const imgUrl = item.image ? item.image : defaultImg;
 
-        let cart = {};
+        container.innerHTML += `
+        <div class="bg-white p-3 rounded-2xl shadow-md mb-4 flex items-center gap-4 border border-gray-100">
+            <div class="w-24 h-24 flex-shrink-0">
+                <img src="${imgUrl}" class="w-full h-full object-cover rounded-xl shadow-sm" alt="${item.name}">
+            </div>
+            
+            <div class="flex-grow">
+                <h3 class="font-bold text-gray-800 text-lg leading-tight">${item.name}</h3>
+                <p class="text-blue-600 font-bold mt-1">₹${item.price}</p>
+            </div>
+            
+            <div class="flex flex-col items-center gap-1 flex-shrink-0">
+                <div class="flex items-center gap-2 bg-gray-50 p-1 rounded-lg border border-gray-200">
+                    <button onclick="updateCart(${item.id}, -1)" class="w-8 h-8 bg-white rounded-md font-bold text-gray-600 shadow-sm">-</button>
+                    <span class="font-bold w-4 text-center text-sm">${qty}</span>
+                    <button onclick="updateCart(${item.id}, 1)" class="w-8 h-8 bg-blue-500 rounded-md font-bold text-white shadow-sm">+</button>
+                </div>
+            </div>
+        </div>`;
+    });
+    updateCartUI();
+}
 
-        // 3. Menu ko screen par dikhana
-        function renderMenu() {
-            const container = document.getElementById('menu-container');
-            container.innerHTML = '';
+loadMenuFromSheet(); // Page khulte hi run karega
+     
 
-            menuItems.forEach(item => {
-                const qty = cart[item.id] ? cart[item.id].qty : 0;
-                container.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl shadow-sm mb-4 flex justify-between items-center border border-gray-100">
-                        <div>
-                            <h3 class="font-bold text-gray-800">${item.name}</h3>
-                            <p class="text-blue-600 font-semibold">₹${item.price}</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <button onclick="updateCart(${item.id}, -1)" class="w-8 h-8 bg-gray-100 rounded-full text-lg font-bold text-gray-600 hover:bg-gray-200">-</button>
-                            <span class="font-bold w-4 text-center">${qty}</span>
-                            <button onclick="updateCart(${item.id}, 1)" class="w-8 h-8 bg-blue-100 rounded-full text-lg font-bold text-blue-600 hover:bg-blue-200">+</button>
-                        </div>
-                    </div>
-                `;
-            });
-            updateCartUI();
-        }
-
+l
         // 4. Cart Logic (+ / - button dabane par)
         function updateCart(itemId, change) {
             const item = menuItems.find(i => i.id === itemId);
