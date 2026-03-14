@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Menu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 pb-24 selection:bg-orange-200">
+
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="px-4 py-3 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-extrabold text-gray-900">Digital Menu</h1>
+                <p class="text-xs text-gray-500">Delicious & Fresh</p>
+            </div>
+            <div class="bg-orange-100 border border-orange-200 px-3 py-1 rounded-lg text-center">
+                <p class="text-[10px] text-orange-600 font-bold uppercase tracking-wide">Table</p>
+                <p id="table-number-display" class="text-lg font-black text-orange-700 leading-none">?</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex overflow-x-auto space-x-3 px-4 py-4 hide-scroll-bar">
+        <button class="bg-gray-800 text-white px-5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap shadow-md">All Items</button>
+    </div>
+
+    <main id="menu-container" class="px-4 space-y-4">
+        </main>
+
+    <div id="cart-bar" class="hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] p-4 transition-all duration-300 transform translate-y-full">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div>
+                <p id="cart-items-count" class="text-xs text-gray-500 font-medium">0 Items Added</p>
+                <p id="cart-total-price" class="text-xl font-black text-gray-900">Total: ₹0</p>
+            </div>
+            <button onclick="submitOrder()" id="place-order-btn" class="bg-gray-900 text-white font-bold px-8 py-3 rounded-xl shadow-md hover:bg-black transition flex items-center gap-2">
+                Place Order
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 🚨 SABSE ZARURI: APNA APPS SCRIPT KA URL YAHAN CHIPKA 👇
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCMi123zCEnkKZ2lsoNvYfjI87KaxZb5iktDnkhqidCzsnv_DdB-ZyQ94H0UKSearf/exec"; 
+
+        // URL se Restaurant ID aur Table number nikalna
+        const urlParams = new URLSearchParams(window.location.search);
+        const resId = urlParams.get('res') || "R1"; 
+        const tableNo = urlParams.get('table') || "Unknown";
+        
+        let cart = {}; 
+        let menuData = []; 
+
+        document.getElementById("table-number-display").innerText = tableNo;
+
+        // Google Sheet se Menu Data laana
+        async function loadMenu() {
+            document.getElementById("menu-container").innerHTML = "<p class='text-center mt-10 font-bold animate-pulse text-orange-500'>Loading Menu...</p>";
+            try {
+                const response = await fetch(SCRIPT_URL + "?action=getMenu&res=" + resId);
+                menuData = await response.json();
+                renderMenu();
+            } catch (error) {
+                document.getElementById("menu-container").innerHTML = "<p class='text-center text-red-500 font-bold mt-10'>Error loading menu. Internet check kar bhai.</p>";
+            }
+        }
+
+        // Menu ko HTML mein convert karke screen pe dikhana
+        function renderMenu() {
+            let html = "";
+            menuData.forEach((item) => {
+                let qty = cart[item.name] || 0;
+                // Agar sheet mein photo nahi hai, toh ek default photo lag jayegi
+                let imgUrl = item.image && item.image.trim() !== "" ? item.image : "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80"; 
+
+                html += `
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex p-3 mb-4">
+                    <div class="w-28 h-28 flex-shrink-0">
+                        <img src="${imgUrl}" alt="${item.name}" class="w-full h-full object-cover rounded-xl shadow-sm">
+                    </div>
+                    <div class="ml-4 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-base leading-tight">${item.name}</h3>
+                            <p class="text-gray-500 text-xs mt-1">₹${item.price}</p>
+                        </div>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="font-black text-gray-900">₹${item.price}</span>
+                            
+                            ${qty === 0 ? 
+                                `<button onclick="updateCart('${item.name}', ${item.price}, 1)" class="bg-orange-50 text-orange-600 border border-orange-200 font-bold px-8 py-1.5 rounded-lg text-sm hover:bg-orange-100 transition">ADD</button>` 
+                                : 
+                                `<div class="flex items-center bg-orange-600 rounded-lg shadow-sm">
+                                    <button onclick="updateCart('${item.name}', ${item.price}, -1)" class="px-3 py-1 text-white font-bold hover:bg-orange-700 rounded-l-lg">-</button>
+                                    <span class="px-2 font-bold text-white text-sm">${qty}</span>
+                                    <button onclick="updateCart('${item.name}', ${item.price}, 1)" class="px-3 py-1 text-white font-bold hover:bg-orange-700 rounded-r-lg">+</button>
+                                </div>`
+                            }
+                        </div>
+                    </div>
+                </div>`;
+            });
+            
+            document.getElementById("menu-container").innerHTML = html;
+            updateCartUI(); // HTML set hone ke baad cart update kar do
+        }
+
+        // Items badhana ya ghatana
+        function updateCart(itemName, price, change) {
+            if (!cart[itemName]) cart[itemName] = 0;
+            cart[itemName] += change;
+            if (cart[itemName] <= 0) delete cart[itemName];
+            renderMenu(); 
+        }
+
+        // Neeche wala total price aur cart bar update karna
+        function updateCartUI() {
+            let totalItems = 0;
+            let totalPrice = 0;
+            
+            for (let item in cart) {
+                totalItems += cart[item];
+                let menuItem = menuData.find(m => m.name === item);
+                if(menuItem) {
+                    totalPrice += (cart[item] * menuItem.price);
+                }
+            }
+            
+            const cartBar = document.getElementById("cart-bar");
+            document.getElementById("cart-items-count").innerText = totalItems + " Item(s) Added";
+            document.getElementById("cart-total-price").innerText = "Total: ₹" + totalPrice;
+
+            // Agar cart mein kuch hai, toh Bottom Bar dikhao, warna chupao
+            if (totalItems > 0) {
+                cartBar.classList.remove("hidden", "translate-y-full");
+            } else {
+                cartBar.classList.add("hidden", "translate-y-full");
+            }
+        }
+
+        // Final Order Google Sheet aur Kitchen TV ko bhejna
+        async function submitOrder() {
+            const btn = document.getElementById("place-order-btn");
+            btn.innerText = "Sending...";
+            btn.disabled = true;
+
+            // Cart ka data ek proper list mein banana (e.g. "Pizza (x2), Burger (x1)")
+            let itemsList = [];
+            let totalPrice = 0;
+            for (let item in cart) {
+                itemsList.push(item + " (x" + cart[item] + ")");
+                let menuItem = menuData.find(m => m.name === item);
+                totalPrice += (cart[item] * menuItem.price);
+            }
+            let finalItemsString = itemsList.join(", ");
+
+            try {
+                // Tere backend ko order bhej raha hai
+                await fetch(SCRIPT_URL + "?action=placeOrder&table=" + tableNo + "&items=" + encodeURIComponent(finalItemsString) + "&amount=" + totalPrice + "&res=" + resId);
+                
+                alert("✅ Order Placed Successfully! Kitchen mein order chala gaya.");
+                cart = {}; // Order hone ke baad cart khali
+                renderMenu(); 
+                btn.innerText = "Place Order";
+                btn.disabled = false;
+            } catch (error) {
+                alert("❌ Error placing order. Internet check karein.");
+                btn.innerText = "Place Order";
+                btn.disabled = false;
+            }
+        }
+
+        // Page khulte hi menu load karo
+        window.onload = loadMenu;
+    </script>
+</body>
+</html>
