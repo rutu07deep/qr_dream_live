@@ -17,7 +17,7 @@
     <audio id="order-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCMi123zCEnkKZ2lsoNvYfjI87KaxZb5iktDnkhqidCzsnv_DdB-ZyQ94H0UKSearf/exec" // Naya URL dalo
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCMi123zCEnkKZ2lsoNvYfjI87KaxZb5iktDnkhqidCzsnv_DdB-ZyQ94H0UKSearf/exec"  // Naya URL dalo
         let lastOrderCount = 0;
  
         async function refreshOrders() { 
@@ -38,12 +38,28 @@
                             <span class="text-gray-400">${order.time}</span>
                         </div>
                         <p class="text-xl text-yellow-100 mb-4">${order.items}</p>
-                        <button onclick="this.parentElement.style.opacity='0.3'" class="w-full bg-green-600 py-2 rounded font-bold uppercase">Ready</button>
+                        <button onclick="completeOrder(${order.rowId}, this)" class="w-full bg-green-600 py-2 rounded font-bold hover:bg-green-700 transition">READY</button>
                     </div>
                 `).join('');
             } catch (e) { console.error("Error:", e); }
         }
 
+        // Ye function order ko complete karne ke liye hai
+    function completeOrder(rowNumber, btnElement) {
+      btnElement.innerText = "UPDATING...";
+      btnElement.style.opacity = "0.5";
+
+      fetch(SCRIPT_URL + "?action=markReady&row=" + rowNumber)
+        .then(response => response.text())
+        .then(data => {
+          btnElement.parentElement.remove(); // Dabba gayab!
+        })
+        .catch(error => {
+          alert("Error: Internet check karo!");
+          btnElement.innerText = "READY";
+          btnElement.style.opacity = "1";
+        });
+    }
         setInterval(refreshOrders, 5000); // Har 5 second mein check karega
         refreshOrders();
     </script>
