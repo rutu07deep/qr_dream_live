@@ -15,16 +15,17 @@
                     <span class="text-2xl font-black text-indigo-600 tracking-tight">QR Dream.</span>
                     <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-1 rounded-md ml-2">Owner Panel</span>
                 </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm font-semibold text-slate-500" id="res-name-display">Restaurant R1</span>
+                </div>
             </div>
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <div>
-            <h1 class="text-3xl font-extrabold text-slate-900">Today's Overview</h1>
-        </div>
+        <div><h1 class="text-3xl font-extrabold text-slate-900">Today's Overview</h1></div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-white rounded-2xl p-6 border shadow-sm">
                 <p class="text-sm font-bold text-slate-500 uppercase">Total Sales</p>
                 <h2 class="text-4xl font-black text-slate-900" id="dash-sales">₹0</h2>
@@ -37,25 +38,15 @@
                 <p class="text-sm font-bold text-orange-600 uppercase">Pending Orders</p>
                 <h2 class="text-4xl font-black text-slate-900" id="dash-pending">0</h2>
             </div>
-            <div class="bg-white rounded-2xl p-6 border shadow-sm border-l-4 border-l-red-500">
-                <p class="text-sm font-bold text-red-600 uppercase">Low Stock Alert</p>
-                <h2 class="text-xl font-bold text-slate-800 mt-2">Check Inventory</h2>
-            </div>
         </div>
 
         <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
-            <div class="px-6 py-5 border-b bg-slate-50">
-                <h3 class="text-lg font-bold text-slate-800">Recent Orders Flow</h3>
-            </div>
+            <div class="px-6 py-5 border-b bg-slate-50"><h3 class="text-lg font-bold text-slate-800">Recent Orders Flow</h3></div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-50 text-slate-500 text-xs uppercase">
-                            <th class="p-4 font-bold border-b">Time</th>
-                            <th class="p-4 font-bold border-b">Table</th>
-                            <th class="p-4 font-bold border-b">Items</th>
-                            <th class="p-4 font-bold border-b">Amount</th>
-                            <th class="p-4 font-bold border-b">Status</th>
+                            <th class="p-4 font-bold border-b">Time</th><th class="p-4 font-bold border-b">Table</th><th class="p-4 font-bold border-b">Items</th><th class="p-4 font-bold border-b">Amount</th><th class="p-4 font-bold border-b">Status</th>
                         </tr>
                     </thead>
                     <tbody id="dashboard-orders-list" class="text-sm divide-y divide-slate-100">
@@ -68,18 +59,16 @@
         <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
             <div class="px-6 py-5 border-b bg-slate-50 flex justify-between items-center">
                 <h3 class="text-lg font-bold text-slate-800">Inventory & Anti-Theft Guard 🛡️</h3>
-                <button onclick="alert('Feature coming!')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-700">+ Daily Stock</button>
+                <div class="flex gap-2">
+                    <button onclick="addStock()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-indigo-700 transition">+ Daily Stock</button>
+                    <button onclick="addWastage()" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-red-100 transition">Add Wastage</button>
+                </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-50 text-slate-500 text-xs uppercase">
-                            <th class="p-4 font-bold border-b">Raw Material</th>
-                            <th class="p-4 font-bold border-b">Opening Stock</th>
-                            <th class="p-4 font-bold border-b">Used (Sales)</th>
-                            <th class="p-4 font-bold border-b">Wasted</th>
-                            <th class="p-4 font-bold border-b">Should Be Left</th>
-                            <th class="p-4 font-bold border-b">Status</th>
+                            <th class="p-4 font-bold border-b">Raw Material</th><th class="p-4 font-bold border-b">Opening Stock</th><th class="p-4 font-bold border-b">Used (Sales)</th><th class="p-4 font-bold border-b">Wasted</th><th class="p-4 font-bold border-b">Should Be Left</th><th class="p-4 font-bold border-b">Status</th>
                         </tr>
                     </thead>
                     <tbody id="inventory-list" class="text-sm divide-y divide-slate-100">
@@ -91,13 +80,15 @@
     </main>
 
     <script>
-        // 🚨 APNA SCRIPT URL YAHAN DAALNA MAT BHOOLNA 👇
+        // 🚨 APNA NAYA SCRIPT URL YAHAN DAAL 👇
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr34JtNFeVV0Qt2K6r3TZB5rk0fOpFkTr-kuBdGHu5dAmkLjjHPTd0J0hGaCj3OSgO/exec"; 
         
         const resId = new URLSearchParams(window.location.search).get('res') || "R1"; 
+        document.getElementById("res-name-display").innerText = "Restaurant " + resId;
 
         async function loadDashboard() {
             try {
+                // Fetch Sales
                 const res1 = await fetch(SCRIPT_URL + "?action=getDashboard&res=" + resId);
                 const data = await res1.json();
                 
@@ -113,11 +104,12 @@
                 });
                 document.getElementById("dashboard-orders-list").innerHTML = tableHtml;
 
+                // Fetch Inventory
                 const res2 = await fetch(SCRIPT_URL + "?action=getInventory&res=" + resId);
                 const invData = await res2.json();
                 
                 let invHtml = "";
-                if(invData.length === 0) invHtml = `<tr><td colspan="6" class="p-8 text-center text-slate-400">Sheet me koi Daily Stock entry nahi hai.</td></tr>`;
+                if(invData.length === 0) invHtml = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No Daily Stock entry found for today.</td></tr>`;
                 else invData.forEach(item => {
                     let sc = item.status.includes("Safe") ? "text-green-600 font-bold" : "text-red-600 font-bold animate-pulse";
                     invHtml += `<tr class="border-b hover:bg-slate-50"><td class="p-4 font-bold">${item.name}</td><td class="p-4">${item.opening}</td><td class="p-4 text-blue-600 font-bold">${item.sold}</td><td class="p-4 text-orange-600">${item.wasted}</td><td class="p-4 font-black">${item.left}</td><td class="p-4 ${sc}">${item.status}</td></tr>`;
@@ -126,6 +118,29 @@
 
             } catch (error) { console.error("Load Error"); }
         }
+
+        async function addStock() {
+            let item = prompt("Raw Material ka naam likhein (Jaise: Pizza Base):");
+            if (!item) return;
+            let qty = prompt(item + " ke kitne piece aaye?:");
+            if (!qty || isNaN(qty)) return alert("Sahi number daalein!");
+            
+            await fetch(SCRIPT_URL + "?action=addStock&res=" + resId + "&name=" + item + "&qty=" + qty);
+            alert("✅ Stock Save ho gaya!");
+            loadDashboard();
+        }
+
+        async function addWastage() {
+            let item = prompt("Kharab hue item ka naam likhein:");
+            if (!item) return;
+            let qty = prompt(item + " kitna waste hua?:");
+            if (!qty || isNaN(qty)) return alert("Sahi number daalein!");
+            
+            await fetch(SCRIPT_URL + "?action=addWastage&name=" + item + "&qty=" + qty);
+            alert("🚨 Wastage Record ho gayi!");
+            loadDashboard();
+        }
+
         window.onload = () => { loadDashboard(); setInterval(loadDashboard, 10000); };
     </script>
 </body>
