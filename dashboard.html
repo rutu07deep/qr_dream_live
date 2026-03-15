@@ -82,5 +82,58 @@
 
     </main>
 
+    <script>
+        // 🚨 APNA NAYA APPS SCRIPT URL YAHAN DAAL 👇
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr34JtNFeVV0Qt2K6r3TZB5rk0fOpFkTr-kuBdGHu5dAmkLjjHPTd0J0hGaCj3OSgO/exec"; 
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const resId = urlParams.get('res') || "R1"; 
+        
+        document.getElementById("res-name-display").innerText = "Restaurant " + resId;
+
+        async function loadDashboard() {
+            try {
+                const response = await fetch(SCRIPT_URL + "?action=getDashboard&res=" + resId);
+                const data = await response.json();
+                
+                // 1. Upar ke 3 cards update karna
+                document.getElementById("dash-sales").innerText = "₹" + data.sales;
+                document.getElementById("dash-orders").innerText = data.orders;
+                document.getElementById("dash-pending").innerText = data.pending;
+                
+                // 2. Neeche wali Table update karna
+                let tableHtml = "";
+                if(data.list.length === 0) {
+                    tableHtml = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-semibold">Aaj abhi tak koi order nahi aaya.</td></tr>`;
+                } else {
+                    data.list.forEach(order => {
+                        let statusColor = order.status === "Completed" ? "text-green-700 bg-green-100 border border-green-200" : "text-orange-700 bg-orange-100 border border-orange-200";
+                        
+                        tableHtml += `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="p-4 border-b border-slate-100 text-slate-500 font-medium">${order.time}</td>
+                            <td class="p-4 border-b border-slate-100 font-bold text-slate-800">Table ${order.table}</td>
+                            <td class="p-4 border-b border-slate-100 text-slate-600">${order.items}</td>
+                            <td class="p-4 border-b border-slate-100 font-black text-slate-900">₹${order.amount}</td>
+                            <td class="p-4 border-b border-slate-100">
+                                <span class="px-3 py-1 rounded-full text-[11px] uppercase tracking-wider font-bold ${statusColor}">${order.status}</span>
+                            </td>
+                        </tr>`;
+                    });
+                }
+                document.getElementById("dashboard-orders-list").innerHTML = tableHtml;
+
+            } catch (error) {
+                console.error("Dashboard Load Error");
+            }
+        }
+
+        // Page khulte hi data lao
+        window.onload = () => {
+            loadDashboard();
+            // Har 10 second mein apne aap refresh hoga (Live feel)
+            setInterval(loadDashboard, 10000); 
+        };
+    </script>
 </body>
 </html>
