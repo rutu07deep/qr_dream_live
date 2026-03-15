@@ -141,57 +141,47 @@
     </main>
 
     <script>
-        // 🚨 APNA NAYA APPS SCRIPT URL YAHAN DAAL 👇
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr34JtNFeVV0Qt2K6r3TZB5rk0fOpFkTr-kuBdGHu5dAmkLjjHPTd0J0hGaCj3OSgO/exec"; 
+        // 🚨 APNA NAYA URL YAHAN DAAL 👇
+        const SCRIPT_URL = "YOUR_SCRIPT_URL_HERE"; 
         
-        const urlParams = new URLSearchParams(window.location.search);
-        const resId = urlParams.get('res') || "R1"; 
-        
+        const resId = new URLSearchParams(window.location.search).get('res') || "R1"; 
         document.getElementById("res-name-display").innerText = "Restaurant " + resId;
 
         async function loadDashboard() {
             try {
-                const response = await fetch(SCRIPT_URL + "?action=getDashboard&res=" + resId);
-                const data = await response.json();
+                // Sales Data
+                const res1 = await fetch(SCRIPT_URL + "?action=getDashboard&res=" + resId);
+                const data = await res1.json();
                 
-                // 1. Upar ke 3 cards update karna
                 document.getElementById("dash-sales").innerText = "₹" + data.sales;
                 document.getElementById("dash-orders").innerText = data.orders;
                 document.getElementById("dash-pending").innerText = data.pending;
                 
-                // 2. Neeche wali Table update karna
                 let tableHtml = "";
-                if(data.list.length === 0) {
-                    tableHtml = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-semibold">Aaj abhi tak koi order nahi aaya.</td></tr>`;
-                } else {
-                    data.list.forEach(order => {
-                        let statusColor = order.status === "Completed" ? "text-green-700 bg-green-100 border border-green-200" : "text-orange-700 bg-orange-100 border border-orange-200";
-                        
-                        tableHtml += `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="p-4 border-b border-slate-100 text-slate-500 font-medium">${order.time}</td>
-                            <td class="p-4 border-b border-slate-100 font-bold text-slate-800">Table ${order.table}</td>
-                            <td class="p-4 border-b border-slate-100 text-slate-600">${order.items}</td>
-                            <td class="p-4 border-b border-slate-100 font-black text-slate-900">₹${order.amount}</td>
-                            <td class="p-4 border-b border-slate-100">
-                                <span class="px-3 py-1 rounded-full text-[11px] uppercase tracking-wider font-bold ${statusColor}">${order.status}</span>
-                            </td>
-                        </tr>`;
-                    });
-                }
+                if(data.list.length === 0) tableHtml = `<tr><td colspan="5" class="p-8 text-center text-slate-400">No orders yet.</td></tr>`;
+                else data.list.forEach(order => {
+                    let c = order.status === "Completed" ? "text-green-700 bg-green-100" : "text-orange-700 bg-orange-100";
+                    tableHtml += `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-4 text-slate-500">${order.time}</td><td class="p-4 font-bold text-slate-800">Table ${order.table}</td><td class="p-4">${order.items}</td><td class="p-4 font-black">₹${order.amount}</td><td class="p-4"><span class="px-3 py-1 rounded-full text-[11px] font-bold ${c}">${order.status}</span></td></tr>`;
+                });
                 document.getElementById("dashboard-orders-list").innerHTML = tableHtml;
 
-            } catch (error) {
-                console.error("Dashboard Load Error");
-            }
+                // Inventory Data
+                const res2 = await fetch(SCRIPT_URL + "?action=getInventory&res=" + resId);
+                const invData = await res2.json();
+                
+                let invHtml = "";
+                if(invData.length === 0) invHtml = `<tr><td colspan="6" class="p-8 text-center text-slate-400">Sheet me koi Daily Stock entry nahi hai.</td></tr>`;
+                else invData.forEach(item => {
+                    let sc = item.status.includes("Safe") ? "text-green-600 font-bold" : "text-red-600 font-bold animate-pulse";
+                    invHtml += `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-4 font-bold text-slate-800">${item.name}</td><td class="p-4 text-slate-600">${item.opening}</td><td class="p-4 text-blue-600 font-bold">${item.sold}</td><td class="p-4 text-orange-600">${item.wasted}</td><td class="p-4 font-black text-slate-900">${item.left}</td><td class="p-4 ${sc}">${item.status}</td></tr>`;
+                });
+                document.getElementById("inventory-list").innerHTML = invHtml;
+
+            } catch (error) { console.error("Load Error"); }
         }
 
-        // Page khulte hi data lao
-        window.onload = () => {
-            loadDashboard();
-            // Har 10 second mein apne aap refresh hoga (Live feel)
-            setInterval(loadDashboard, 10000); 
-        };
+        window.onload = () => { loadDashboard(); setInterval(loadDashboard, 10000); };
     </script>
+
 </body>
 </html>
