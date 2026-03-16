@@ -59,11 +59,16 @@
                 </div>
 
                 <div id="upi-section" class="hidden mt-6 bg-slate-50 p-5 rounded-2xl border border-indigo-100 text-center shadow-inner">
-                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Pay via UPI (GPay / PhonePe)</p>
-                    <div class="bg-white p-3 rounded-xl inline-block shadow-md border border-slate-200">
-                        <img id="upi-qr-image" src="" alt="UPI QR" class="w-40 h-40">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Pay via UPI</p>
+                    
+                    <div class="bg-white p-3 rounded-xl inline-block shadow-md border border-slate-200 mb-2">
+                        <img id="upi-qr-image" src="" alt="UPI QR" class="w-32 h-32 mx-auto">
                     </div>
-                    <p class="text-sm font-bold text-slate-600 mt-3">Scan karke exact <span class="text-indigo-600 font-black text-lg">₹<span id="upi-amount">0</span></span> pay karein</p>
+                    <p class="text-sm font-bold text-slate-600">Scan QR - OR -</p>
+                    
+                    <a id="upi-link-btn" href="#" class="mt-3 w-full block bg-white border-2 border-indigo-600 text-indigo-700 hover:bg-indigo-50 font-black py-3 rounded-xl shadow-sm transition">
+                        ⚡ TAP TO PAY (GPay/PhonePe)
+                    </a>
                 </div>
             </div>
 
@@ -87,23 +92,24 @@
 
         let menuData = [];
         let cart = {};
-        
         let clientUpiId = "";
         let clientResName = "Restaurant " + resId;
 
         async function fetchMenuAndSettings() {
             try {
+                // Settings fetch karna
                 const setRes = await fetch(SCRIPT_URL + "?action=getSettings&res=" + resId);
                 const setData = await setRes.json();
                 clientResName = setData.name || "Restaurant " + resId;
                 clientUpiId = setData.upi || "";
                 document.getElementById("res-title").innerText = clientResName;
 
+                // Menu fetch karna
                 const menuRes = await fetch(SCRIPT_URL + "?action=getMenu&res=" + resId);
                 menuData = await menuRes.json();
                 renderMenu();
             } catch (error) {
-                document.getElementById('loading-menu').innerHTML = "<p class='text-red-500 font-bold'>Menu load nahi ho paya! Connection check karein.</p>";
+                document.getElementById('loading-menu').innerHTML = "<p class='text-red-500 font-bold text-center mt-5'>Menu load nahi ho paya! Connection check karein.</p>";
             }
         }
 
@@ -112,7 +118,7 @@
             document.getElementById('loading-menu').style.display = 'none';
             
             if(menuData.length === 0) {
-                container.innerHTML = "<p class='text-center text-slate-400'>No items available today.</p>";
+                container.innerHTML = "<p class='text-center text-slate-400 mt-5'>No items available today.</p>";
                 return;
             }
 
@@ -123,10 +129,16 @@
                     ? `<button onclick="addToCart('${item.name}', ${item.price})" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-2 rounded-xl text-sm font-black hover:bg-indigo-100 hover:scale-105 transition shadow-sm">+ ADD</button>`
                     : `<span class="bg-slate-100 text-slate-400 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200">SOLD OUT</span>`;
 
+                // 🔥 IMAGE WALA CODE BHI ADD KAR DIYA HAI 🔥
+                let defaultImg = 'https://cdn-icons-png.flaticon.com/512/3170/3170733.png';
+                let imgSrc = item.image ? item.image : defaultImg;
+
                 html += `
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-lg ${!isAvail ? 'opacity-50 line-through' : ''}">${item.name}</h3>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-center transform hover:scale-[1.01] transition-all">
+                    <img src="${imgSrc}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl border border-slate-100 shadow-sm ${!isAvail ? 'opacity-50 grayscale' : ''}">
+                    
+                    <div class="flex-1">
+                        <h3 class="font-bold text-slate-800 text-lg leading-tight ${!isAvail ? 'opacity-50 line-through' : ''}">${item.name}</h3>
                         <p class="font-black text-indigo-600 mt-1">₹${item.price}</p>
                     </div>
                     <div>${btnHtml}</div>
@@ -174,12 +186,16 @@
                 document.getElementById('bottom-items-count').innerText = totalItems + (totalItems > 1 ? " Items" : " Item");
                 document.getElementById('bottom-total-price').innerText = total;
 
-                // QR Logic
+                // QR & DIRECT LINK Logic
                 if(clientUpiId && clientUpiId.trim() !== "") {
                     document.getElementById('upi-section').classList.remove('hidden');
                     let upiLink = `upi://pay?pa=${clientUpiId}&pn=${encodeURIComponent(clientResName)}&am=${total}&cu=INR`;
-                    document.getElementById('upi-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;
-                    document.getElementById('upi-amount').innerText = total;
+                    
+                    // Set QR Image
+                    document.getElementById('upi-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiLink)}`;
+                    
+                    // Set Button Link
+                    document.getElementById('upi-link-btn').href = upiLink;
                 } else {
                     document.getElementById('upi-section').classList.add('hidden');
                 }
