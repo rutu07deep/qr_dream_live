@@ -5,62 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Menu - QR Dream</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .cart-bounce { animation: bounce 0.3s ease-in-out; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-    </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 pb-24">
+<body class="bg-slate-50 font-sans text-slate-800 pb-28">
 
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-2xl mx-auto px-4 py-4 flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-black text-indigo-600 tracking-tight" id="res-title">Loading...</h1>
-                <p class="text-xs font-bold text-slate-400" id="table-display">Table --</p>
+                <h1 class="text-2xl font-black text-indigo-600 tracking-tight" id="res-title">Loading...</h1>
+                <p class="text-sm font-bold text-slate-500" id="table-display">Table --</p>
             </div>
-            <button onclick="toggleCart()" class="relative bg-slate-900 text-white p-2 rounded-xl shadow-lg hover:bg-slate-800 transition">
-                🛒
-                <span id="cart-badge" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full shadow hidden">0</span>
-            </button>
+            <div class="bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100">
+                <span class="text-indigo-800 font-bold text-sm">Live Menu 🟢</span>
+            </div>
         </div>
     </nav>
 
     <main class="max-w-2xl mx-auto px-4 py-6">
         <div id="loading-menu" class="text-center py-10">
-            <p class="text-slate-400 font-bold animate-pulse">Menu load ho raha hai... 🍕</p>
+            <p class="text-slate-400 font-bold animate-pulse text-lg">Menu load ho raha hai... 🍕</p>
         </div>
         <div id="menu-container" class="space-y-4">
             </div>
     </main>
 
-    <div id="cart-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-60 z-50 flex items-end sm:items-center justify-center backdrop-blur-sm">
-        <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
-            <div class="px-6 py-4 border-b flex justify-between items-center bg-slate-50">
-                <h3 class="text-lg font-black text-slate-800">Your Order 🛒</h3>
-                <button onclick="toggleCart()" class="text-slate-400 hover:text-red-500 font-bold text-2xl">&times;</button>
+    <div id="sticky-bottom-bar" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] z-40 p-4">
+        <div class="max-w-2xl mx-auto flex justify-between items-center">
+            <div>
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider" id="bottom-items-count">0 Items</p>
+                <p class="text-xl font-black text-slate-900">₹<span id="bottom-total-price">0</span></p>
+            </div>
+            <button onclick="toggleCart()" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-black shadow-lg hover:bg-indigo-700 transition flex items-center gap-2">
+                VIEW CART 🛒
+            </button>
+        </div>
+    </div>
+
+    <div id="cart-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-70 z-50 flex items-end sm:items-center justify-center backdrop-blur-sm transition-all">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+            
+            <div class="px-6 py-5 border-b flex justify-between items-center bg-slate-50">
+                <h3 class="text-xl font-black text-slate-800">Your Order 🛒</h3>
+                <button onclick="toggleCart()" class="text-slate-400 hover:text-red-500 font-black text-3xl">&times;</button>
             </div>
             
-            <div class="p-6 max-h-[60vh] overflow-y-auto">
-                <div id="cart-items" class="space-y-3 mb-4">
+            <div class="p-6 overflow-y-auto flex-1">
+                <div id="cart-items" class="space-y-3 mb-6">
                     <p class="text-center text-slate-400 text-sm font-bold">Cart is empty.</p>
                 </div>
                 
-                <div class="border-t pt-4 flex justify-between items-center">
+                <div class="border-t border-slate-200 pt-4 flex justify-between items-center bg-white">
                     <span class="text-sm font-bold text-slate-500">Total Amount:</span>
-                    <span class="text-2xl font-black text-slate-900">₹<span id="cart-total">0</span></span>
+                    <span class="text-3xl font-black text-slate-900">₹<span id="cart-total">0</span></span>
                 </div>
 
-                <div id="upi-section" class="hidden mt-6 bg-slate-50 p-4 rounded-2xl border border-indigo-100 text-center shadow-inner">
-                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pay via UPI (GPay / PhonePe)</p>
-                    <div class="bg-white p-2 rounded-xl inline-block shadow-sm">
-                        <img id="upi-qr-image" src="" alt="UPI QR" class="w-32 h-32">
+                <div id="upi-section" class="hidden mt-6 bg-slate-50 p-5 rounded-2xl border border-indigo-100 text-center shadow-inner">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Pay via UPI (GPay / PhonePe)</p>
+                    <div class="bg-white p-3 rounded-xl inline-block shadow-md border border-slate-200">
+                        <img id="upi-qr-image" src="" alt="UPI QR" class="w-40 h-40">
                     </div>
-                    <p class="text-[11px] font-bold text-slate-400 mt-2">Scan karke exact <span class="text-indigo-600">₹<span id="upi-amount">0</span></span> pay karein</p>
+                    <p class="text-sm font-bold text-slate-600 mt-3">Scan karke exact <span class="text-indigo-600 font-black text-lg">₹<span id="upi-amount">0</span></span> pay karein</p>
                 </div>
             </div>
 
-            <div class="p-4 bg-white border-t">
-                <button id="place-order-btn" onclick="placeOrder()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl shadow-[0_0_15px_rgba(79,70,229,0.3)] transition text-lg disabled:opacity-50 disabled:cursor-not-allowed">
+            <div class="p-4 bg-white border-t border-slate-200 shadow-[0_-5px_10px_-5px_rgba(0,0,0,0.1)]">
+                <button id="place-order-btn" onclick="placeOrder()" class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-4 rounded-xl shadow-[0_5px_15px_rgba(22,163,74,0.4)] transition text-xl tracking-wide disabled:opacity-50 disabled:cursor-not-allowed">
                     PLACE ORDER 🚀
                 </button>
             </div>
@@ -68,7 +76,7 @@
     </div>
 
     <script>
-        // 🚨 APNA SCRIPT URL DAAL YAHAN (URL wahi purana rahega agar tune update deploy kiya hai) 👇
+        // 🚨 YAHAN APNA SCRIPT URL DAALNA MAT BHOOLNA 👇
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr34JtNFeVV0Qt2K6r3TZB5rk0fOpFkTr-kuBdGHu5dAmkLjjHPTd0J0hGaCj3OSgO/exec"; 
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -80,20 +88,17 @@
         let menuData = [];
         let cart = {};
         
-        // Naye Global Variables Client Data ke liye
         let clientUpiId = "";
         let clientResName = "Restaurant " + resId;
 
         async function fetchMenuAndSettings() {
             try {
-                // 1. Pehle Settings (Naam aur UPI) layega
                 const setRes = await fetch(SCRIPT_URL + "?action=getSettings&res=" + resId);
                 const setData = await setRes.json();
                 clientResName = setData.name || "Restaurant " + resId;
                 clientUpiId = setData.upi || "";
                 document.getElementById("res-title").innerText = clientResName;
 
-                // 2. Fir Menu layega
                 const menuRes = await fetch(SCRIPT_URL + "?action=getMenu&res=" + resId);
                 menuData = await menuRes.json();
                 renderMenu();
@@ -115,11 +120,11 @@
             menuData.forEach(item => {
                 let isAvail = item.status === "Available";
                 let btnHtml = isAvail 
-                    ? `<button onclick="addToCart('${item.name}', ${item.price})" class="bg-indigo-50 text-indigo-600 border border-indigo-200 px-4 py-2 rounded-lg text-sm font-black hover:bg-indigo-100 transition shadow-sm">+ ADD</button>`
-                    : `<span class="bg-slate-100 text-slate-400 px-4 py-2 rounded-lg text-xs font-bold border border-slate-200">SOLD OUT</span>`;
+                    ? `<button onclick="addToCart('${item.name}', ${item.price})" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-2 rounded-xl text-sm font-black hover:bg-indigo-100 hover:scale-105 transition shadow-sm">+ ADD</button>`
+                    : `<span class="bg-slate-100 text-slate-400 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200">SOLD OUT</span>`;
 
                 html += `
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center transform hover:scale-[1.01] transition-all">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div>
                         <h3 class="font-bold text-slate-800 text-lg ${!isAvail ? 'opacity-50 line-through' : ''}">${item.name}</h3>
                         <p class="font-black text-indigo-600 mt-1">₹${item.price}</p>
@@ -133,12 +138,6 @@
         function addToCart(name, price) {
             if(cart[name]) cart[name].qty++;
             else cart[name] = { price: price, qty: 1 };
-            
-            let badge = document.getElementById('cart-badge');
-            badge.classList.remove('hidden');
-            badge.classList.add('cart-bounce');
-            setTimeout(() => badge.classList.remove('cart-bounce'), 300);
-            
             updateCartUI();
         }
 
@@ -152,30 +151,34 @@
                 total += itemTotal;
                 totalItems += cart[key].qty;
                 cartHtml += `
-                <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <div class="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-200">
                     <div class="flex-1">
-                        <p class="font-bold text-slate-800 text-sm">${key}</p>
-                        <p class="text-xs font-black text-indigo-500">₹${cart[key].price} x ${cart[key].qty}</p>
+                        <p class="font-bold text-slate-800 text-base">${key}</p>
+                        <p class="text-sm font-black text-indigo-500">₹${cart[key].price} x ${cart[key].qty}</p>
                     </div>
-                    <div class="font-black text-slate-800">₹${itemTotal}</div>
+                    <div class="font-black text-slate-800 text-lg">₹${itemTotal}</div>
                 </div>`;
             }
 
             if(totalItems === 0) {
-                document.getElementById('cart-items').innerHTML = '<p class="text-center text-slate-400 text-sm font-bold">Cart is empty.</p>';
-                document.getElementById('cart-badge').classList.add('hidden');
+                document.getElementById('cart-items').innerHTML = '<p class="text-center text-slate-400 font-bold">Cart is empty.</p>';
                 document.getElementById('place-order-btn').disabled = true;
                 document.getElementById('upi-section').classList.add('hidden'); 
+                document.getElementById('sticky-bottom-bar').classList.add('hidden');
             } else {
                 document.getElementById('cart-items').innerHTML = cartHtml;
-                document.getElementById('cart-badge').innerText = totalItems;
                 document.getElementById('place-order-btn').disabled = false;
                 
-                // Agar Sheet mein UPI ID hai, tabhi QR dikhao
+                // Show sticky bottom bar
+                document.getElementById('sticky-bottom-bar').classList.remove('hidden');
+                document.getElementById('bottom-items-count').innerText = totalItems + (totalItems > 1 ? " Items" : " Item");
+                document.getElementById('bottom-total-price').innerText = total;
+
+                // QR Logic
                 if(clientUpiId && clientUpiId.trim() !== "") {
                     document.getElementById('upi-section').classList.remove('hidden');
                     let upiLink = `upi://pay?pa=${clientUpiId}&pn=${encodeURIComponent(clientResName)}&am=${total}&cu=INR`;
-                    document.getElementById('upi-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiLink)}`;
+                    document.getElementById('upi-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;
                     document.getElementById('upi-amount').innerText = total;
                 } else {
                     document.getElementById('upi-section').classList.add('hidden');
@@ -217,7 +220,6 @@
             }
         }
 
-        // Load hote hi nayi function chalegi
         window.onload = fetchMenuAndSettings;
     </script>
 </body>
