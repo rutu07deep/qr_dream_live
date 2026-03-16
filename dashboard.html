@@ -6,7 +6,7 @@
     <title>Owner Dashboard - QR Dream</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800">
+<body class="bg-slate-50 font-sans text-slate-800 relative">
 
     <nav class="bg-white border-b border-slate-200 sticky top-0 z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -29,7 +29,7 @@
             <div class="flex flex-wrap gap-2">
                 <button onclick="openKitchen()" class="bg-blue-50 text-blue-700 border border-blue-200 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-blue-100 transition flex items-center gap-2">👨‍🍳 Open Kitchen TV</button>
                 <button onclick="whatsappChef()" class="bg-green-50 text-green-700 border border-green-200 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-green-100 transition flex items-center gap-2">📲 WhatsApp Chef</button>
-                <button onclick="toggleMenu()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-700 transition flex items-center gap-2">🛑 Menu On/Off</button>
+                <button onclick="toggleMenu()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-700 transition flex items-center gap-2 animate-pulse">🛑 Menu On/Off</button>
             </div>
         </div>
 
@@ -72,9 +72,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase">
-                            <th class="p-4 font-bold border-b">Time</th><th class="p-4 font-bold border-b">Table</th><th class="p-4 font-bold border-b">Items</th><th class="p-4 font-bold border-b">Amount</th><th class="p-4 font-bold border-b">Status</th>
-                        </tr>
+                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase"><th class="p-4 font-bold border-b">Time</th><th class="p-4 font-bold border-b">Table</th><th class="p-4 font-bold border-b">Items</th><th class="p-4 font-bold border-b">Amount</th><th class="p-4 font-bold border-b">Status</th></tr>
                     </thead>
                     <tbody id="dashboard-orders-list" class="text-sm divide-y divide-slate-100">
                         <tr><td colspan="5" class="p-8 text-center text-slate-400">Loading live data...</td></tr>
@@ -94,9 +92,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase">
-                            <th class="p-4 font-bold border-b">Raw Material</th><th class="p-4 font-bold border-b">Opening Stock</th><th class="p-4 font-bold border-b">Used (Sales)</th><th class="p-4 font-bold border-b">Wasted</th><th class="p-4 font-bold border-b">Should Be Left</th><th class="p-4 font-bold border-b">Status</th>
-                        </tr>
+                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase"><th class="p-4 font-bold border-b">Raw Material</th><th class="p-4 font-bold border-b">Opening Stock</th><th class="p-4 font-bold border-b">Used (Sales)</th><th class="p-4 font-bold border-b">Wasted</th><th class="p-4 font-bold border-b">Should Be Left</th><th class="p-4 font-bold border-b">Status</th></tr>
                     </thead>
                     <tbody id="inventory-list" class="text-sm divide-y divide-slate-100">
                         <tr><td colspan="6" class="p-8 text-center text-slate-400">Connecting to Inventory Engine...</td></tr>
@@ -106,8 +102,22 @@
         </div>
     </main>
 
+    <div id="menu-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-60 z-50 flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden m-4">
+            <div class="px-6 py-4 border-b flex justify-between items-center bg-slate-50">
+                <h3 class="text-lg font-black text-slate-800">🛑 Turn Menu Items On/Off</h3>
+                <button onclick="closeMenuModal()" class="text-slate-400 hover:text-red-500 font-bold text-2xl">&times;</button>
+            </div>
+            <div class="p-6 max-h-[60vh] overflow-y-auto">
+                <div id="menu-toggle-list" class="space-y-3">
+                    <p class="text-center text-slate-500 font-bold animate-pulse">Loading menu items...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // 🚨 APNA SCRIPT URL YAHAN DAALNA MAT BHULNA 👇
+        // 🚨 APNA EKDUUUUM NAYA WALA SCRIPT URL YAHAN DAAL 👇
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr34JtNFeVV0Qt2K6r3TZB5rk0fOpFkTr-kuBdGHu5dAmkLjjHPTd0J0hGaCj3OSgO/exec"; 
         
         const resId = new URLSearchParams(window.location.search).get('res') || "R1"; 
@@ -115,7 +125,6 @@
 
         async function loadDashboard() {
             try {
-                // Fetch Sales Data
                 const res1 = await fetch(SCRIPT_URL + "?action=getDashboard&res=" + resId);
                 const data = await res1.json();
                 
@@ -135,7 +144,6 @@
                 });
                 document.getElementById("dashboard-orders-list").innerHTML = tableHtml;
 
-                // Fetch Inventory Data
                 const res2 = await fetch(SCRIPT_URL + "?action=getInventory&res=" + resId);
                 const invData = await res2.json();
                 
@@ -156,7 +164,7 @@
                             if(alertCount === 1) alertText = item.name + " (" + item.left + " left)";
                         }
                     });
-                    if(alertCount > 1) alertText += " & More🚨";
+                    if(alertCount > 1) alertText += " & More 🚨";
                 }
                 
                 document.getElementById("inventory-list").innerHTML = invHtml;
@@ -186,15 +194,12 @@
             loadDashboard();
         }
 
-        // 🚀 NAYE BUTTONS KE FUNCTIONS
         function openKitchen() {
-            // Ye button automatically tera kitchen.html khol dega naye tab mein
             let kitchenUrl = window.location.href.split('dashboard.html')[0] + "kitchen.html?res=" + resId;
             window.open(kitchenUrl, "_blank");
         }
 
         function whatsappChef() {
-            // Chef ka number pooch kar direct WhatsApp khol dega
             let num = prompt("Chef ka WhatsApp Number daalein (Country code ke sath, jaise 91987654321):", "91");
             if(num) {
                 let msg = encodeURIComponent("Chef bhai, thoda jaldi haath chalao! Dashboard se message hai 🚀");
@@ -202,12 +207,49 @@
             }
         }
 
-        function toggleMenu() {
-            alert("🛠️ UI set ho gaya! Agle step mein hum Google Script mein iska backend banayenge.");
+        // 🛑 NAYA: POPUP KHOLNE KA AUR SWITCH KARNE KA LOGIC
+        async function toggleMenu() {
+            document.getElementById('menu-modal').classList.remove('hidden');
+            document.getElementById('menu-toggle-list').innerHTML = '<p class="text-center text-slate-500 font-bold animate-pulse">Loading menu items...</p>';
+            
+            try {
+                const res = await fetch(SCRIPT_URL + "?action=getMenu&res=" + resId);
+                const menuData = await res.json();
+                
+                let html = "";
+                menuData.forEach(item => {
+                    let isAvail = item.status === "Available";
+                    let btnColor = isAvail ? "bg-green-500 hover:bg-green-600" : "bg-slate-300 hover:bg-slate-400 text-slate-700";
+                    let btnText = isAvail ? "ON" : "OFF";
+                    let textColor = isAvail ? "text-slate-800" : "text-slate-400 line-through";
+                    
+                    html += `
+                    <div class="flex justify-between items-center p-3 border rounded-lg bg-white shadow-sm">
+                        <span class="font-bold ${textColor}">${item.name}</span>
+                        <button onclick="flipStatus('${item.name}', '${item.status}')" class="${btnColor} ${isAvail ? 'text-white' : ''} px-4 py-1.5 rounded-full text-xs font-black transition-all w-16 text-center shadow-inner">
+                            ${btnText}
+                        </button>
+                    </div>`;
+                });
+                document.getElementById('menu-toggle-list').innerHTML = html || "<p class='text-center text-slate-500'>No items found.</p>";
+            } catch (error) {
+                document.getElementById('menu-toggle-list').innerHTML = "<p class='text-center text-red-500'>Error loading menu.</p>";
+            }
+        }
+
+        async function flipStatus(name, currentStatus) {
+            let newStatus = currentStatus === "Available" ? "Out of Stock" : "Available";
+            document.getElementById('menu-toggle-list').innerHTML = '<p class="text-center text-blue-500 font-bold animate-pulse">Updating '+name+'...</p>';
+            
+            await fetch(SCRIPT_URL + "?action=toggleItem&res=" + resId + "&name=" + name + "&status=" + newStatus);
+            toggleMenu(); // Wapas list refresh karega
+        }
+
+        function closeMenuModal() {
+            document.getElementById('menu-modal').classList.add('hidden');
         }
 
         window.onload = () => { loadDashboard(); setInterval(loadDashboard, 10000); };
     </script>
 </body>
 </html>
-
