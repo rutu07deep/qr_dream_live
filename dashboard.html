@@ -69,20 +69,20 @@
         </div>
 
         <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
-            <div class="px-6 py-5 border-b bg-slate-50"><h3 class="text-lg font-bold text-slate-800">Recent Orders Flow</h3></div>
+            <div class="px-6 py-5 border-b bg-slate-50"><h3 class="text-lg font-bold text-slate-800">Recent Orders & Billing 🖨️</h3></div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase"><th class="p-4 font-bold border-b">Time</th><th class="p-4 font-bold border-b">Table</th><th class="p-4 font-bold border-b">Items</th><th class="p-4 font-bold border-b">Amount</th><th class="p-4 font-bold border-b">Status</th></tr>
+                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase"><th class="p-4 font-bold border-b">Time</th><th class="p-4 font-bold border-b">Table</th><th class="p-4 font-bold border-b">Items</th><th class="p-4 font-bold border-b">Amount</th><th class="p-4 font-bold border-b">Status</th><th class="p-4 font-bold border-b">Bill</th></tr>
                     </thead>
                     <tbody id="dashboard-orders-list" class="text-sm divide-y divide-slate-100">
-                        <tr><td colspan="5" class="p-8 text-center text-slate-400">Loading live data...</td></tr>
+                        <tr><td colspan="6" class="p-8 text-center text-slate-400">Loading live data...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
+        <div class="bg-white rounded-2xl border shadow-sm overflow-hidden mt-8">
             <div class="px-6 py-5 border-b bg-slate-50 flex justify-between items-center">
                 <h3 class="text-lg font-bold text-slate-800">Inventory & Anti-Theft Guard 🛡️</h3>
                 <div class="flex gap-2">
@@ -136,10 +136,21 @@
                 document.getElementById("dash-loss").innerText = "₹" + (data.loss || 0);
 
                 let tableHtml = "";
-                if(data.list.length === 0) tableHtml = `<tr><td colspan="5" class="p-8 text-center text-slate-400">No orders yet.</td></tr>`;
+                if(data.list.length === 0) tableHtml = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No orders yet.</td></tr>`;
                 else data.list.forEach(order => {
                     let c = order.status === "Completed" ? "text-green-700 bg-green-100" : "text-orange-700 bg-orange-100";
-                    tableHtml += `<tr class="border-b hover:bg-slate-50"><td class="p-4 text-slate-500">${order.time}</td><td class="p-4 font-bold">Table ${order.table}</td><td class="p-4">${order.items}</td><td class="p-4 font-black">₹${order.amount}</td><td class="p-4"><span class="px-3 py-1 rounded-full text-[11px] font-bold ${c}">${order.status}</span></td></tr>`;
+                    // 🖨️ NAYE BUTTON YAHAN ADD HUE HAIN 👇
+                    tableHtml += `<tr class="border-b hover:bg-slate-50">
+                        <td class="p-4 text-slate-500">${order.time}</td>
+                        <td class="p-4 font-bold">Table ${order.table}</td>
+                        <td class="p-4 text-xs">${order.items}</td>
+                        <td class="p-4 font-black">₹${order.amount}</td>
+                        <td class="p-4"><span class="px-3 py-1 rounded-full text-[11px] font-bold ${c}">${order.status}</span></td>
+                        <td class="p-4 flex gap-2">
+                            <button onclick="printBill('${order.table}', '${order.items}', ${order.amount}, '${order.time}')" class="bg-slate-800 text-white p-2 rounded-lg hover:bg-black transition shadow" title="Print Bill">🖨️</button>
+                            <button onclick="whatsappBill('${order.table}', '${order.items}', ${order.amount})" class="bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition shadow" title="WhatsApp Bill">💬</button>
+                        </td>
+                    </tr>`;
                 });
                 document.getElementById("dashboard-orders-list").innerHTML = tableHtml;
 
@@ -158,7 +169,6 @@
                         let statusHtml = "";
                         if(item.left < 0) {
                             let missingQty = Math.abs(item.left);
-                            // NAYA MISSING ALERT BUTTON 👇
                             statusHtml = `<span class="bg-red-100 text-red-700 px-3 py-1 rounded-md text-xs font-black border border-red-200 shadow-sm animate-pulse">MISSING: ${missingQty} 🚨</span>`;
                             theftItems.push(`${item.name} (-${missingQty})`);
                         } else {
@@ -181,7 +191,6 @@
                 if(lowStockItems.length > 0) document.getElementById("dash-lowstock").innerText = lowStockItems.join(", ");
                 else document.getElementById("dash-lowstock").innerText = "All Good ✅";
 
-                // NAYA KAALA WALA THEFT ALERT CARD UPDATE 👇
                 if(theftItems.length > 0) {
                     document.getElementById("dash-theft").innerText = "Missing: " + theftItems.join(", ");
                     document.getElementById("dash-theft").classList.add("text-red-400", "animate-pulse");
@@ -191,6 +200,50 @@
                 }
 
             } catch (error) { console.error("Load Error"); }
+        }
+
+        // 🖨️ NAYA FUNCTION: PRINT BILL
+        function printBill(table, items, amount, time) {
+            let cleanItems = items.replace(/,/g, '<br>');
+            let receiptWindow = window.open('', '_blank', 'width=350,height=500');
+            receiptWindow.document.write(`
+                <html><head><title>Bill - Table ${table}</title>
+                <style>
+                    body { font-family: monospace; text-align: center; margin: 0; padding: 20px; color: #000; }
+                    hr { border-top: 1px dashed #000; border-bottom: none; margin: 15px 0; }
+                    .left { text-align: left; font-size: 14px; line-height: 1.6; }
+                </style>
+                </head><body>
+                <h2 style="margin-bottom: 5px;">QR DREAM RESTRO</h2>
+                <p style="margin: 0; font-size: 12px;">Restaurant ID: ${resId}</p>
+                <hr>
+                <p style="margin: 5px 0;"><strong>Table No: ${table}</strong></p>
+                <p style="margin: 5px 0; font-size: 12px;">Time: ${time}</p>
+                <hr>
+                <div class="left">${cleanItems}</div>
+                <hr>
+                <h2 style="margin: 10px 0;">Total: Rs ${amount}/-</h2>
+                <hr>
+                <p style="font-size: 12px;">Thank You! Visit Again.</p>
+                <script>
+                    setTimeout(() => { window.print(); window.close(); }, 500);
+                <\/script>
+                </body></html>
+            `);
+            receiptWindow.document.close();
+        }
+
+        // 💬 NAYA FUNCTION: WHATSAPP BILL
+        function whatsappBill(table, items, amount) {
+            let cleanItems = items.replace(/,/g, '\n- ');
+            let text = `*🧾 BILL RECEIPT*\n*QR Dream Restro (${resId})*\n----------------------\n*Table No:* ${table}\n\n*Items Ordered:*\n- ${cleanItems}\n----------------------\n*Grand Total:* ₹${amount}/-\n----------------------\n_Thank you for dining with us!_ 🍽️`;
+            
+            let num = prompt("Customer ka WhatsApp number daalein (Ex: 919876543210):", "91");
+            if(num && num.length >= 12) {
+                window.open("https://wa.me/" + num + "?text=" + encodeURIComponent(text), "_blank");
+            } else if(num) {
+                alert("Sahi number daaliye with country code (91)!");
+            }
         }
 
         async function addStock() {
@@ -220,10 +273,7 @@
 
         function whatsappChef() {
             let num = prompt("Chef ka WhatsApp Number daalein:", "91");
-            if(num) {
-                let msg = encodeURIComponent("Chef bhai, thoda jaldi haath chalao! Dashboard se message hai 🚀");
-                window.open("https://wa.me/" + num + "?text=" + msg, "_blank");
-            }
+            if(num) window.open("https://wa.me/" + num + "?text=" + encodeURIComponent("Chef bhai, thoda jaldi haath chalao! Dashboard se message hai 🚀"), "_blank");
         }
 
         async function toggleMenu() {
@@ -257,4 +307,3 @@
     </script>
 </body>
 </html>
-
