@@ -25,7 +25,7 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         <div><h1 class="text-3xl font-extrabold text-slate-900">Today's Overview</h1></div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="bg-white rounded-2xl p-6 border shadow-sm">
                 <p class="text-sm font-bold text-slate-500 uppercase">Total Sales</p>
                 <h2 class="text-4xl font-black text-slate-900" id="dash-sales">₹0</h2>
@@ -37,6 +37,10 @@
             <div class="bg-white rounded-2xl p-6 border shadow-sm border-l-4 border-l-orange-500">
                 <p class="text-sm font-bold text-orange-600 uppercase">Pending Orders</p>
                 <h2 class="text-4xl font-black text-slate-900" id="dash-pending">0</h2>
+            </div>
+            <div class="bg-white rounded-2xl p-6 border shadow-sm border-l-4 border-l-red-500">
+                <p class="text-sm font-bold text-red-600 uppercase">Low Stock Alert</p>
+                <h2 class="text-xl font-black text-slate-800 mt-2" id="dash-alert">All Good ✅</h2>
             </div>
         </div>
 
@@ -80,7 +84,7 @@
     </main>
 
     <script>
-        // 🚨 APNA NAYA SCRIPT URL YAHAN DAAL 👇
+        // 🚨 APNA SCRIPT URL YAHAN DAALNA MAT BHULNA 👇
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr34JtNFeVV0Qt2K6r3TZB5rk0fOpFkTr-kuBdGHu5dAmkLjjHPTd0J0hGaCj3OSgO/exec"; 
         
         const resId = new URLSearchParams(window.location.search).get('res') || "R1"; 
@@ -109,12 +113,31 @@
                 const invData = await res2.json();
                 
                 let invHtml = "";
-                if(invData.length === 0) invHtml = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No Daily Stock entry found for today.</td></tr>`;
-                else invData.forEach(item => {
-                    let sc = item.status.includes("Safe") ? "text-green-600 font-bold" : "text-red-600 font-bold animate-pulse";
-                    invHtml += `<tr class="border-b hover:bg-slate-50"><td class="p-4 font-bold">${item.name}</td><td class="p-4">${item.opening}</td><td class="p-4 text-blue-600 font-bold">${item.sold}</td><td class="p-4 text-orange-600">${item.wasted}</td><td class="p-4 font-black">${item.left}</td><td class="p-4 ${sc}">${item.status}</td></tr>`;
-                });
+                let alertText = "All Good ✅";
+                let alertCount = 0;
+
+                if(invData.length === 0) {
+                    invHtml = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No Daily Stock entry found for today.</td></tr>`;
+                    alertText = "Stock Khaali 🚨";
+                } else {
+                    invData.forEach(item => {
+                        let sc = item.status.includes("Safe") ? "text-green-600 font-bold" : "text-red-600 font-bold animate-pulse";
+                        invHtml += `<tr class="border-b hover:bg-slate-50"><td class="p-4 font-bold">${item.name}</td><td class="p-4">${item.opening}</td><td class="p-4 text-blue-600 font-bold">${item.sold}</td><td class="p-4 text-orange-600">${item.wasted}</td><td class="p-4 font-black">${item.left}</td><td class="p-4 ${sc}">${item.status}</td></tr>`;
+                        
+                        // Smart Alert Logic: Agar stock 5 ya usse kam hai
+                        if(item.left <= 5) {
+                            alertCount++;
+                            if(alertCount === 1) alertText = item.name + " (" + item.left + " left)";
+                        }
+                    });
+                    if(alertCount > 1) alertText += " & More🚨";
+                }
+                
                 document.getElementById("inventory-list").innerHTML = invHtml;
+                document.getElementById("dash-alert").innerText = alertText;
+                
+                // Agar alert hai toh text red kardo
+                if(alertText !== "All Good ✅") document.getElementById("dash-alert").classList.add("text-red-600");
 
             } catch (error) { console.error("Load Error"); }
         }
