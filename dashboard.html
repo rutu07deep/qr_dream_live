@@ -23,7 +23,15 @@
     </nav>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <div><h1 class="text-3xl font-extrabold text-slate-900">Today's Overview</h1></div>
+        
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <h1 class="text-3xl font-extrabold text-slate-900">Today's Overview</h1>
+            <div class="flex flex-wrap gap-2">
+                <button onclick="openKitchen()" class="bg-blue-50 text-blue-700 border border-blue-200 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-blue-100 transition flex items-center gap-2">👨‍🍳 Open Kitchen TV</button>
+                <button onclick="whatsappChef()" class="bg-green-50 text-green-700 border border-green-200 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-green-100 transition flex items-center gap-2">📲 WhatsApp Chef</button>
+                <button onclick="toggleMenu()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-700 transition flex items-center gap-2">🛑 Menu On/Off</button>
+            </div>
+        </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="bg-white rounded-2xl p-6 border shadow-sm">
@@ -40,7 +48,22 @@
             </div>
             <div class="bg-white rounded-2xl p-6 border shadow-sm border-l-4 border-l-red-500">
                 <p class="text-sm font-bold text-red-600 uppercase">Low Stock Alert</p>
-                <h2 class="text-xl font-black text-slate-800 mt-2" id="dash-alert">All Good ✅</h2>
+                <h2 class="text-xl font-black text-slate-800 mt-2" id="dash-alert">Checking... ⏳</h2>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-green-50 rounded-2xl p-6 border border-green-100 shadow-sm">
+                <p class="text-xs font-bold text-green-600 uppercase tracking-wider">Net Profit (Est.)</p>
+                <h2 class="text-3xl font-black text-green-700 mt-1" id="dash-profit">₹0</h2>
+            </div>
+            <div class="bg-blue-50 rounded-2xl p-6 border border-blue-100 shadow-sm">
+                <p class="text-xs font-bold text-blue-600 uppercase tracking-wider">Food Cost</p>
+                <h2 class="text-3xl font-black text-blue-700 mt-1" id="dash-foodcost">0%</h2>
+            </div>
+            <div class="bg-red-50 rounded-2xl p-6 border border-red-100 shadow-sm">
+                <p class="text-xs font-bold text-red-600 uppercase tracking-wider">Wastage Loss</p>
+                <h2 class="text-3xl font-black text-red-700 mt-1" id="dash-loss">₹0</h2>
             </div>
         </div>
 
@@ -81,21 +104,6 @@
                 </table>
             </div>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-green-50 rounded-2xl p-6 border border-green-100 shadow-sm">
-                <p class="text-xs font-bold text-green-600 uppercase tracking-wider">Net Profit (Est.)</p>
-                <h2 class="text-3xl font-black text-green-700 mt-1" id="dash-profit">₹0</h2>
-            </div>
-            <div class="bg-blue-50 rounded-2xl p-6 border border-blue-100 shadow-sm">
-                <p class="text-xs font-bold text-blue-600 uppercase tracking-wider">Food Cost</p>
-                <h2 class="text-3xl font-black text-blue-700 mt-1" id="dash-foodcost">0%</h2>
-            </div>
-            <div class="bg-red-50 rounded-2xl p-6 border border-red-100 shadow-sm">
-                <p class="text-xs font-bold text-red-600 uppercase tracking-wider">Wastage Loss</p>
-                <h2 class="text-3xl font-black text-red-700 mt-1" id="dash-loss">₹0</h2>
-            </div>
-        </div>
     </main>
 
     <script>
@@ -107,15 +115,18 @@
 
         async function loadDashboard() {
             try {
-                // Fetch Sales
+                // Fetch Sales Data
                 const res1 = await fetch(SCRIPT_URL + "?action=getDashboard&res=" + resId);
                 const data = await res1.json();
                 
-                // Naye cards ka data
+                document.getElementById("dash-sales").innerText = "₹" + data.sales;
+                document.getElementById("dash-orders").innerText = data.orders;
+                document.getElementById("dash-pending").innerText = data.pending;
+                
                 document.getElementById("dash-profit").innerText = "₹" + (data.profit || 0);
                 document.getElementById("dash-foodcost").innerText = data.foodCost || "0%";
                 document.getElementById("dash-loss").innerText = "₹" + (data.loss || 0);
-                
+
                 let tableHtml = "";
                 if(data.list.length === 0) tableHtml = `<tr><td colspan="5" class="p-8 text-center text-slate-400">No orders yet.</td></tr>`;
                 else data.list.forEach(order => {
@@ -124,7 +135,7 @@
                 });
                 document.getElementById("dashboard-orders-list").innerHTML = tableHtml;
 
-                // Fetch Inventory
+                // Fetch Inventory Data
                 const res2 = await fetch(SCRIPT_URL + "?action=getInventory&res=" + resId);
                 const invData = await res2.json();
                 
@@ -140,7 +151,6 @@
                         let sc = item.status.includes("Safe") ? "text-green-600 font-bold" : "text-red-600 font-bold animate-pulse";
                         invHtml += `<tr class="border-b hover:bg-slate-50"><td class="p-4 font-bold">${item.name}</td><td class="p-4">${item.opening}</td><td class="p-4 text-blue-600 font-bold">${item.sold}</td><td class="p-4 text-orange-600">${item.wasted}</td><td class="p-4 font-black">${item.left}</td><td class="p-4 ${sc}">${item.status}</td></tr>`;
                         
-                        // Smart Alert Logic: Agar stock 5 ya usse kam hai
                         if(item.left <= 5) {
                             alertCount++;
                             if(alertCount === 1) alertText = item.name + " (" + item.left + " left)";
@@ -151,8 +161,6 @@
                 
                 document.getElementById("inventory-list").innerHTML = invHtml;
                 document.getElementById("dash-alert").innerText = alertText;
-                
-                // Agar alert hai toh text red kardo
                 if(alertText !== "All Good ✅") document.getElementById("dash-alert").classList.add("text-red-600");
 
             } catch (error) { console.error("Load Error"); }
@@ -163,7 +171,6 @@
             if (!item) return;
             let qty = prompt(item + " ke kitne piece aaye?:");
             if (!qty || isNaN(qty)) return alert("Sahi number daalein!");
-            
             await fetch(SCRIPT_URL + "?action=addStock&res=" + resId + "&name=" + item + "&qty=" + qty);
             alert("✅ Stock Save ho gaya!");
             loadDashboard();
@@ -174,10 +181,29 @@
             if (!item) return;
             let qty = prompt(item + " kitna waste hua?:");
             if (!qty || isNaN(qty)) return alert("Sahi number daalein!");
-            
             await fetch(SCRIPT_URL + "?action=addWastage&name=" + item + "&qty=" + qty);
             alert("🚨 Wastage Record ho gayi!");
             loadDashboard();
+        }
+
+        // 🚀 NAYE BUTTONS KE FUNCTIONS
+        function openKitchen() {
+            // Ye button automatically tera kitchen.html khol dega naye tab mein
+            let kitchenUrl = window.location.href.split('dashboard.html')[0] + "kitchen.html?res=" + resId;
+            window.open(kitchenUrl, "_blank");
+        }
+
+        function whatsappChef() {
+            // Chef ka number pooch kar direct WhatsApp khol dega
+            let num = prompt("Chef ka WhatsApp Number daalein (Country code ke sath, jaise 91987654321):", "91");
+            if(num) {
+                let msg = encodeURIComponent("Chef bhai, thoda jaldi haath chalao! Dashboard se message hai 🚀");
+                window.open("https://wa.me/" + num + "?text=" + msg, "_blank");
+            }
+        }
+
+        function toggleMenu() {
+            alert("🛠️ UI set ho gaya! Agle step mein hum Google Script mein iska backend banayenge.");
         }
 
         window.onload = () => { loadDashboard(); setInterval(loadDashboard, 10000); };
