@@ -3,170 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Menu</title>
+    <title>Live Menu - QR Dream</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .cart-bounce { animation: bounce 0.3s ease-in-out; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+    </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-800 pb-24 selection:bg-orange-200">
+<body class="bg-slate-50 font-sans text-slate-800 pb-24">
 
-    <header class="bg-white shadow-sm sticky top-0 z-10">
-        <div class="px-4 py-3 flex justify-between items-center">
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-extrabold text-gray-900">Digital Menu</h1>
-                <p class="text-xs text-gray-500">Delicious & Fresh</p>
+                <h1 class="text-xl font-black text-indigo-600 tracking-tight" id="res-title">Loading...</h1>
+                <p class="text-xs font-bold text-slate-400" id="table-display">Table --</p>
             </div>
-            <div class="bg-orange-100 border border-orange-200 px-3 py-1 rounded-lg text-center">
-                <p class="text-[10px] text-orange-600 font-bold uppercase tracking-wide">Table</p>
-                <p id="table-number-display" class="text-lg font-black text-orange-700 leading-none">?</p>
-            </div>
-        </div>
-    </header>
-
-    <div class="flex overflow-x-auto space-x-3 px-4 py-4 hide-scroll-bar">
-        <button class="bg-gray-800 text-white px-5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap shadow-md">All Items</button>
-    </div>
-
-    <main id="menu-container" class="px-4 space-y-4">
-        </main>
-
-    <div id="cart-bar" class="hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] p-4 transition-all duration-300 transform translate-y-full">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <div>
-                <p id="cart-items-count" class="text-xs text-gray-500 font-medium">0 Items Added</p>
-                <p id="cart-total-price" class="text-xl font-black text-gray-900">Total: ₹0</p>
-            </div>
-            <button onclick="submitOrder()" id="place-order-btn" class="bg-gray-900 text-white font-bold px-8 py-3 rounded-xl shadow-md hover:bg-black transition flex items-center gap-2">
-                Place Order
+            <button onclick="toggleCart()" class="relative bg-slate-900 text-white p-2 rounded-xl shadow-lg hover:bg-slate-800 transition">
+                🛒
+                <span id="cart-badge" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full shadow hidden">0</span>
             </button>
+        </div>
+    </nav>
+
+    <main class="max-w-2xl mx-auto px-4 py-6">
+        <div id="loading-menu" class="text-center py-10">
+            <p class="text-slate-400 font-bold animate-pulse">Menu load ho raha hai... 🍕</p>
+        </div>
+        <div id="menu-container" class="space-y-4">
+            </div>
+    </main>
+
+    <div id="cart-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-60 z-50 flex items-end sm:items-center justify-center backdrop-blur-sm">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+            <div class="px-6 py-4 border-b flex justify-between items-center bg-slate-50">
+                <h3 class="text-lg font-black text-slate-800">Your Order 🛒</h3>
+                <button onclick="toggleCart()" class="text-slate-400 hover:text-red-500 font-bold text-2xl">&times;</button>
+            </div>
+            
+            <div class="p-6 max-h-[60vh] overflow-y-auto">
+                <div id="cart-items" class="space-y-3 mb-4">
+                    <p class="text-center text-slate-400 text-sm font-bold">Cart is empty.</p>
+                </div>
+                
+                <div class="border-t pt-4 flex justify-between items-center">
+                    <span class="text-sm font-bold text-slate-500">Total Amount:</span>
+                    <span class="text-2xl font-black text-slate-900">₹<span id="cart-total">0</span></span>
+                </div>
+
+                <div id="upi-section" class="hidden mt-6 bg-slate-50 p-4 rounded-2xl border border-indigo-100 text-center shadow-inner">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pay via UPI (GPay / PhonePe)</p>
+                    <div class="bg-white p-2 rounded-xl inline-block shadow-sm">
+                        <img id="upi-qr-image" src="" alt="UPI QR" class="w-32 h-32">
+                    </div>
+                    <p class="text-[11px] font-bold text-slate-400 mt-2">Scan karke exact <span class="text-indigo-600">₹<span id="upi-amount">0</span></span> pay karein</p>
+                </div>
+            </div>
+
+            <div class="p-4 bg-white border-t">
+                <button id="place-order-btn" onclick="placeOrder()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl shadow-[0_0_15px_rgba(79,70,229,0.3)] transition text-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                    PLACE ORDER 🚀
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        // TERA APPS SCRIPT URL
+        // 🚨 APNA SCRIPT URL DAAL YAHAN (URL wahi purana rahega agar tune update deploy kiya hai) 👇
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr34JtNFeVV0Qt2K6r3TZB5rk0fOpFkTr-kuBdGHu5dAmkLjjHPTd0J0hGaCj3OSgO/exec"; 
 
         const urlParams = new URLSearchParams(window.location.search);
-        const resId = urlParams.get('res') || "R1"; 
-        const tableNo = urlParams.get('table') || "Unknown";
+        const resId = urlParams.get('res') || "R1";
+        const tableNo = urlParams.get('table') || "Takeaway";
         
-        let cart = {}; 
-        let menuData = []; 
+        document.getElementById("table-display").innerText = "Table " + tableNo;
 
-        document.getElementById("table-number-display").innerText = tableNo;
+        let menuData = [];
+        let cart = {};
+        
+        // Naye Global Variables Client Data ke liye
+        let clientUpiId = "";
+        let clientResName = "Restaurant " + resId;
 
-        async function loadMenu() {
-            document.getElementById("menu-container").innerHTML = "<p class='text-center mt-10 font-bold animate-pulse text-orange-500'>Loading Menu...</p>";
+        async function fetchMenuAndSettings() {
             try {
-                const response = await fetch(SCRIPT_URL + "?action=getMenu&res=" + resId);
-                menuData = await response.json();
+                // 1. Pehle Settings (Naam aur UPI) layega
+                const setRes = await fetch(SCRIPT_URL + "?action=getSettings&res=" + resId);
+                const setData = await setRes.json();
+                clientResName = setData.name || "Restaurant " + resId;
+                clientUpiId = setData.upi || "";
+                document.getElementById("res-title").innerText = clientResName;
+
+                // 2. Fir Menu layega
+                const menuRes = await fetch(SCRIPT_URL + "?action=getMenu&res=" + resId);
+                menuData = await menuRes.json();
                 renderMenu();
             } catch (error) {
-                document.getElementById("menu-container").innerHTML = "<p class='text-center text-red-500 font-bold mt-10'>Error loading menu. Internet check kar bhai.</p>";
+                document.getElementById('loading-menu').innerHTML = "<p class='text-red-500 font-bold'>Menu load nahi ho paya! Connection check karein.</p>";
             }
         }
 
-        // 🛑 NAYA DIMAAG: SOLD OUT LOGIC
         function renderMenu() {
+            const container = document.getElementById('menu-container');
+            document.getElementById('loading-menu').style.display = 'none';
+            
+            if(menuData.length === 0) {
+                container.innerHTML = "<p class='text-center text-slate-400'>No items available today.</p>";
+                return;
+            }
+
             let html = "";
-            menuData.forEach((item) => {
-                let qty = cart[item.name] || 0;
-                let imgUrl = item.image && item.image.trim() !== "" ? item.image : "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80"; 
-
-                // Check karo item "Out of Stock" hai ya nahi
-                let isOut = (item.status === "Out of Stock");
-
-                // Agar Out of stock hai, toh card ko fika (grayscale) aur text ko gray kardo
-                let cardStyle = isOut ? "opacity-60 grayscale" : "";
-                let textStyle = isOut ? "text-gray-400 line-through" : "text-gray-900";
-                let priceStyle = isOut ? "text-gray-400" : "text-gray-900";
+            menuData.forEach(item => {
+                let isAvail = item.status === "Available";
+                let btnHtml = isAvail 
+                    ? `<button onclick="addToCart('${item.name}', ${item.price})" class="bg-indigo-50 text-indigo-600 border border-indigo-200 px-4 py-2 rounded-lg text-sm font-black hover:bg-indigo-100 transition shadow-sm">+ ADD</button>`
+                    : `<span class="bg-slate-100 text-slate-400 px-4 py-2 rounded-lg text-xs font-bold border border-slate-200">SOLD OUT</span>`;
 
                 html += `
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex p-3 mb-4 transition-all ${cardStyle}">
-                    <div class="w-28 h-28 flex-shrink-0">
-                        <img src="${imgUrl}" alt="${item.name}" class="w-full h-full object-cover rounded-xl shadow-sm">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center transform hover:scale-[1.01] transition-all">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg ${!isAvail ? 'opacity-50 line-through' : ''}">${item.name}</h3>
+                        <p class="font-black text-indigo-600 mt-1">₹${item.price}</p>
                     </div>
-                    <div class="ml-4 flex-1 flex flex-col justify-between">
-                        <div>
-                            <h3 class="font-bold ${textStyle} text-base leading-tight">${item.name}</h3>
-                            <p class="text-gray-500 text-xs mt-1">₹${item.price}</p>
-                        </div>
-                        <div class="flex justify-between items-center mt-2">
-                            <span class="font-black ${priceStyle}">₹${item.price}</span>
-                            
-                            ${isOut ? 
-                                // Agar Sold out hai, toh button hata kar ye label laga do
-                                `<span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider border border-gray-200">Sold Out</span>`
-                                :
-                                // Warna normal ADD button dikhao
-                                (qty === 0 ? 
-                                    `<button onclick="updateCart('${item.name}', ${item.price}, 1)" class="bg-orange-50 text-orange-600 border border-orange-200 font-bold px-8 py-1.5 rounded-lg text-sm hover:bg-orange-100 transition">ADD</button>` 
-                                    : 
-                                    `<div class="flex items-center bg-orange-600 rounded-lg shadow-sm">
-                                        <button onclick="updateCart('${item.name}', ${item.price}, -1)" class="px-3 py-1 text-white font-bold hover:bg-orange-700 rounded-l-lg">-</button>
-                                        <span class="px-2 font-bold text-white text-sm">${qty}</span>
-                                        <button onclick="updateCart('${item.name}', ${item.price}, 1)" class="px-3 py-1 text-white font-bold hover:bg-orange-700 rounded-r-lg">+</button>
-                                    </div>`
-                                )
-                            }
-                        </div>
-                    </div>
+                    <div>${btnHtml}</div>
                 </div>`;
             });
-            
-            document.getElementById("menu-container").innerHTML = html;
-            updateCartUI(); 
+            container.innerHTML = html;
         }
 
-        function updateCart(itemName, price, change) {
-            if (!cart[itemName]) cart[itemName] = 0;
-            cart[itemName] += change;
-            if (cart[itemName] <= 0) delete cart[itemName];
-            renderMenu(); 
+        function addToCart(name, price) {
+            if(cart[name]) cart[name].qty++;
+            else cart[name] = { price: price, qty: 1 };
+            
+            let badge = document.getElementById('cart-badge');
+            badge.classList.remove('hidden');
+            badge.classList.add('cart-bounce');
+            setTimeout(() => badge.classList.remove('cart-bounce'), 300);
+            
+            updateCartUI();
         }
 
         function updateCartUI() {
+            let cartHtml = "";
+            let total = 0;
             let totalItems = 0;
-            let totalPrice = 0;
-            for (let item in cart) {
-                totalItems += cart[item];
-                let menuItem = menuData.find(m => m.name === item);
-                if(menuItem) totalPrice += (cart[item] * menuItem.price);
+
+            for(let key in cart) {
+                let itemTotal = cart[key].qty * cart[key].price;
+                total += itemTotal;
+                totalItems += cart[key].qty;
+                cartHtml += `
+                <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <div class="flex-1">
+                        <p class="font-bold text-slate-800 text-sm">${key}</p>
+                        <p class="text-xs font-black text-indigo-500">₹${cart[key].price} x ${cart[key].qty}</p>
+                    </div>
+                    <div class="font-black text-slate-800">₹${itemTotal}</div>
+                </div>`;
             }
-            const cartBar = document.getElementById("cart-bar");
-            document.getElementById("cart-items-count").innerText = totalItems + " Item(s) Added";
-            document.getElementById("cart-total-price").innerText = "Total: ₹" + totalPrice;
-            if (totalItems > 0) cartBar.classList.remove("hidden", "translate-y-full");
-            else cartBar.classList.add("hidden", "translate-y-full");
+
+            if(totalItems === 0) {
+                document.getElementById('cart-items').innerHTML = '<p class="text-center text-slate-400 text-sm font-bold">Cart is empty.</p>';
+                document.getElementById('cart-badge').classList.add('hidden');
+                document.getElementById('place-order-btn').disabled = true;
+                document.getElementById('upi-section').classList.add('hidden'); 
+            } else {
+                document.getElementById('cart-items').innerHTML = cartHtml;
+                document.getElementById('cart-badge').innerText = totalItems;
+                document.getElementById('place-order-btn').disabled = false;
+                
+                // Agar Sheet mein UPI ID hai, tabhi QR dikhao
+                if(clientUpiId && clientUpiId.trim() !== "") {
+                    document.getElementById('upi-section').classList.remove('hidden');
+                    let upiLink = `upi://pay?pa=${clientUpiId}&pn=${encodeURIComponent(clientResName)}&am=${total}&cu=INR`;
+                    document.getElementById('upi-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiLink)}`;
+                    document.getElementById('upi-amount').innerText = total;
+                } else {
+                    document.getElementById('upi-section').classList.add('hidden');
+                }
+            }
+            document.getElementById('cart-total').innerText = total;
         }
 
-        async function submitOrder() {
-            const btn = document.getElementById("place-order-btn");
-            btn.innerText = "Sending...";
+        function toggleCart() {
+            const modal = document.getElementById('cart-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        async function placeOrder() {
+            let btn = document.getElementById('place-order-btn');
+            btn.innerText = "Sending Order... ⏳";
             btn.disabled = true;
 
-            let itemsList = [];
-            let totalPrice = 0;
-            for (let item in cart) {
-                itemsList.push(item + " (x" + cart[item] + ")");
-                let menuItem = menuData.find(m => m.name === item);
-                totalPrice += (cart[item] * menuItem.price);
+            let itemsArr = [];
+            let totalAmt = 0;
+            for(let key in cart) {
+                itemsArr.push(`${key} (x${cart[key].qty})`);
+                totalAmt += (cart[key].qty * cart[key].price);
             }
-            let finalItemsString = itemsList.join(", ");
+            let itemsStr = itemsArr.join(", ");
 
             try {
-                await fetch(SCRIPT_URL + "?action=placeOrder&table=" + tableNo + "&items=" + encodeURIComponent(finalItemsString) + "&amount=" + totalPrice + "&res=" + resId);
-                alert("✅ Order Placed Successfully! Kitchen mein order chala gaya.");
-                cart = {}; 
-                renderMenu(); 
-                btn.innerText = "Place Order";
-                btn.disabled = false;
-            } catch (error) {
-                alert("❌ Error placing order. Internet check karein.");
-                btn.innerText = "Place Order";
+                let url = `${SCRIPT_URL}?action=placeOrder&res=${resId}&table=${tableNo}&items=${encodeURIComponent(itemsStr)}&amount=${totalAmt}`;
+                await fetch(url);
+                alert(`🎉 Order Placed Successfully! (Total: ₹${totalAmt})`);
+                cart = {};
+                updateCartUI();
+                toggleCart();
+                btn.innerText = "PLACE ORDER 🚀";
+            } catch(e) {
+                alert("Error! Please try again.");
+                btn.innerText = "PLACE ORDER 🚀";
                 btn.disabled = false;
             }
         }
 
-        window.onload = loadMenu;
+        // Load hote hi nayi function chalegi
+        window.onload = fetchMenuAndSettings;
     </script>
 </body>
 </html>
