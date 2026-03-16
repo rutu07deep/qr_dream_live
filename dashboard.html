@@ -118,7 +118,7 @@
     </div>
 
     <script>
-        // 🚨 APNA SCRIPT URL YAHAN ZAROOR DAALNA 👇
+        // 🚨 APNA GOOGLE SCRIPT URL YAHAN DAALNA MAT BHOOLNA 👇
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr34JtNFeVV0Qt2K6r3TZB5rk0fOpFkTr-kuBdGHu5dAmkLjjHPTd0J0hGaCj3OSgO/exec"; 
         
         const resId = new URLSearchParams(window.location.search).get('res') || "R1"; 
@@ -126,7 +126,6 @@
 
         async function loadDashboard() {
             try {
-                // Fetch Sales
                 const res1 = await fetch(SCRIPT_URL + "?action=getDashboard&res=" + resId);
                 const data = await res1.json();
                 
@@ -144,7 +143,6 @@
                 });
                 document.getElementById("dashboard-orders-list").innerHTML = tableHtml;
 
-                // Fetch Inventory
                 const res2 = await fetch(SCRIPT_URL + "?action=getInventory&res=" + resId);
                 const invData = await res2.json();
                 
@@ -157,10 +155,10 @@
                     document.getElementById("dash-lowstock").innerText = "Nothing added";
                 } else {
                     invData.forEach(item => {
-                        // SMART STATUS LOGIC
                         let statusHtml = "";
                         if(item.left < 0) {
                             let missingQty = Math.abs(item.left);
+                            // NAYA MISSING ALERT BUTTON 👇
                             statusHtml = `<span class="bg-red-100 text-red-700 px-3 py-1 rounded-md text-xs font-black border border-red-200 shadow-sm animate-pulse">MISSING: ${missingQty} 🚨</span>`;
                             theftItems.push(`${item.name} (-${missingQty})`);
                         } else {
@@ -168,7 +166,6 @@
                             if(item.left <= 5) lowStockItems.push(item.name);
                         }
 
-                        // Table row
                         invHtml += `<tr class="border-b hover:bg-slate-50">
                             <td class="p-4 font-bold text-slate-800">${item.name}</td>
                             <td class="p-4 text-slate-600">${item.opening}</td>
@@ -181,14 +178,10 @@
                 }
                 document.getElementById("inventory-list").innerHTML = invHtml;
 
-                // UPDATE LOW STOCK CARD
-                if(lowStockItems.length > 0) {
-                    document.getElementById("dash-lowstock").innerText = lowStockItems.join(", ");
-                } else {
-                    document.getElementById("dash-lowstock").innerText = "All Good ✅";
-                }
+                if(lowStockItems.length > 0) document.getElementById("dash-lowstock").innerText = lowStockItems.join(", ");
+                else document.getElementById("dash-lowstock").innerText = "All Good ✅";
 
-                // UPDATE THEFT ALERT CARD (Dark Mode Jaisa!)
+                // NAYA KAALA WALA THEFT ALERT CARD UPDATE 👇
                 if(theftItems.length > 0) {
                     document.getElementById("dash-theft").innerText = "Missing: " + theftItems.join(", ");
                     document.getElementById("dash-theft").classList.add("text-red-400", "animate-pulse");
