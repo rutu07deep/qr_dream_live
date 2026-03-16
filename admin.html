@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin HQ - QR Dream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 font-sans text-slate-100 min-h-screen selection:bg-indigo-500">
+
+    <nav class="bg-slate-950 border-b border-slate-800 sticky top-0 z-10 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl font-black text-white tracking-tight">QR Dream <span class="text-indigo-500">HQ</span></span>
+                    <span class="bg-indigo-600 text-white text-[10px] font-black px-2 py-1 rounded uppercase tracking-widest ml-2 shadow-[0_0_10px_rgba(79,70,229,0.5)]">Super Admin</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold text-white">Restaurant Onboarding Engine 🚀</h1>
+            <p class="text-slate-400 mt-2">Naya client add karo aur 1 second mein QR codes print ke liye ready karo.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl lg:col-span-1 h-fit">
+                <h3 class="text-lg font-bold text-white mb-6 border-b border-slate-700 pb-4">Add New Restaurant</h3>
+                
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Restaurant Name</label>
+                        <input type="text" id="new-res-name" placeholder="E.g., Sharma Dhaba" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Restaurant ID (Unique)</label>
+                        <input type="text" id="new-res-id" placeholder="E.g., R2, R3..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Tables</label>
+                        <input type="number" id="table-count" placeholder="E.g., 10" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition">
+                    </div>
+                    
+                    <button onclick="generateSystem()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 rounded-xl shadow-[0_0_15px_rgba(79,70,229,0.4)] transition mt-4">
+                        ⚡ GENERATE QR & LINKS
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl lg:col-span-2 hidden" id="result-section">
+                
+                <div class="mb-8 bg-slate-900 p-5 rounded-xl border border-indigo-500/30 relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 opacity-10 text-6xl">🔗</div>
+                    <h3 class="text-indigo-400 font-black mb-4">Send this to the Owner 👇</h3>
+                    <p class="text-sm text-slate-400 mb-1">Owner Dashboard Link:</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="owner-link" readonly class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white font-mono">
+                        <button onclick="copyLink()" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-sm font-bold transition">Copy</button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-end mb-4 border-b border-slate-700 pb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Table QR Codes</h3>
+                            <p class="text-xs text-slate-400">Right-click karke 'Save Image' kar lo print ke liye.</p>
+                        </div>
+                        <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded text-xs font-bold" id="qr-count-badge">10 Generated</span>
+                    </div>
+                    
+                    <div id="qr-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 🚨 TERA GITHUB WALA BASE URL YAHAN AAYEGA 👇
+        // Agar tune menu page ka naam index.html rakha hai toh wahi likhna
+        const GITHUB_BASE_URL = "https://rutu07deep.github.io/qr_dream_live"; 
+
+        function generateSystem() {
+            const name = document.getElementById('new-res-name').value;
+            const resId = document.getElementById('new-res-id').value.trim().toUpperCase();
+            const tables = parseInt(document.getElementById('table-count').value);
+
+            if(!name || !resId || !tables) {
+                alert("Bhai, saari details dhang se bhar de pehle!");
+                return;
+            }
+
+            // 1. Owner ka link generate karo
+            const ownerLink = `${GITHUB_BASE_URL}/dashboard.html?res=${resId}`;
+            document.getElementById('owner-link').value = ownerLink;
+
+            // 2. QR Codes Generate karo
+            let qrHtml = "";
+            for(let i = 1; i <= tables; i++) {
+                // Menu ka link jo QR ke andar chhipega
+                let tableLink = `${GITHUB_BASE_URL}/menu.html?res=${resId}&table=${i}`;
+                
+                // Free API se QR Code Image banana
+                let qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(tableLink)}&margin=10`;
+
+                qrHtml += `
+                <div class="bg-white p-3 rounded-xl flex flex-col items-center shadow-lg transform hover:scale-105 transition">
+                    <img src="${qrImageUrl}" alt="Table ${i}" class="w-full rounded-lg mb-2 border border-slate-200">
+                    <span class="text-slate-800 font-black text-lg">Table ${i}</span>
+                    <span class="text-slate-500 text-[10px] font-bold uppercase">${resId}</span>
+                </div>`;
+            }
+
+            document.getElementById('qr-grid').innerHTML = qrHtml;
+            document.getElementById('qr-count-badge').innerText = `${tables} Generated ✅`;
+            
+            // Result section dikhao
+            document.getElementById('result-section').classList.remove('hidden');
+        }
+
+        function copyLink() {
+            let copyText = document.getElementById("owner-link");
+            copyText.select();
+            document.execCommand("copy");
+            alert("✅ Owner Dashboard Link Copied!");
+        }
+    </script>
+</body>
+</html>
