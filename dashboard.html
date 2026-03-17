@@ -53,6 +53,24 @@
             </div>
         </div>
 
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-100 shadow-sm">
+            <h3 class="text-lg font-black text-indigo-900 mb-4 flex items-center gap-2">📊 This Month's Report</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <p class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Monthly Sales</p>
+                    <h2 class="text-3xl font-black text-indigo-700 mt-1" id="dash-monthly-sales">₹0</h2>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-purple-500 uppercase tracking-wider">Total Orders</p>
+                    <h2 class="text-3xl font-black text-purple-700 mt-1" id="dash-monthly-orders">0</h2>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-pink-500 uppercase tracking-wider">🏆 Top Bestseller</p>
+                    <h2 class="text-xl font-bold text-slate-800 mt-2" id="dash-bestseller">Loading...</h2>
+                </div>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-green-50 rounded-2xl p-6 border border-green-100 shadow-sm">
                 <p class="text-xs font-bold text-green-600 uppercase tracking-wider">Net Profit (Est.)</p>
@@ -63,7 +81,7 @@
                 <h2 class="text-3xl font-black text-blue-700 mt-1" id="dash-foodcost">0%</h2>
             </div>
             <div class="bg-red-50 rounded-2xl p-6 border border-red-100 shadow-sm">
-                <p class="text-xs font-bold text-red-600 uppercase tracking-wider">Wastage Loss</p>
+                <p class="text-xs font-bold text-red-600 uppercase tracking-wider">Wastage Loss (Today)</p>
                 <h2 class="text-3xl font-black text-red-700 mt-1" id="dash-loss">₹0</h2>
             </div>
         </div>
@@ -118,7 +136,7 @@
     </div>
 
     <script>
-        // 🚨 APNA GOOGLE SCRIPT URL YAHAN DAALNA MAT BHOOLNA 👇
+        // 🚨 APNA SCRIPT URL YAHAN DAAL 👇
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr34JtNFeVV0Qt2K6r3TZB5rk0fOpFkTr-kuBdGHu5dAmkLjjHPTd0J0hGaCj3OSgO/exec"; 
         
         const resId = new URLSearchParams(window.location.search).get('res') || "R1"; 
@@ -129,17 +147,22 @@
                 const res1 = await fetch(SCRIPT_URL + "?action=getDashboard&res=" + resId);
                 const data = await res1.json();
                 
+                // Today's Data
                 document.getElementById("dash-sales").innerText = "₹" + data.sales;
                 document.getElementById("dash-pending").innerText = data.pending;
                 document.getElementById("dash-profit").innerText = "₹" + (data.profit || 0);
                 document.getElementById("dash-foodcost").innerText = data.foodCost || "0%";
                 document.getElementById("dash-loss").innerText = "₹" + (data.loss || 0);
 
+                // 🔥 Monthly Data Output 🔥
+                document.getElementById("dash-monthly-sales").innerText = "₹" + (data.monthlySales || 0);
+                document.getElementById("dash-monthly-orders").innerText = data.monthlyOrders || 0;
+                document.getElementById("dash-bestseller").innerText = data.bestSeller || "N/A";
+
                 let tableHtml = "";
                 if(data.list.length === 0) tableHtml = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No orders yet.</td></tr>`;
                 else data.list.forEach(order => {
                     let c = order.status === "Completed" ? "text-green-700 bg-green-100" : "text-orange-700 bg-orange-100";
-                    // 🖨️ NAYE BUTTON YAHAN ADD HUE HAIN 👇
                     tableHtml += `<tr class="border-b hover:bg-slate-50">
                         <td class="p-4 text-slate-500">${order.time}</td>
                         <td class="p-4 font-bold">Table ${order.table}</td>
@@ -162,7 +185,7 @@
                 let theftItems = [];
 
                 if(invData.length === 0) {
-                    invHtml = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No Daily Stock entry found for today.</td></tr>`;
+                    invHtml = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No Daily Stock entry found.</td></tr>`;
                     document.getElementById("dash-lowstock").innerText = "Nothing added";
                 } else {
                     invData.forEach(item => {
@@ -202,7 +225,6 @@
             } catch (error) { console.error("Load Error"); }
         }
 
-        // 🖨️ NAYA FUNCTION: PRINT BILL
         function printBill(table, items, amount, time) {
             let cleanItems = items.replace(/,/g, '<br>');
             let receiptWindow = window.open('', '_blank', 'width=350,height=500');
@@ -233,7 +255,6 @@
             receiptWindow.document.close();
         }
 
-        // 💬 NAYA FUNCTION: WHATSAPP BILL
         function whatsappBill(table, items, amount) {
             let cleanItems = items.replace(/,/g, '\n- ');
             let text = `*🧾 BILL RECEIPT*\n*QR Dream Restro (${resId})*\n----------------------\n*Table No:* ${table}\n\n*Items Ordered:*\n- ${cleanItems}\n----------------------\n*Grand Total:* ₹${amount}/-\n----------------------\n_Thank you for dining with us!_ 🍽️`;
