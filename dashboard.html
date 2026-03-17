@@ -53,8 +53,11 @@
             </div>
         </div>
 
-        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-100 shadow-sm">
-            <h3 class="text-lg font-black text-indigo-900 mb-4 flex items-center gap-2">📊 This Month's Report</h3>
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-100 shadow-sm relative">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-black text-indigo-900 flex items-center gap-2">📊 This Month's Report</h3>
+                <button id="clear-data-btn" onclick="clearOldData()" class="bg-white text-red-600 border border-red-200 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-red-50 transition">🗑️ Clear Old Data</button>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <p class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Monthly Sales</p>
@@ -136,7 +139,7 @@
     </div>
 
     <script>
-        // 🚨 APNA SCRIPT URL YAHAN DAAL 👇
+        // 🚨 APNA SCRIPT URL YAHAN DAALNA ZARURI HAI 👇
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr34JtNFeVV0Qt2K6r3TZB5rk0fOpFkTr-kuBdGHu5dAmkLjjHPTd0J0hGaCj3OSgO/exec"; 
         
         const resId = new URLSearchParams(window.location.search).get('res') || "R1"; 
@@ -147,14 +150,12 @@
                 const res1 = await fetch(SCRIPT_URL + "?action=getDashboard&res=" + resId);
                 const data = await res1.json();
                 
-                // Today's Data
                 document.getElementById("dash-sales").innerText = "₹" + data.sales;
                 document.getElementById("dash-pending").innerText = data.pending;
                 document.getElementById("dash-profit").innerText = "₹" + (data.profit || 0);
                 document.getElementById("dash-foodcost").innerText = data.foodCost || "0%";
                 document.getElementById("dash-loss").innerText = "₹" + (data.loss || 0);
 
-                // 🔥 Monthly Data Output 🔥
                 document.getElementById("dash-monthly-sales").innerText = "₹" + (data.monthlySales || 0);
                 document.getElementById("dash-monthly-orders").innerText = data.monthlyOrders || 0;
                 document.getElementById("dash-bestseller").innerText = data.bestSeller || "N/A";
@@ -223,6 +224,25 @@
                 }
 
             } catch (error) { console.error("Load Error"); }
+        }
+
+        // 🔥 NAYA FUNCTION: CLEAR OLD DATA 🔥
+        async function clearOldData() {
+            let confirmClean = confirm("⚠️ Dhyan de! Isse pichle mahino ka saara purana order data hamesha ke liye delete ho jayega (Sirf is mahine ka data bachega). Kya aap sure hain?");
+            if(confirmClean) {
+                let btn = document.getElementById('clear-data-btn');
+                btn.innerText = "Clearing... ⏳";
+                btn.disabled = true;
+                try {
+                    await fetch(SCRIPT_URL + "?action=clearOldData&res=" + resId);
+                    alert("✅ Purana data clean ho gaya! Sheet ab ekdum fast ho gayi hai.");
+                } catch(e) {
+                    alert("Error! Data clean nahi hua.");
+                }
+                btn.innerText = "🗑️ Clear Old Data";
+                btn.disabled = false;
+                loadDashboard();
+            }
         }
 
         function printBill(table, items, amount, time) {
