@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Dream - Smart Restaurant OS</title>
+    <title>Entaurant - Smart Restaurant OS</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 font-sans text-gray-900 selection:bg-indigo-200">
+<body class="bg-gray-50 font-sans text-gray-900 selection:bg-indigo-200 relative">
 
     <nav class="flex justify-between items-center p-6 max-w-7xl mx-auto">
-        <div class="text-2xl font-black text-indigo-600 tracking-tight">QR Dream.</div>
+        <div class="text-3xl font-black text-indigo-600 tracking-tight">Entaurant.</div>
         <div>
-            <a href="dashboard.html?res=R1" class="hidden md:inline-block text-gray-600 hover:text-indigo-600 font-semibold mr-6 transition">Owner Login</a>
-            <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20to%20start%20QR%20Dream%20for%20my%20restaurant." target="_blank" class="bg-indigo-600 text-white px-8 py-4 rounded-full text-lg font-bold shadow-xl hover:shadow-2xl hover:-translate-y-1 transition transform">Start For Free</a>
+            <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20to%20start%20Entaurant" target="_blank" class="hidden md:inline-block text-gray-600 hover:text-indigo-600 font-bold">Contact Us</a>
         </div>
     </nav>
-  
+
     <header class="text-center py-20 px-4 max-w-5xl mx-auto">
         <div class="inline-block bg-indigo-100 text-indigo-700 font-bold px-4 py-1 rounded-full mb-6 text-sm">
             🚀 The Ultimate Multi-Tenant Restaurant OS
@@ -25,38 +24,89 @@
             <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Smarter, Not Harder.</span>
         </h1>
         <p class="text-xl text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Stop paying high commissions. Digitize your tables with Smart QR Menus, sync orders directly to Live Kitchen TVs, and stop theft with automated inventory tracking.
+            Stop paying high commissions. Digitize your tables with Smart QR Menus, sync orders directly to the kitchen, and track every penny.
         </p>
+        
         <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="#" class="bg-indigo-600 text-white px-8 py-4 rounded-full text-lg font-bold shadow-xl hover:shadow-2xl hover:-translate-y-1 transition transform">Start For Free</a>
-            <a href="menu.html?res=R1&table=Demo" class="bg-white text-indigo-600 border border-gray-200 px-8 py-4 rounded-full text-lg font-bold shadow-sm hover:bg-gray-50 transition">View Live Demo</a>
+            <button onclick="toggleLogin()" class="bg-indigo-600 text-white px-8 py-4 rounded-full text-lg font-bold shadow-xl hover:bg-indigo-700 transition transform hover:scale-105">
+                Owner Login 🔐
+            </button>
+            <a href="menu.html?res=R1&table=Demo" class="bg-white text-indigo-600 border border-gray-200 px-8 py-4 rounded-full text-lg font-bold shadow-sm hover:shadow-md transition">
+                Try Live Menu Demo 🍕
+            </a>
         </div>
     </header>
 
     <section class="py-16 bg-white border-t border-gray-100">
         <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            
             <div class="p-8 border border-gray-100 rounded-3xl shadow-sm hover:shadow-xl transition duration-300 bg-gray-50">
                 <div class="text-5xl mb-6">📱</div>
                 <h3 class="text-2xl font-bold mb-3">Zero-Commission Menus</h3>
-                <p class="text-gray-500 leading-relaxed">Customers scan, order, and pay from their phones. You keep 100% of your profits without paying third-party apps.</p>
+                <p class="text-gray-500 leading-relaxed">Customers scan, order, and pay from their phones. You keep 100% of the profit.</p>
             </div>
-
+            
             <div class="p-8 border border-gray-100 rounded-3xl shadow-sm hover:shadow-xl transition duration-300 bg-gray-50">
                 <div class="text-5xl mb-6">📺</div>
                 <h3 class="text-2xl font-bold mb-3">Live Kitchen TV</h3>
-                <p class="text-gray-500 leading-relaxed">Say goodbye to missing paper tickets. Orders sync to the kitchen display instantly with a single tap to complete.</p>
+                <p class="text-gray-500 leading-relaxed">Say goodbye to missing paper tickets. Orders sync to the kitchen instantly with loud alerts.</p>
             </div>
-
+            
             <div class="p-8 border border-gray-100 rounded-3xl shadow-sm hover:shadow-xl transition duration-300 bg-gray-50">
                 <div class="text-5xl mb-6">🛡️</div>
                 <h3 class="text-2xl font-bold mb-3">Anti-Theft Inventory</h3>
-                <p class="text-gray-500 leading-relaxed">Track every bun and pizza base automatically. Get instant alerts if physical stock doesn't match daily sales.</p>
+                <p class="text-gray-500 leading-relaxed">Track every bun and pizza base automatically. Get instant alerts when stock goes missing.</p>
             </div>
-
         </div>
     </section>
- 
+
+    <div id="login-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-70 z-50 flex items-center justify-center backdrop-blur-sm transition-all px-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-8 relative">
+            <button onclick="toggleLogin()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 font-bold text-3xl">&times;</button>
+            <h3 class="text-2xl font-black text-indigo-900 mb-6 text-center">Entaurant Login 🔐</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Restaurant ID</label>
+                    <input type="text" id="login-id" placeholder="e.g., R1" class="w-full mt-1 px-4 py-3 border-2 border-gray-200 rounded-xl font-bold focus:border-indigo-600 outline-none uppercase transition">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Passcode</label>
+                    <input type="password" id="login-pass" placeholder="••••" class="w-full mt-1 px-4 py-3 border-2 border-gray-200 rounded-xl font-bold focus:border-indigo-600 outline-none transition">
+                </div>
+                <button onclick="verifyLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl shadow-[0_5px_15px_rgba(79,70,229,0.4)] transition mt-4 text-lg">
+                    ENTER DASHBOARD 🚀
+                </button>
+                <p id="login-error" class="text-red-500 text-sm font-bold text-center hidden mt-2 bg-red-50 py-2 rounded-lg border border-red-100">Wrong ID or Passcode! ❌</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // MASTER PHONEBOOK FOR LOGIN
+        const clientDatabase = {
+            "R1": { pass: "1234", url: "dashboard.html?res=R1" }, // Demo / Sharma Dhaba
+            "R2": { pass: "9988", url: "dashboard.html?res=R2" }  // Varma Cafe
+        };
+
+        function toggleLogin() {
+            document.getElementById('login-modal').classList.toggle('hidden');
+            document.getElementById('login-error').classList.add('hidden'); // Reset error
+            document.getElementById('login-id').value = ""; // Clear inputs
+            document.getElementById('login-pass').value = "";
+        }
+
+        function verifyLogin() {
+            let id = document.getElementById('login-id').value.trim().toUpperCase();
+            let pass = document.getElementById('login-pass').value.trim();
+            let btn = document.querySelector('#login-modal button.bg-indigo-600');
+            
+            if (clientDatabase[id] && clientDatabase[id].pass === pass) {
+                btn.innerText = "Loading... ⏳";
+                window.location.href = clientDatabase[id].url;
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+    </script>
 </body>
 </html>
-
