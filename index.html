@@ -92,7 +92,7 @@
             document.getElementById('login-pass').value = "";
         }
 
-        // 🔥 NAYA SECURE LOGIN FUNCTION (Backend se judha hua) 🔥
+        // 🔥 NINJA LOGIN FUNCTION (Laptops ka CORS Bypass karega) 🔥
         async function verifyLogin() {
             let id = document.getElementById('login-id').value.trim(); 
             let pass = document.getElementById('login-pass').value.trim();
@@ -101,8 +101,15 @@
             btn.innerText = "Checking Code... ⏳";
             
             try {
-                // Backend (Google Script) se pucho ki password sahi hai ya nahi
-                let response = await fetch(SCRIPT_URL + "?action=login&res=" + id + "&pass=" + pass);
+                // Backend se judne ka naya ninja tareeka
+                let targetUrl = SCRIPT_URL + "?action=login&res=" + id + "&pass=" + pass;
+                
+                let response = await fetch(targetUrl, {
+                    method: "GET",
+                    mode: "cors",
+                    redirect: "follow" // 🔥 YE WOH JADOO HAI JO LAPTOP KO ROKEGA NAHI
+                });
+                
                 let result = await response.text();
                 
                 if (result === "SUCCESS") {
@@ -113,6 +120,7 @@
                     btn.innerText = "ENTER DASHBOARD 🚀";
                 }
             } catch (error) {
+                console.log("Error Details: ", error); // Console me error dekhne ke liye
                 alert("Network Problem! Internet check karein.");
                 btn.innerText = "ENTER DASHBOARD 🚀";
             }
