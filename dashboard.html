@@ -140,10 +140,10 @@
 
     <script>
         // 🚨 APNA SCRIPT URL YAHAN DAALNA ZARURI HAI 👇
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr34JtNFeVV0Qt2K6r3TZB5rk0fOpFkTr-kuBdGHu5dAmkLjjHPTd0J0hGaCj3OSgO/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpGiZTB0yBl0DsOiMRJMLn9L-qrmOMJ3uVX9ZaN7Thbk98IlE3FH04QVMC2d1sET5e/exec"; 
         
         const resId = new URLSearchParams(window.location.search).get('res') || "R1"; 
-        document.getElementById("res-name-display").innerText = "Restaurant " + resId;
+        document.getElementById("res-name-display").innerText = resId;
 
         async function loadDashboard() {
             try {
@@ -184,7 +184,7 @@
                 let invHtml = "";
                 let lowStockItems = [];
                 let theftItems = [];
-
+   
                 if(invData.length === 0) {
                     invHtml = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No Daily Stock entry found.</td></tr>`;
                     document.getElementById("dash-lowstock").innerText = "Nothing added";
@@ -302,15 +302,14 @@
             if (!item) return;
             let qty = prompt(item + " kitna waste hua?:");
             if (!qty || isNaN(qty)) return alert("Sahi number daalein!");
-            await fetch(SCRIPT_URL + "?action=addWastage&name=" + item + "&qty=" + qty);
+            await fetch(SCRIPT_URL + "?action=addWastage&res=" + resId + "&name=" + item + "&qty=" + qty);
             alert("🚨 Wastage Record ho gayi!");
             loadDashboard();
         }
 
-        function openKitchen() {
-            let kitchenUrl = window.location.href.split('dashboard.html')[0] + "kitchen.html?res=" + resId;
-            window.open(kitchenUrl, "_blank");
-        }
+       function openKitchen() {
+    window.open("kitchen.html?res=" + resId, "_blank");
+}
 
         function whatsappChef() {
             let num = prompt("Chef ka WhatsApp Number daalein:", "91");

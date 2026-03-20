@@ -82,36 +82,41 @@
     </div>
 
     <script>
-        // MASTER PHONEBOOK FOR LOGIN
-        const clientDatabase = {
-            "R1": { pass: "1234", url: "dashboard.html?res=R1" }, // Demo / Sharma Dhaba
-            "R2": { pass: "9988", url: "dashboard.html?res=R2" }  // Varma Cafe
-        };
+        // 🚨 YAHAN APNA LATEST GOOGLE SCRIPT URL DAALNA ZARURI HAI 👇
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpGiZTB0yBl0DsOiMRJMLn9L-qrmOMJ3uVX9ZaN7Thbk98IlE3FH04QVMC2d1sET5e/exec"; 
 
         function toggleLogin() {
             document.getElementById('login-modal').classList.toggle('hidden');
-            document.getElementById('login-error').classList.add('hidden'); // Reset error
-            document.getElementById('login-id').value = ""; // Clear inputs
+            document.getElementById('login-error').classList.add('hidden');
+            document.getElementById('login-id').value = "";
             document.getElementById('login-pass').value = "";
         }
 
-        function verifyLogin() {
-            let id = document.getElementById('login-id').value.trim().toUpperCase();
+        // 🔥 NAYA SECURE LOGIN FUNCTION (Backend se judha hua) 🔥
+        async function verifyLogin() {
+            let id = document.getElementById('login-id').value.trim(); 
             let pass = document.getElementById('login-pass').value.trim();
             let btn = document.querySelector('#login-modal button.bg-indigo-600');
             
-            if (clientDatabase[id] && clientDatabase[id].pass === pass) {
-                btn.innerText = "Loading... ⏳";
-                window.location.href = clientDatabase[id].url;
-            } else {
-                document.getElementById('login-error').classList.remove('hidden');
+            btn.innerText = "Checking Code... ⏳";
+            
+            try {
+                // Backend (Google Script) se pucho ki password sahi hai ya nahi
+                let response = await fetch(SCRIPT_URL + "?action=login&res=" + id + "&pass=" + pass);
+                let result = await response.text();
+                
+                if (result === "SUCCESS") {
+                    btn.innerText = "Entering... 🚀";
+                    window.location.href = "dashboard.html?res=" + id;
+                } else {
+                    document.getElementById('login-error').classList.remove('hidden');
+                    btn.innerText = "ENTER DASHBOARD 🚀";
+                }
+            } catch (error) {
+                alert("Network Problem! Internet check karein.");
+                btn.innerText = "ENTER DASHBOARD 🚀";
             }
         }
     </script>
 </body>
 </html>
-
-
-
-
-
