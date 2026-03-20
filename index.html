@@ -82,6 +82,12 @@
     </div>
 
     <script>
+        // 🔥 BACK BUTTON FIX
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
         // 🚨 YAHAN TERA CURRENT SCRIPT URL HAI
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
 
