@@ -139,15 +139,26 @@
     </div>
 
     <script>
+        // 🔥 BACK BUTTON FIX (Dashboard ke liye bhi)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) window.location.reload();
+        });
+
         // 🚨 APNA SCRIPT URL YAHAN DAALNA ZARURI HAI 👇
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
         
         const resId = new URLSearchParams(window.location.search).get('res') || "R1"; 
         document.getElementById("res-name-display").innerText = resId;
 
+        // 🔥 NINJA FETCH ENGINE: Har request ko fresh aur safe banata hai
+        async function safeFetch(action, extraParams = "") {
+            const noCacheUrl = `${SCRIPT_URL}?action=${action}&res=${resId}${extraParams}&t=${new Date().getTime()}`;
+            return await fetch(noCacheUrl, { redirect: "follow" });
+        }
+
         async function loadDashboard() {
             try {
-                const res1 = await fetch(SCRIPT_URL + "?action=getDashboard&res=" + resId);
+                const res1 = await safeFetch("getDashboard");
                 const data = await res1.json();
                 
                 document.getElementById("dash-sales").innerText = "₹" + data.sales;
@@ -178,7 +189,7 @@
                 });
                 document.getElementById("dashboard-orders-list").innerHTML = tableHtml;
 
-                const res2 = await fetch(SCRIPT_URL + "?action=getInventory&res=" + resId);
+                const res2 = await safeFetch("getInventory");
                 const invData = await res2.json();
                 
                 let invHtml = "";
@@ -223,10 +234,13 @@
                     document.getElementById("dash-theft").classList.remove("text-red-400", "animate-pulse");
                 }
 
-            } catch (error) { console.error("Load Error"); }
+            } catch (error) { 
+                console.error("Dashboard Load Error:", error); 
+                // Agar internet chala gaya toh table me error dikhayega, page dark hoke freeze nahi hoga
+                document.getElementById("dashboard-orders-list").innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500 font-bold">Internet Connection Problem! ❌</td></tr>`;
+            }
         }
 
-        // 🔥 NAYA FUNCTION: CLEAR OLD DATA 🔥
         async function clearOldData() {
             let confirmClean = confirm("⚠️ Dhyan de! Isse pichle mahino ka saara purana order data hamesha ke liye delete ho jayega (Sirf is mahine ka data bachega). Kya aap sure hain?");
             if(confirmClean) {
@@ -234,7 +248,7 @@
                 btn.innerText = "Clearing... ⏳";
                 btn.disabled = true;
                 try {
-                    await fetch(SCRIPT_URL + "?action=clearOldData&res=" + resId);
+                    await safeFetch("clearOldData");
                     alert("✅ Purana data clean ho gaya! Sheet ab ekdum fast ho gayi hai.");
                 } catch(e) {
                     alert("Error! Data clean nahi hua.");
@@ -292,7 +306,8 @@
             if (!item) return;
             let qty = prompt(item + " ke kitne piece aaye?:");
             if (!qty || isNaN(qty)) return alert("Sahi number daalein!");
-            await fetch(SCRIPT_URL + "?action=addStock&res=" + resId + "&name=" + item + "&qty=" + qty);
+            
+            await safeFetch("addStock", `&name=${encodeURIComponent(item)}&qty=${qty}`);
             alert("✅ Stock Save ho gaya!");
             loadDashboard();
         }
@@ -302,14 +317,15 @@
             if (!item) return;
             let qty = prompt(item + " kitna waste hua?:");
             if (!qty || isNaN(qty)) return alert("Sahi number daalein!");
-            await fetch(SCRIPT_URL + "?action=addWastage&res=" + resId + "&name=" + item + "&qty=" + qty);
+            
+            await safeFetch("addWastage", `&name=${encodeURIComponent(item)}&qty=${qty}`);
             alert("🚨 Wastage Record ho gayi!");
             loadDashboard();
         }
 
        function openKitchen() {
-    window.open("kitchen.html?res=" + resId, "_blank");
-}
+            window.open("kitchen.html?res=" + resId, "_blank");
+       }
 
         function whatsappChef() {
             let num = prompt("Chef ka WhatsApp Number daalein:", "91");
@@ -320,7 +336,7 @@
             document.getElementById('menu-modal').classList.remove('hidden');
             document.getElementById('menu-toggle-list').innerHTML = '<p class="text-center text-slate-500 font-bold animate-pulse">Loading menu items...</p>';
             try {
-                const res = await fetch(SCRIPT_URL + "?action=getMenu&res=" + resId);
+                const res = await safeFetch("getMenu");
                 const menuData = await res.json();
                 let html = "";
                 menuData.forEach(item => {
@@ -331,13 +347,16 @@
                     html += `<div class="flex justify-between items-center p-3 border rounded-lg bg-white shadow-sm"><span class="font-bold ${textColor}">${item.name}</span><button onclick="flipStatus('${item.name}', '${item.status}')" class="${btnColor} ${isAvail ? 'text-white' : ''} px-4 py-1.5 rounded-full text-xs font-black transition-all w-16 text-center shadow-inner">${btnText}</button></div>`;
                 });
                 document.getElementById('menu-toggle-list').innerHTML = html || "<p class='text-center text-slate-500'>No items found.</p>";
-            } catch (error) { document.getElementById('menu-toggle-list').innerHTML = "<p class='text-center text-red-500'>Error loading menu.</p>"; }
+            } catch (error) { 
+                document.getElementById('menu-toggle-list').innerHTML = "<p class='text-center text-red-500'>Error loading menu. Check Internet!</p>"; 
+            }
         }
 
         async function flipStatus(name, currentStatus) {
             let newStatus = currentStatus === "Available" ? "Out of Stock" : "Available";
             document.getElementById('menu-toggle-list').innerHTML = '<p class="text-center text-blue-500 font-bold animate-pulse">Updating '+name+'...</p>';
-            await fetch(SCRIPT_URL + "?action=toggleItem&res=" + resId + "&name=" + name + "&status=" + newStatus);
+            
+            await safeFetch("toggleItem", `&name=${encodeURIComponent(name)}&status=${encodeURIComponent(newStatus)}`);
             toggleMenu(); 
         }
 
@@ -347,4 +366,3 @@
     </script>
 </body>
 </html>
-
