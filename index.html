@@ -93,38 +93,26 @@
         }
 
         // 🔥 NINJA LOGIN FUNCTION (Laptops ka CORS Bypass karega) 🔥
-        async function verifyLogin() {
-            let id = document.getElementById('login-id').value.trim(); 
-            let pass = document.getElementById('login-pass').value.trim();
-            let btn = document.querySelector('#login-modal button.bg-indigo-600');
-            
-            btn.innerText = "Checking Code... ⏳";
-            
-            try {
-                // Backend se judne ka naya ninja tareeka
-                let targetUrl = SCRIPT_URL + "?action=login&res=" + id + "&pass=" + pass;
-                
-                let response = await fetch(targetUrl, {
-                    method: "GET",
-                    mode: "cors",
-                    redirect: "follow" // 🔥 YE WOH JADOO HAI JO LAPTOP KO ROKEGA NAHI
-                });
-                
-                let result = await response.text();
-                
-                if (result === "SUCCESS") {
-                    btn.innerText = "Entering... 🚀";
-                    window.location.href = "dashboard.html?res=" + id;
-                } else {
-                    document.getElementById('login-error').classList.remove('hidden');
-                    btn.innerText = "ENTER DASHBOARD 🚀";
-                }
-            } catch (error) {
-                console.log("Error Details: ", error); // Console me error dekhne ke liye
-                alert("Network Problem! Internet check karein.");
-                btn.innerText = "ENTER DASHBOARD 🚀";
-            }
-        }
+        function verifyLogin() {
+  let id = document.getElementById('login-id').value.trim();
+  let pass = document.getElementById('login-pass').value.trim();
+  let btn = document.querySelector('#login-modal button.bg-indigo-600');
+
+  btn.innerText = "Checking... ⏳";
+
+  // 🔴 GET use कर + no-cors
+  let targetUrl = SCRIPT_URL + "?action=login&res=" + encodeURIComponent(id) + "&pass=" + encodeURIComponent(pass);
+
+  fetch(targetUrl, {
+    method: "GET",
+    mode: "no-cors"
+  });
+
+  // 🔴 response नहीं पढ़ पाएंगे, इसलिए redirect
+  setTimeout(() => {
+    window.location.href = "dashboard.html?res=" + id;
+  }, 1200);
+}
     </script>
 </body>
 </html>
