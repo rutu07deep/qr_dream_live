@@ -8,22 +8,28 @@
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 pb-28">
 
+    <div id="premium-loader" class="fixed inset-0 bg-slate-50 z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="text-7xl animate-bounce mb-6">👨‍🍳</div>
+        <div class="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-6 shadow-lg"></div>
+        <h2 class="text-3xl font-black text-slate-800 tracking-tight text-center px-4">Warming up the ovens...</h2>
+        <p class="text-slate-500 font-bold mt-3 animate-pulse text-lg">Fetching the freshest menu 🍕</p>
+    </div>
+
     <nav class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
         <div class="max-w-2xl mx-auto px-4 py-4 flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-black text-indigo-600 tracking-tight" id="res-title">Loading...</h1>
+                <h1 class="text-2xl font-black text-indigo-600 tracking-tight" id="res-title">Entaurent</h1>
                 <p class="text-sm font-bold text-slate-500" id="table-display">Table --</p>
             </div>
-            <div class="bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100">
-                <span class="text-indigo-800 font-bold text-sm">Live Menu 🟢</span>
+            <div class="bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100 shadow-sm">
+                <span class="text-indigo-800 font-bold text-sm flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Live
+                </span>
             </div>
         </div>
     </nav>
 
     <main class="max-w-2xl mx-auto px-4 py-6">
-        <div id="loading-menu" class="text-center py-10">
-            <p class="text-slate-400 font-bold animate-pulse text-lg">Menu load ho raha hai... 🍕</p>
-        </div>
         <div id="menu-container" class="space-y-4">
             </div>
     </main>
@@ -34,7 +40,7 @@
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider" id="bottom-items-count">0 Items</p>
                 <p class="text-xl font-black text-slate-900">₹<span id="bottom-total-price">0</span></p>
             </div>
-            <button onclick="toggleCart()" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-black shadow-lg hover:bg-indigo-700 transition flex items-center gap-2">
+            <button onclick="toggleCart()" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-black shadow-lg hover:bg-indigo-700 transition transform hover:scale-105 flex items-center gap-2">
                 VIEW CART 🛒
             </button>
         </div>
@@ -82,7 +88,12 @@
     </div> 
 
     <script>
-        // 🚨 YAHAN APNA LATEST GOOGLE SCRIPT URL DAALNA MAT BHOOLNA 👇
+        // 🔥 BACK BUTTON FIX
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) window.location.reload();
+        });
+
+        // 🚨 APNA SCRIPT URL YAHAN DAALNA 👇
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -96,30 +107,68 @@
         let clientUpiId = "";
         let clientResName = "Restaurant " + resId;
 
+        // 🔥 NINJA FETCH ENGINE (Bypasses CORS & Cache)
+        async function safeFetch(action, extraParams = "") {
+            const noCacheUrl = `${SCRIPT_URL}?action=${action}&res=${resId}${extraParams}&t=${new Date().getTime()}`;
+            return await fetch(noCacheUrl, { redirect: "follow" });
+        }
+
+        // Hides the premium loader smoothly
+        function hideLoader() {
+            const loader = document.getElementById('premium-loader');
+            loader.style.opacity = '0';
+            setTimeout(() => { loader.style.display = 'none'; }, 500);
+        }
+
         async function fetchMenuAndSettings() {
+            // 🔥 INSTANT LOAD TRICK: Check agar phone me pehle se menu save hai
+            const cachedMenu = localStorage.getItem("entaurent_menu_" + resId);
+            const cachedName = localStorage.getItem("entaurent_name_" + resId);
+            const cachedUpi = localStorage.getItem("entaurent_upi_" + resId);
+
+            if (cachedMenu && cachedName) {
+                // Agar save hai toh turant (0.1 sec me) dikha do!
+                menuData = JSON.parse(cachedMenu);
+                clientResName = cachedName;
+                clientUpiId = cachedUpi || "";
+                document.getElementById("res-title").innerText = clientResName;
+                renderMenu();
+                hideLoader(); 
+            }
+
             try {
-                // Settings fetch karna
-                const setRes = await fetch(SCRIPT_URL + "?action=getSettings&res=" + resId);
+                // Background me chup-chaap naya data check karo
+                const setRes = await safeFetch("getSettings");
                 const setData = await setRes.json();
                 clientResName = setData.name || "Restaurant " + resId;
                 clientUpiId = setData.upi || "";
+                
                 document.getElementById("res-title").innerText = clientResName;
+                localStorage.setItem("entaurent_name_" + resId, clientResName);
+                localStorage.setItem("entaurent_upi_" + resId, clientUpiId);
 
-                // Menu fetch karna
-                const menuRes = await fetch(SCRIPT_URL + "?action=getMenu&res=" + resId);
+                const menuRes = await safeFetch("getMenu");
                 menuData = await menuRes.json();
+                
+                // Naya menu save kar lo aur screen update kar do
+                localStorage.setItem("entaurent_menu_" + resId, JSON.stringify(menuData));
                 renderMenu();
+                
+                // Agar pehli baar load ho raha hai, toh loader hatao
+                if (!cachedMenu) hideLoader();
+
             } catch (error) {
-                document.getElementById('loading-menu').innerHTML = "<p class='text-red-500 font-bold text-center mt-5'>Menu load nahi ho paya! Connection check karein.</p>";
+                if (!cachedMenu) {
+                    document.getElementById('premium-loader').innerHTML = "<h2 class='text-2xl font-black text-red-500'>Connection Error! ❌</h2><p class='text-slate-500 mt-2'>Please check your internet.</p>";
+                }
             }
         }
 
         function renderMenu() {
             const container = document.getElementById('menu-container');
-            document.getElementById('loading-menu').style.display = 'none';
             
             if(menuData.length === 0) {
-                container.innerHTML = "<p class='text-center text-slate-400 mt-5'>No items available today.</p>";
+                container.innerHTML = "<p class='text-center text-slate-400 mt-5 font-bold'>No items available today.</p>";
                 return;
             }
 
@@ -127,19 +176,19 @@
             menuData.forEach(item => {
                 let isAvail = item.status === "Available";
                 let btnHtml = isAvail 
-                    ? `<button onclick="addToCart('${item.name}', ${item.price})" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-2 rounded-xl text-sm font-black hover:bg-indigo-100 hover:scale-105 transition shadow-sm">+ ADD</button>`
-                    : `<span class="bg-slate-100 text-slate-400 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200">SOLD OUT</span>`;
+                    ? `<button onclick="addToCart('${item.name}', ${item.price})" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-2 rounded-xl text-sm font-black hover:bg-indigo-100 active:scale-95 transition shadow-sm">+ ADD</button>`
+                    : `<span class="bg-slate-100 text-slate-400 px-4 py-2 rounded-xl text-[10px] font-black tracking-widest border border-slate-200 uppercase">Sold Out</span>`;
 
                 let defaultImg = 'https://cdn-icons-png.flaticon.com/512/3170/3170733.png';
                 let imgSrc = item.image ? item.image : defaultImg;
 
                 html += `
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-center transform hover:scale-[1.01] transition-all">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-center transform hover:-translate-y-1 transition-all duration-300">
                     <img src="${imgSrc}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl border border-slate-100 shadow-sm ${!isAvail ? 'opacity-50 grayscale' : ''}">
                     
                     <div class="flex-1">
                         <h3 class="font-bold text-slate-800 text-lg leading-tight ${!isAvail ? 'opacity-50 line-through' : ''}">${item.name}</h3>
-                        <p class="font-black text-indigo-600 mt-1">₹${item.price}</p>
+                        <p class="font-black text-indigo-600 mt-1 text-lg">₹${item.price}</p>
                     </div>
                     <div>${btnHtml}</div>
                 </div>`;
@@ -187,14 +236,8 @@
 
                 if(clientUpiId && clientUpiId.trim() !== "") {
                     document.getElementById('upi-section').classList.remove('hidden');
-                    
-                    // Direct UPI intent link
                     let upiLink = `upi://pay?pa=${clientUpiId}&pn=${encodeURIComponent(clientResName)}&am=${total}&cu=INR`;
-                    
-                    // Generates QR Code using an open API
                     document.getElementById('upi-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiLink)}`;
-                    
-                    // Button logic for mobile devices
                     document.getElementById('upi-link-btn').href = upiLink;
                 } else {
                     document.getElementById('upi-section').classList.add('hidden');
@@ -222,15 +265,15 @@
             let itemsStr = itemsArr.join(", ");
 
             try {
-                let url = `${SCRIPT_URL}?action=placeOrder&res=${resId}&table=${tableNo}&items=${encodeURIComponent(itemsStr)}&amount=${totalAmt}`;
-                await fetch(url);
+                await safeFetch("placeOrder", `&table=${tableNo}&items=${encodeURIComponent(itemsStr)}&amount=${totalAmt}`);
+                
                 alert(`🎉 Order Placed Successfully! (Total: ₹${totalAmt})`);
                 cart = {};
                 updateCartUI();
                 toggleCart();
                 btn.innerText = "PLACE ORDER 🚀";
             } catch(e) {
-                alert("Error! Please try again.");
+                alert("Error! Please try again. Internet check karein.");
                 btn.innerText = "PLACE ORDER 🚀";
                 btn.disabled = false;
             }
