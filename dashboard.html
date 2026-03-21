@@ -6,6 +6,19 @@
     <title>Owner Dashboard -Entaurent</title>
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // 🔥 THE BOUNCER (SECURITY GUARD) 🔥
+        // Ye page load hone se pehle hi check kar lega ki entry deni hai ya nahi
+        const urlParams = new URLSearchParams(window.location.search);
+        const reqId = urlParams.get('res') || "R1";
+        const savedAuth = localStorage.getItem("entaurent_auth");
+
+        // Agar ticket nahi hai, ya ticket kisi aur ki hai -> Laat maar ke bahar nikalo!
+        if (!savedAuth || savedAuth !== reqId) {
+            alert("⚠️ Unauthorized Access! Pura Login karein.");
+            window.location.href = "index.html"; // Wapas login page pe
+        }
+    </script>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 relative">
 
@@ -17,7 +30,8 @@
                     <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-1 rounded-md ml-2">Owner Panel</span>
                 </div>
                 <div class="flex items-center gap-4">
-                    <span class="text-sm font-semibold text-slate-500" id="res-name-display">Restaurant R1</span>
+                    <button onclick="logout()" class="text-xs font-bold text-red-500 border border-red-200 px-3 py-1 rounded-md hover:bg-red-50">Logout 🚪</button>
+                    <span class="text-sm font-black text-slate-700 bg-slate-200 px-3 py-1 rounded-full" id="res-name-display">Restaurant R1</span>
                 </div>
             </div>
         </div>
@@ -140,18 +154,23 @@
     </div>
 
     <script>
-        // 🔥 BACK BUTTON FIX (Dashboard ke liye bhi)
+        // 🔥 BACK BUTTON FIX
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) window.location.reload();
         });
 
-        // 🚨 APNA SCRIPT URL YAHAN DAALNA ZARURI HAI 👇
+        // 🚨 SCRIPT URL
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
-        
         const resId = new URLSearchParams(window.location.search).get('res') || "R1"; 
-        document.getElementById("res-name-display").innerText = resId;
+        document.getElementById("res-name-display").innerText = "Restro " + resId;
 
-        // 🔥 NINJA FETCH ENGINE: Har request ko fresh aur safe banata hai
+        // 🔥 LOGOUT FUNCTION
+        function logout() {
+            localStorage.removeItem("entaurent_auth"); // Ticket faad do
+            window.location.href = "index.html"; // Wapas login screen pe bhejo
+        }
+
+        // 🔥 NINJA FETCH ENGINE
         async function safeFetch(action, extraParams = "") {
             const noCacheUrl = `${SCRIPT_URL}?action=${action}&res=${resId}${extraParams}&t=${new Date().getTime()}`;
             return await fetch(noCacheUrl, { redirect: "follow" });
@@ -237,7 +256,6 @@
 
             } catch (error) { 
                 console.error("Dashboard Load Error:", error); 
-                // Agar internet chala gaya toh table me error dikhayega, page dark hoke freeze nahi hoga
                 document.getElementById("dashboard-orders-list").innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500 font-bold">Internet Connection Problem! ❌</td></tr>`;
             }
         }

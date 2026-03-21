@@ -83,13 +83,12 @@
     </div>
 
     <script>
-        // 🔥 BACK BUTTON FIX
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
                 window.location.reload();
             }
         });
-        // 🚨 YAHAN TERA CURRENT SCRIPT URL HAI
+
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
 
         function toggleLogin() {
@@ -99,7 +98,6 @@
             document.getElementById('login-pass').value = "";
         }
 
-        // 🔥 THE ULTIMATE JSONP LOGIN (No CORS Error, Full Security) 🔥
         function verifyLogin() {
             let id = document.getElementById('login-id').value.trim().toUpperCase();
             let pass = document.getElementById('login-pass').value.trim();
@@ -139,6 +137,10 @@
 
             if (response.status === "SUCCESS") {
                 btn.innerText = "Entering... 🚀";
+                
+                // 🔥 NAYA JAADU: TICKET DE DO BROWSER KO 🔥
+                localStorage.setItem("entaurent_auth", id); 
+                
                 window.location.href = `dashboard.html?res=${id}`;
             } else {
                 errorMsg.innerText = "Wrong ID or Passcode! ❌";
