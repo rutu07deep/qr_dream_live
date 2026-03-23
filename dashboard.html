@@ -8,15 +8,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         // 🔥 THE BOUNCER (SECURITY GUARD) 🔥
-        // Ye page load hone se pehle hi check kar lega ki entry deni hai ya nahi
         const urlParams = new URLSearchParams(window.location.search);
         const reqId = urlParams.get('res') || "R1";
         const savedAuth = localStorage.getItem("entaurent_auth");
 
-        // Agar ticket nahi hai, ya ticket kisi aur ki hai -> Laat maar ke bahar nikalo!
         if (!savedAuth || savedAuth !== reqId) {
             alert("⚠️ Unauthorized Access! Pura Login karein.");
-            window.location.href = "index.html"; // Wapas login page pe
+            window.location.href = "index.html"; 
         }
     </script>
 </head>
@@ -99,7 +97,7 @@
                 <h2 class="text-3xl font-black text-blue-700 mt-1" id="dash-foodcost">0%</h2>
             </div>
             <div class="bg-red-50 rounded-2xl p-6 border border-red-100 shadow-sm">
-                <p class="text-xs font-bold text-red-600 uppercase tracking-wider">Wastage Loss (Today)</p>
+                <p class="text-xs font-bold text-red-600 uppercase tracking-wider">Overall Wastage Loss</p>
                 <h2 class="text-3xl font-black text-red-700 mt-1" id="dash-loss">₹0</h2>
             </div>
         </div>
@@ -109,7 +107,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase"><th class="p-4 font-bold border-b">Time</th><th class="p-4 font-bold border-b">Table</th><th class="p-4 font-bold border-b">Items</th><th class="p-4 font-bold border-b">Amount</th><th class="p-4 font-bold border-b">Status</th><th class="p-4 font-bold border-b">Bill</th></tr>
+                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase"><th class="p-4 font-bold border-b">Time</th><th class="p-4 font-bold border-b">Table</th><th class="p-4 font-bold border-b">Items</th><th class="p-4 font-bold border-b">Amount</th><th class="p-4 font-bold border-b">Status</th><th class="p-4 font-bold border-b">Action</th></tr>
                     </thead>
                     <tbody id="dashboard-orders-list" class="text-sm divide-y divide-slate-100">
                         <tr><td colspan="6" class="p-8 text-center text-slate-400">Loading live data...</td></tr>
@@ -154,23 +152,21 @@
     </div>
 
     <script>
-        // 🔥 BACK BUTTON FIX
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) window.location.reload();
         });
 
-        // 🚨 SCRIPT URL
+        // 🚨 SCRIPT URL (Tera latest deployed URL yahan zaroor daalna)
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
+        
         const resId = new URLSearchParams(window.location.search).get('res') || "R1"; 
         document.getElementById("res-name-display").innerText = "Restro " + resId;
 
-        // 🔥 LOGOUT FUNCTION
         function logout() {
-            localStorage.removeItem("entaurent_auth"); // Ticket faad do
-            window.location.href = "index.html"; // Wapas login screen pe bhejo
+            localStorage.removeItem("entaurent_auth");
+            window.location.href = "index.html"; 
         }
 
-        // 🔥 NINJA FETCH ENGINE
         async function safeFetch(action, extraParams = "") {
             const noCacheUrl = `${SCRIPT_URL}?action=${action}&res=${resId}${extraParams}&t=${new Date().getTime()}`;
             return await fetch(noCacheUrl, { redirect: "follow" });
@@ -195,6 +191,8 @@
                 if(data.list.length === 0) tableHtml = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No orders yet.</td></tr>`;
                 else data.list.forEach(order => {
                     let c = order.status === "Completed" ? "text-green-700 bg-green-100" : "text-orange-700 bg-orange-100";
+                    
+                    // 🔥 YAHAN HAIN TERE TEENO BUTTONS (Print, WhatsApp, Cancel) 🔥
                     tableHtml += `<tr class="border-b hover:bg-slate-50">
                         <td class="p-4 text-slate-500">${order.time}</td>
                         <td class="p-4 font-bold">Table ${order.table}</td>
@@ -204,6 +202,7 @@
                         <td class="p-4 flex gap-2">
                             <button onclick="printBill('${order.table}', '${order.items}', ${order.amount}, '${order.time}')" class="bg-slate-800 text-white p-2 rounded-lg hover:bg-black transition shadow" title="Print Bill">🖨️</button>
                             <button onclick="whatsappBill('${order.table}', '${order.items}', ${order.amount})" class="bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition shadow" title="WhatsApp Bill">💬</button>
+                            <button onclick="cancelOrder('${order.table}', '${order.time}')" class="bg-red-50 text-red-600 border border-red-200 p-2 rounded-lg hover:bg-red-100 transition shadow" title="Cancel Order">🚫</button>
                         </td>
                     </tr>`;
                 });
@@ -228,7 +227,9 @@
                             theftItems.push(`${item.name} (-${missingQty})`);
                         } else {
                             statusHtml = `<span class="text-green-600 font-bold">Safe ✅</span>`;
-                            if(item.left <= 5) lowStockItems.push(item.name);
+                            if(item.left <= 5 && item.name.trim() !== "") {
+                                lowStockItems.push(item.name.trim()); // Khali naam avoid karega
+                            }
                         }
 
                         invHtml += `<tr class="border-b hover:bg-slate-50">
@@ -243,8 +244,13 @@
                 }
                 document.getElementById("inventory-list").innerHTML = invHtml;
 
-                if(lowStockItems.length > 0) document.getElementById("dash-lowstock").innerText = lowStockItems.join(", ");
-                else document.getElementById("dash-lowstock").innerText = "All Good ✅";
+                // 🔥 LOW STOCK COMMA BUG FIX 🔥
+                if(lowStockItems.length > 0) {
+                    // Filter se confirm karenge ki koi empty string array mein na ho
+                    document.getElementById("dash-lowstock").innerText = lowStockItems.filter(Boolean).join(", ");
+                } else {
+                    document.getElementById("dash-lowstock").innerText = "All Good ✅";
+                }
 
                 if(theftItems.length > 0) {
                     document.getElementById("dash-theft").innerText = "Missing: " + theftItems.join(", ");
@@ -257,6 +263,21 @@
             } catch (error) { 
                 console.error("Dashboard Load Error:", error); 
                 document.getElementById("dashboard-orders-list").innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500 font-bold">Internet Connection Problem! ❌</td></tr>`;
+            }
+        }
+
+        // 🔥 NAYA: CANCEL ORDER FUNCTION 🔥
+        async function cancelOrder(table, time) {
+            let confirmCancel = confirm(`⚠️ Dhyan de! Kya aap sach mein Table ${table} ka order Cancel karna chahte hain?`);
+            if(confirmCancel) {
+                try {
+                    // Ye call piche backend se Table No. aur Time match karke data udayega
+                    await safeFetch("cancelOrder", `&table=${encodeURIComponent(table)}&time=${encodeURIComponent(time)}`);
+                    alert("🚫 Order Cancel ho gaya!");
+                    loadDashboard(); // Auto-refresh table
+                } catch(e) {
+                    alert("Error! Order cancel nahi hua. Internet check karein.");
+                }
             }
         }
 
