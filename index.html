@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entaurent | The OS for Modern Restaurants</title>
+    <title>Entaurent | Smart Restaurant OS</title>
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
@@ -30,6 +30,7 @@
     <style>
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
         .glow-text { text-shadow: 0 0 40px rgba(109, 40, 217, 0.4); }
+        .step-number { font-size: 4rem; font-weight: 900; color: rgba(255,255,255,0.05); position: absolute; top: -10px; right: 10px; z-index: 0; }
     </style>
 </head>
 <body class="bg-midnight text-white font-sans antialiased selection:bg-primary selection:text-white overflow-x-hidden relative">
@@ -44,13 +45,11 @@
                     <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-black text-xl shadow-lg shadow-primary/30">E</div>
                     <span class="text-2xl font-black tracking-tighter">Entaurent<span class="text-primary">.</span></span>
                 </div>
-                <div class="flex items-center gap-6">
-                    <button onclick="toggleLogin()" class="hidden md:block text-sm font-semibold text-gray-400 hover:text-white transition">Owner Login 🔐</button>
-                    <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20to%20start%20Entaurant" target="_blank" class="relative group">
+                <div class="flex items-center gap-4 md:gap-6">
+                    <button onclick="toggleLogin()" class="text-sm font-semibold text-gray-400 hover:text-white transition">Owner Login 🔐</button>
+                    <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20to%20start%20Entaurant" target="_blank" class="hidden md:block relative group">
                         <div class="absolute -inset-0.5 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-50 group-hover:opacity-100 transition duration-300"></div>
-                        <button class="relative bg-black border border-white/10 text-white px-6 py-2 rounded-full text-sm font-bold transition-all">
-                            Free Trial
-                        </button>
+                        <button class="relative bg-black border border-white/10 text-white px-6 py-2 rounded-full text-sm font-bold transition-all">Free Trial</button>
                     </a>
                 </div>
             </div>
@@ -64,81 +63,123 @@
         </div>
         
         <h1 data-aos="fade-up" data-aos-delay="100" class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-8 leading-[1.1] max-w-5xl glow-text">
-            Stop Paying Waiters. <br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-primary to-secondary">Start Printing Profits.</span>
+            Run Your Restaurant <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-primary to-secondary">Smarter, Not Harder.</span>
         </h1>
         
         <p data-aos="fade-up" data-aos-delay="200" class="text-lg md:text-xl text-gray-400 max-w-3xl font-medium mb-12 leading-relaxed">
-            A single waiter costs ₹15,000/month, makes mistakes, and takes leaves. Replace them with a <strong>Digital Waiter</strong>. Customers scan, order instantly, and your kitchen gets real-time alerts. 
+            Stop losing money on slow manual ordering and stolen inventory. Entaurent transforms your tables into digital ordering points, connects directly to your kitchen, and guards your raw materials.
         </p>
 
         <div data-aos="fade-up" data-aos-delay="300" class="flex flex-col sm:flex-row gap-5 w-full sm:w-auto justify-center">
-            <button onclick="toggleLogin()" class="bg-white text-black px-8 py-4 rounded-full text-lg font-black hover:bg-gray-200 hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-                Owner Login 🔐
-            </button>
+            <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20to%20start%20Entaurant" target="_blank" class="bg-white text-black px-8 py-4 rounded-full text-lg font-black hover:bg-gray-200 hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                Get 7-Day Free Trial
+            </a>
             <a href="menu.html?res=R1&table=Demo" class="glass-card text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-white/10 transition-all border border-white/20">
                 Try Live Menu Demo 🍕
             </a>
         </div>
     </main>
 
-    <section class="relative z-10 py-24 bg-midnight border-y border-white/5">
+    <section class="relative z-10 py-24 bg-surface border-y border-white/5">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="mb-16 text-center" data-aos="fade-up">
-                <h2 class="text-3xl md:text-5xl font-black text-white mb-4">Real problems.<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Solved instantly.</span></h2>
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl md:text-5xl font-black text-white mb-4">How it works in your Restaurant?</h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">No app downloads required. A completely automated flow from the customer's table to your kitchen and billing counter.</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[280px]">
-                <div data-aos="fade-up" data-aos-delay="100" class="md:col-span-2 glass-card rounded-3xl p-8 flex flex-col justify-end relative overflow-hidden group hover:border-primary/50 transition-all">
-                    <div class="absolute top-0 right-0 p-8 text-7xl opacity-10 group-hover:scale-110 group-hover:opacity-20 transition transform">📱</div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div data-aos="fade-up" data-aos-delay="100" class="glass-card p-8 rounded-3xl relative overflow-hidden group hover:-translate-y-2 transition-transform">
+                    <div class="step-number">01</div>
                     <div class="relative z-10">
-                        <div class="inline-block px-3 py-1 bg-primary/20 text-primary text-xs font-black rounded-lg mb-4 uppercase tracking-widest">Digital Waiter</div>
-                        <h3 class="text-3xl font-black text-white mb-3">Smart QR Ordering</h3>
-                        <p class="text-gray-400 font-medium text-lg">No more waiting for menus. Customers sit, scan, and order from their phones. You handle 2x more rush with zero extra staff.</p>
+                        <div class="text-4xl mb-4">🤳</div>
+                        <h3 class="text-xl font-bold text-white mb-3">Customer Scans</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Customers sit at the table and scan the QR code using their normal phone camera. Your digital menu opens instantly.</p>
                     </div>
                 </div>
-                <div data-aos="fade-up" data-aos-delay="200" class="glass-card rounded-3xl p-8 flex flex-col justify-end relative overflow-hidden group border-t-2 border-t-orange-500 hover:-translate-y-1 transition-transform">
-                    <div class="absolute top-6 right-6 text-4xl">👨‍🍳</div>
-                    <h3 class="text-2xl font-black text-white mb-2">Kitchen TV</h3>
-                    <p class="text-gray-400 font-medium">Loud 'Beep' alerts for every new order. Chefs never miss or delay an item again.</p>
+                <div data-aos="fade-up" data-aos-delay="200" class="glass-card p-8 rounded-3xl relative overflow-hidden group hover:-translate-y-2 transition-transform">
+                    <div class="step-number">02</div>
+                    <div class="relative z-10">
+                        <div class="text-4xl mb-4">🛒</div>
+                        <h3 class="text-xl font-bold text-white mb-3">Place Order</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">They browse mouth-watering pictures, select items, and place the order. No waiting 10 minutes for a busy waiter.</p>
+                    </div>
                 </div>
-                <div data-aos="fade-up" data-aos-delay="300" class="glass-card rounded-3xl p-8 flex flex-col justify-end relative overflow-hidden group border-t-2 border-t-red-500 hover:-translate-y-1 transition-transform">
-                    <div class="absolute top-6 right-6 text-4xl">🛡️</div>
-                    <h3 class="text-2xl font-black text-white mb-2">Stop Theft</h3>
-                    <p class="text-gray-400 font-medium">System tracks every bun and cheese slice sold. Catch staff theft and wastage instantly.</p>
+                <div data-aos="fade-up" data-aos-delay="300" class="glass-card p-8 rounded-3xl relative overflow-hidden group border-t-2 border-t-orange-500 hover:-translate-y-2 transition-transform">
+                    <div class="step-number">03</div>
+                    <div class="relative z-10">
+                        <div class="text-4xl mb-4">👨‍🍳</div>
+                        <h3 class="text-xl font-bold text-white mb-3">Kitchen TV Beeps</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">The order instantly flashes on the Kitchen Display Screen with a loud 'Beep'. Chef starts cooking immediately. No miscommunication.</p>
+                    </div>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="400" class="glass-card p-8 rounded-3xl relative overflow-hidden group border-t-2 border-t-green-500 hover:-translate-y-2 transition-transform">
+                    <div class="step-number">04</div>
+                    <div class="relative z-10">
+                        <div class="text-4xl mb-4">💰</div>
+                        <h3 class="text-xl font-bold text-white mb-3">You Track Everything</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">On your Owner Panel, you see live sales, pending orders, and exact raw material inventory left. Total control in your hands.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="pricing" class="relative z-10 py-32 px-6 overflow-hidden">
-        <div class="max-w-4xl mx-auto text-center" data-aos="fade-down">
-            <h2 class="text-4xl md:text-6xl font-black mb-6">Insanely Affordable.</h2>
-            <p class="text-xl text-gray-400 mb-16">Costs less than a single day's salary of a waiter.</p>
+    <section class="relative z-10 py-24 bg-midnight border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="mb-16 text-center" data-aos="fade-up">
+                <h2 class="text-3xl md:text-5xl font-black text-white mb-4">Why Top Cafes use Entaurent?</h2>
+            </div>
             
-            <div class="relative max-w-lg mx-auto group" data-aos="zoom-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div data-aos="fade-right" data-aos-delay="100" class="glass-card rounded-3xl p-8 lg:p-10 border-l-4 border-l-primary">
+                    <h3 class="text-2xl font-black text-white mb-4 flex items-center gap-3">💸 Cut Heavy Waiter Costs</h3>
+                    <p class="text-gray-400 font-medium text-lg leading-relaxed mb-4">
+                        A typical restaurant spends ₹15,000 to ₹25,000 per month on just 2 waiters. With Entaurent's Digital Waiter, your customers order directly. You can manage weekend rush easily with half the staff, adding direct profit to your pocket.
+                    </p>
+                </div>
+                <div data-aos="fade-left" data-aos-delay="200" class="glass-card rounded-3xl p-8 lg:p-10 border-l-4 border-l-red-500">
+                    <h3 class="text-2xl font-black text-white mb-4 flex items-center gap-3">🛡️ Zero Inventory Theft</h3>
+                    <p class="text-gray-400 font-medium text-lg leading-relaxed mb-4">
+                        Do you know exactly how many pizza buns were used today vs how many were sold? Entaurent links your sales directly to your stock. If 10 pizzas are sold, 10 buns are deducted. Any mismatch flashes instantly as a "Missing Alert" on your dashboard.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="relative z-10 py-24 px-6 overflow-hidden bg-surface">
+        <div class="max-w-4xl mx-auto text-center" data-aos="fade-down">
+            <h2 class="text-4xl md:text-5xl font-black mb-6">Simple & Honest Pricing.</h2>
+            <p class="text-xl text-gray-400 mb-12">One flat fee. No hidden delivery commissions. Complete peace of mind.</p>
+            
+            <div class="relative max-w-md mx-auto group" data-aos="zoom-in">
                 <div class="absolute -inset-1 bg-gradient-to-b from-primary to-secondary rounded-[2.5rem] blur-xl opacity-40 group-hover:opacity-70 transition duration-500"></div>
-                <div class="relative bg-surface p-10 md:p-12 rounded-[2.5rem] border border-white/10 text-left">
-                    <div class="flex justify-between items-center mb-10">
-                        <div>
-                            <p class="text-primary font-black tracking-widest text-sm mb-2 uppercase">Full Business OS</p>
-                            <h3 class="text-6xl font-black text-white tracking-tighter">₹999<span class="text-xl text-gray-500 font-bold">/mo</span></h3>
-                        </div>
+                <div class="relative bg-[#111] p-10 rounded-[2.5rem] border border-white/10 text-left">
+                    <div class="mb-8 border-b border-white/10 pb-8">
+                        <p class="text-primary font-black tracking-widest text-sm mb-2 uppercase">Pro Business OS</p>
+                        <h3 class="text-6xl font-black text-white tracking-tighter">₹999<span class="text-xl text-gray-500 font-bold">/mo</span></h3>
                     </div>
                     
-                    <ul class="space-y-5 mb-12">
-                        <li class="flex items-center gap-4 text-gray-200 font-medium text-lg"><span class="flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 text-green-400 text-sm">✓</span> Unlimited QR Orders</li>
-                        <li class="flex items-center gap-4 text-gray-200 font-medium text-lg"><span class="flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 text-green-400 text-sm">✓</span> Live Kitchen TV Screen</li>
-                        <li class="flex items-center gap-4 text-gray-200 font-medium text-lg"><span class="flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 text-green-400 text-sm">✓</span> Anti-Theft Dashboard</li>
+                    <ul class="space-y-4 mb-10">
+                        <li class="flex items-center gap-4 text-gray-300 font-medium"><span class="text-green-400 text-xl">✓</span> Unlimited QR Orders (0% Comm.)</li>
+                        <li class="flex items-center gap-4 text-gray-300 font-medium"><span class="text-green-400 text-xl">✓</span> Live Kitchen TV Screen Setup</li>
+                        <li class="flex items-center gap-4 text-gray-300 font-medium"><span class="text-green-400 text-xl">✓</span> Anti-Theft Analytics Dashboard</li>
+                        <li class="flex items-center gap-4 text-gray-300 font-medium"><span class="text-green-400 text-xl">✓</span> Free Digital Menu Creation</li>
                     </ul>
                     
-                    <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20to%20start%20Entaurant" target="_blank" class="block w-full bg-white text-black text-center py-5 rounded-2xl font-black text-xl hover:scale-[1.02] hover:bg-gray-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                        Start 7-Day Free Trial
+                    <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20to%20start%20Entaurant" target="_blank" class="block w-full bg-white text-black text-center py-4 rounded-xl font-black text-lg hover:scale-[1.02] hover:bg-gray-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                        Claim 7-Day Free Trial
                     </a>
                 </div>
             </div>
         </div>
     </section>
+
+    <footer class="relative z-10 py-8 border-t border-white/5 text-center text-gray-600 font-medium text-sm bg-midnight">
+        <p>Built with ❤️ to upgrade restaurants.</p>
+        <p class="mt-1 text-xs">© 2026 Entaurent Technologies.</p>
+    </footer>
 
     <div id="login-modal" class="hidden fixed inset-0 bg-black/80 z-[100] flex items-center justify-center backdrop-blur-md px-4 transition-all">
         <div class="bg-[#111] border border-white/10 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-8 relative">
@@ -167,9 +208,7 @@
     <script>
         AOS.init({ once: true, offset: 50 });
 
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) window.location.reload();
-        });
+        window.addEventListener('pageshow', function(event) { if (event.persisted) window.location.reload(); });
 
         // 🚨 TERA SCRIPT URL YAHAN HAI
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
@@ -177,8 +216,6 @@
         function toggleLogin() {
             document.getElementById('login-modal').classList.toggle('hidden');
             document.getElementById('login-error').classList.add('hidden');
-            document.getElementById('login-id').value = "";
-            document.getElementById('login-pass').value = "";
         }
 
         function verifyLogin() {
@@ -187,28 +224,17 @@
             let btn = document.getElementById('login-btn');
             let errorMsg = document.getElementById('login-error');
 
-            if (!id || !pass) {
-                errorMsg.innerText = "Please fill all fields! ❌";
-                errorMsg.classList.remove('hidden');
-                return;
-            }
+            if (!id || !pass) { errorMsg.innerText = "Please fill all fields! ❌"; errorMsg.classList.remove('hidden'); return; }
 
-            btn.innerText = "Checking... ⏳";
-            btn.disabled = true;
-            errorMsg.classList.add('hidden');
+            btn.innerText = "Checking... ⏳"; btn.disabled = true; errorMsg.classList.add('hidden');
 
             let script = document.createElement('script');
-            let targetUrl = `${SCRIPT_URL}?action=login&res=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse`;
-            script.src = targetUrl;
+            script.src = `${SCRIPT_URL}?action=login&res=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse`;
             
             script.onerror = function() {
-                errorMsg.innerText = "Network Error! Check Internet ❌";
-                errorMsg.classList.remove('hidden');
-                btn.innerText = "ENTER DASHBOARD 🚀";
-                btn.disabled = false;
-                document.body.removeChild(script); 
+                errorMsg.innerText = "Network Error! ❌"; errorMsg.classList.remove('hidden');
+                btn.innerText = "ENTER DASHBOARD 🚀"; btn.disabled = false; document.body.removeChild(script); 
             };
-
             document.body.appendChild(script);
         }
 
@@ -217,18 +243,15 @@
             let btn = document.getElementById('login-btn');
             let errorMsg = document.getElementById('login-error');
 
-            let scripts = document.querySelectorAll('script[src*="action=login"]');
-            scripts.forEach(s => s.remove());
+            document.querySelectorAll('script[src*="action=login"]').forEach(s => s.remove());
 
             if (response.status === "SUCCESS") {
                 btn.innerText = "Entering... 🚀";
                 localStorage.setItem("entaurent_auth", id); 
                 window.location.href = `dashboard.html?res=${id}`;
             } else {
-                errorMsg.innerText = "Wrong ID or Passcode! ❌";
-                errorMsg.classList.remove('hidden');
-                btn.innerText = "ENTER DASHBOARD 🚀";
-                btn.disabled = false;
+                errorMsg.innerText = "Wrong ID or Passcode! ❌"; errorMsg.classList.remove('hidden');
+                btn.innerText = "ENTER DASHBOARD 🚀"; btn.disabled = false;
             }
         }
     </script>
