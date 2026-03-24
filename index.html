@@ -218,6 +218,7 @@
             document.getElementById('login-error').classList.add('hidden');
         }
 
+        // 🔥 NAYA BULLETPROOF VERIFY LOGIN (MOBILE KE LIYE) 🔥
         function verifyLogin() {
             let id = document.getElementById('login-id').value.trim().toUpperCase();
             let pass = document.getElementById('login-pass').value.trim();
@@ -226,16 +227,36 @@
 
             if (!id || !pass) { errorMsg.innerText = "Please fill all fields! ❌"; errorMsg.classList.remove('hidden'); return; }
 
-            btn.innerText = "Checking... ⏳"; btn.disabled = true; errorMsg.classList.add('hidden');
+            btn.innerText = "Connecting... ⏳"; 
+            btn.disabled = true; 
+            errorMsg.classList.add('hidden');
 
             let script = document.createElement('script');
-            script.src = `${SCRIPT_URL}?action=login&res=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse`;
+            script.type = 'text/javascript';
+            
+            // MAGIC HACK 1: Date.now() se cache buster lagaya
+            script.src = `${SCRIPT_URL}?action=login&res=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse&nocache=${Date.now()}`;
             
             script.onerror = function() {
-                errorMsg.innerText = "Network Error! ❌"; errorMsg.classList.remove('hidden');
-                btn.innerText = "ENTER DASHBOARD 🚀"; btn.disabled = false; document.body.removeChild(script); 
+                errorMsg.innerText = "Network Error! ❌"; 
+                errorMsg.classList.remove('hidden');
+                btn.innerText = "ENTER DASHBOARD 🚀"; 
+                btn.disabled = false; 
+                script.remove(); 
             };
-            document.body.appendChild(script);
+            
+            // MAGIC HACK 2: Body ki jagah HEAD me daalo, mobile me block nahi hoga
+            document.head.appendChild(script);
+
+            // MAGIC HACK 3: Timeout Hack (Agar net slow hua toh button fasa nahi rahega)
+            setTimeout(() => {
+                if (btn.innerText === "Connecting... ⏳") {
+                    btn.innerText = "ENTER DASHBOARD 🚀"; 
+                    btn.disabled = false;
+                    errorMsg.innerText = "Slow Internet! Try Again ❌"; 
+                    errorMsg.classList.remove('hidden');
+                }
+            }, 8000);
         }
 
         function handleLoginResponse(response) {
