@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin HQ - Entaurent</title>
+    <title>Super Admin HQ - Entaurant</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 font-sans text-slate-100 min-h-screen selection:bg-indigo-500">
@@ -67,7 +67,7 @@
                     <div class="flex justify-between items-end mb-4 border-b border-slate-700 pb-4">
                         <div>
                             <h3 class="text-lg font-bold text-white">Table QR Codes</h3>
-                            <p class="text-xs text-slate-400">Right-click karke 'Save Image' kar lo print ke liye.</p>
+                            <p class="text-xs text-slate-400">Print ready! Includes Table number and Restro ID automatically.</p>
                         </div>
                         <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded text-xs font-bold" id="qr-count-badge">10 Generated</span>
                     </div>
@@ -81,7 +81,6 @@
     </main>
 
     <script>
-        // Agar tune menu page ka naam index.html rakha hai toh wahi likhna
         const GITHUB_BASE_URL = "https://entaurent.in"; 
 
         function generateSystem() {
@@ -94,31 +93,28 @@
                 return;
             }
 
-            // 1. Owner ka link generate karo
             const ownerLink = `${GITHUB_BASE_URL}/dashboard.html?res=${resId}`;
             document.getElementById('owner-link').value = ownerLink;
 
-            // 2. QR Codes Generate karo
             let qrHtml = "";
             for(let i = 1; i <= tables; i++) {
-                // Menu ka link jo QR ke andar chhipega
                 let tableLink = `${GITHUB_BASE_URL}/menu.html?res=${resId}&table=${i}`;
-                
-                // Free API se QR Code Image banana
                 let qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(tableLink)}&margin=10`;
 
+                // 🔥 NAYA: Download Button Add Kiya Hai 🔥
                 qrHtml += `
                 <div class="bg-white p-3 rounded-xl flex flex-col items-center shadow-lg transform hover:scale-105 transition">
                     <img src="${qrImageUrl}" alt="Table ${i}" class="w-full rounded-lg mb-2 border border-slate-200">
                     <span class="text-slate-800 font-black text-lg">Table ${i}</span>
-                    <span class="text-slate-500 text-[10px] font-bold uppercase">${resId}</span>
+                    <span class="text-slate-500 text-[10px] font-bold uppercase mb-2">${resId}</span>
+                    <button onclick="downloadWithText('${i}', '${resId}', '${qrImageUrl}')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black py-2 rounded-lg transition shadow-md">
+                        ⬇️ DOWNLOAD
+                    </button>
                 </div>`;
             }
 
             document.getElementById('qr-grid').innerHTML = qrHtml;
             document.getElementById('qr-count-badge').innerText = `${tables} Generated ✅`;
-            
-            // Result section dikhao
             document.getElementById('result-section').classList.remove('hidden');
         }
 
@@ -127,6 +123,51 @@
             copyText.select();
             document.execCommand("copy");
             alert("✅ Owner Dashboard Link Copied!");
+        }
+
+        // 🔥 THE MAGIC CANVAS FUNCTION 🔥
+        // Ye code automatically photo edit karke table number likh dega
+        function downloadWithText(tableNumber, resId, qrUrl) {
+            let canvas = document.createElement("canvas");
+            let ctx = canvas.getContext("2d");
+            
+            let img = new Image();
+            img.crossOrigin = "Anonymous"; // CORS bypass
+            img.src = qrUrl;
+
+            img.onload = function() {
+                // Photo ka size thoda bada rakha hai taaki niche text aa sake
+                canvas.width = 340;
+                canvas.height = 420;
+
+                // 1. White Background
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // 2. QR Code chipkao (Center mein)
+                ctx.drawImage(img, 20, 20, 300, 300);
+
+                // 3. Table Number likho
+                ctx.fillStyle = "#000000"; // Black Color
+                ctx.font = "900 34px 'Arial', sans-serif"; // Mota aur Bada text
+                ctx.textAlign = "center";
+                ctx.fillText(`TABLE - ${tableNumber}`, canvas.width / 2, 365);
+
+                // 4. Restaurant ID likho (Taaki dusre restro se mix na ho)
+                ctx.fillStyle = "#6b7280"; // Grey color
+                ctx.font = "bold 16px 'Arial', sans-serif";
+                ctx.fillText(`ID: ${resId}`, canvas.width / 2, 395);
+
+                // 5. Download trigger karo
+                let link = document.createElement("a");
+                link.download = `${resId}_Table_${tableNumber}_QR.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            };
+
+            img.onerror = function() {
+                alert("Oops! Network issue. Ek baar refresh karke dobara try kar bhai.");
+            }
         }
     </script>
 </body>
