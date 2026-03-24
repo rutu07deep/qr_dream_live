@@ -1,94 +1,177 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entaurent - Smart Restaurant OS</title>
+    <title>Entaurent | The OS for Modern Restaurants</title>
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: { midnight: '#030303', surface: '#0f0f0f', primary: '#6d28d9', secondary: '#4f46e5' },
+                    animation: { 'blob': 'blob 7s infinite' },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .glow-text { text-shadow: 0 0 40px rgba(109, 40, 217, 0.4); }
+    </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-900 selection:bg-indigo-200 relative">
+<body class="bg-midnight text-white font-sans antialiased selection:bg-primary selection:text-white overflow-x-hidden relative">
 
-    <nav class="flex justify-between items-center p-6 max-w-7xl mx-auto">
-        <div class="text-3xl font-black text-indigo-600 tracking-tight">Entaurent.</div>
-        <div>
-            <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20to%20start%20Entaurant" target="_blank" class="hidden md:inline-block text-gray-600 hover:text-indigo-600 font-bold">Contact Us</a>
+    <div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/20 blur-[120px] mix-blend-screen animate-blob pointer-events-none z-0"></div>
+    <div class="fixed top-[20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-secondary/20 blur-[120px] mix-blend-screen animate-blob animation-delay-2000 pointer-events-none z-0"></div>
+
+    <nav class="fixed w-full top-0 z-40 bg-midnight/70 backdrop-blur-xl border-b border-white/5" data-aos="fade-down" data-aos-duration="800">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center gap-2 cursor-pointer">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-black text-xl shadow-lg shadow-primary/30">E</div>
+                    <span class="text-2xl font-black tracking-tighter">Entaurent<span class="text-primary">.</span></span>
+                </div>
+                <div class="flex items-center gap-6">
+                    <button onclick="toggleLogin()" class="hidden md:block text-sm font-semibold text-gray-400 hover:text-white transition">Owner Login 🔐</button>
+                    <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20to%20start%20Entaurant" target="_blank" class="relative group">
+                        <div class="absolute -inset-0.5 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-50 group-hover:opacity-100 transition duration-300"></div>
+                        <button class="relative bg-black border border-white/10 text-white px-6 py-2 rounded-full text-sm font-bold transition-all">
+                            Free Trial
+                        </button>
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <header class="text-center py-20 px-4 max-w-5xl mx-auto">
-        <div class="inline-block bg-indigo-100 text-indigo-700 font-bold px-4 py-1 rounded-full mb-6 text-sm">
-            🚀 The Ultimate Multi-Tenant Restaurant OS
+    <main class="relative z-10 pt-40 pb-20 lg:pt-48 lg:pb-32 px-6 text-center flex flex-col items-center">
+        <div data-aos="fade-up" class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card text-sm font-bold text-gray-300 mb-8 border border-white/10">
+            <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span></span>
+            Now live in your city
         </div>
-        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
-            Run Your Restaurant <br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Smarter, Not Harder.</span>
-        </h1>
-        <p class="text-xl text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Stop paying high commissions. Digitize your tables with Smart QR Menus, sync orders directly to the kitchen, and track every penny.
-        </p>
         
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <button onclick="toggleLogin()" class="bg-indigo-600 text-white px-8 py-4 rounded-full text-lg font-bold shadow-xl hover:bg-indigo-700 transition transform hover:scale-105">
+        <h1 data-aos="fade-up" data-aos-delay="100" class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-8 leading-[1.1] max-w-5xl glow-text">
+            Stop Paying Waiters. <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-primary to-secondary">Start Printing Profits.</span>
+        </h1>
+        
+        <p data-aos="fade-up" data-aos-delay="200" class="text-lg md:text-xl text-gray-400 max-w-3xl font-medium mb-12 leading-relaxed">
+            A single waiter costs ₹15,000/month, makes mistakes, and takes leaves. Replace them with a <strong>Digital Waiter</strong>. Customers scan, order instantly, and your kitchen gets real-time alerts. 
+        </p>
+
+        <div data-aos="fade-up" data-aos-delay="300" class="flex flex-col sm:flex-row gap-5 w-full sm:w-auto justify-center">
+            <button onclick="toggleLogin()" class="bg-white text-black px-8 py-4 rounded-full text-lg font-black hover:bg-gray-200 hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]">
                 Owner Login 🔐
             </button>
-            <a href="menu.html?res=R1&table=Demo" class="bg-white text-indigo-600 border border-gray-200 px-8 py-4 rounded-full text-lg font-bold shadow-sm hover:shadow-md transition">
+            <a href="menu.html?res=R1&table=Demo" class="glass-card text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-white/10 transition-all border border-white/20">
                 Try Live Menu Demo 🍕
             </a>
         </div>
-    </header>
+    </main>
 
-    <section class="py-16 bg-white border-t border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div class="p-8 border border-gray-100 rounded-3xl shadow-sm hover:shadow-xl transition duration-300 bg-gray-50">
-                <div class="text-5xl mb-6">📱</div>
-                <h3 class="text-2xl font-bold mb-3">Zero-Commission Menus</h3>
-                <p class="text-gray-500 leading-relaxed">Customers scan, order, and pay from their phones. You keep 100% of the profit.</p>
+    <section class="relative z-10 py-24 bg-midnight border-y border-white/5">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="mb-16 text-center" data-aos="fade-up">
+                <h2 class="text-3xl md:text-5xl font-black text-white mb-4">Real problems.<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Solved instantly.</span></h2>
             </div>
             
-            <div class="p-8 border border-gray-100 rounded-3xl shadow-sm hover:shadow-xl transition duration-300 bg-gray-50">
-                <div class="text-5xl mb-6">📺</div>
-                <h3 class="text-2xl font-bold mb-3">Live Kitchen TV</h3>
-                <p class="text-gray-500 leading-relaxed">Say goodbye to missing paper tickets. Orders sync to the kitchen instantly with loud alerts.</p>
-            </div>
-            
-            <div class="p-8 border border-gray-100 rounded-3xl shadow-sm hover:shadow-xl transition duration-300 bg-gray-50">
-                <div class="text-5xl mb-6">🛡️</div>
-                <h3 class="text-2xl font-bold mb-3">Anti-Theft Inventory</h3>
-                <p class="text-gray-500 leading-relaxed">Track every bun and pizza base automatically. Get instant alerts when stock goes missing.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[280px]">
+                <div data-aos="fade-up" data-aos-delay="100" class="md:col-span-2 glass-card rounded-3xl p-8 flex flex-col justify-end relative overflow-hidden group hover:border-primary/50 transition-all">
+                    <div class="absolute top-0 right-0 p-8 text-7xl opacity-10 group-hover:scale-110 group-hover:opacity-20 transition transform">📱</div>
+                    <div class="relative z-10">
+                        <div class="inline-block px-3 py-1 bg-primary/20 text-primary text-xs font-black rounded-lg mb-4 uppercase tracking-widest">Digital Waiter</div>
+                        <h3 class="text-3xl font-black text-white mb-3">Smart QR Ordering</h3>
+                        <p class="text-gray-400 font-medium text-lg">No more waiting for menus. Customers sit, scan, and order from their phones. You handle 2x more rush with zero extra staff.</p>
+                    </div>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="200" class="glass-card rounded-3xl p-8 flex flex-col justify-end relative overflow-hidden group border-t-2 border-t-orange-500 hover:-translate-y-1 transition-transform">
+                    <div class="absolute top-6 right-6 text-4xl">👨‍🍳</div>
+                    <h3 class="text-2xl font-black text-white mb-2">Kitchen TV</h3>
+                    <p class="text-gray-400 font-medium">Loud 'Beep' alerts for every new order. Chefs never miss or delay an item again.</p>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="300" class="glass-card rounded-3xl p-8 flex flex-col justify-end relative overflow-hidden group border-t-2 border-t-red-500 hover:-translate-y-1 transition-transform">
+                    <div class="absolute top-6 right-6 text-4xl">🛡️</div>
+                    <h3 class="text-2xl font-black text-white mb-2">Stop Theft</h3>
+                    <p class="text-gray-400 font-medium">System tracks every bun and cheese slice sold. Catch staff theft and wastage instantly.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <div id="login-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-70 z-50 flex items-center justify-center backdrop-blur-sm transition-all px-4">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-8 relative">
-            <button onclick="toggleLogin()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 font-bold text-3xl">&times;</button>
-            <h3 class="text-2xl font-black text-indigo-900 mb-6 text-center">Entaurant Login 🔐</h3>
+    <section id="pricing" class="relative z-10 py-32 px-6 overflow-hidden">
+        <div class="max-w-4xl mx-auto text-center" data-aos="fade-down">
+            <h2 class="text-4xl md:text-6xl font-black mb-6">Insanely Affordable.</h2>
+            <p class="text-xl text-gray-400 mb-16">Costs less than a single day's salary of a waiter.</p>
             
-            <div class="space-y-4">
+            <div class="relative max-w-lg mx-auto group" data-aos="zoom-in">
+                <div class="absolute -inset-1 bg-gradient-to-b from-primary to-secondary rounded-[2.5rem] blur-xl opacity-40 group-hover:opacity-70 transition duration-500"></div>
+                <div class="relative bg-surface p-10 md:p-12 rounded-[2.5rem] border border-white/10 text-left">
+                    <div class="flex justify-between items-center mb-10">
+                        <div>
+                            <p class="text-primary font-black tracking-widest text-sm mb-2 uppercase">Full Business OS</p>
+                            <h3 class="text-6xl font-black text-white tracking-tighter">₹999<span class="text-xl text-gray-500 font-bold">/mo</span></h3>
+                        </div>
+                    </div>
+                    
+                    <ul class="space-y-5 mb-12">
+                        <li class="flex items-center gap-4 text-gray-200 font-medium text-lg"><span class="flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 text-green-400 text-sm">✓</span> Unlimited QR Orders</li>
+                        <li class="flex items-center gap-4 text-gray-200 font-medium text-lg"><span class="flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 text-green-400 text-sm">✓</span> Live Kitchen TV Screen</li>
+                        <li class="flex items-center gap-4 text-gray-200 font-medium text-lg"><span class="flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 text-green-400 text-sm">✓</span> Anti-Theft Dashboard</li>
+                    </ul>
+                    
+                    <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20to%20start%20Entaurant" target="_blank" class="block w-full bg-white text-black text-center py-5 rounded-2xl font-black text-xl hover:scale-[1.02] hover:bg-gray-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                        Start 7-Day Free Trial
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="login-modal" class="hidden fixed inset-0 bg-black/80 z-[100] flex items-center justify-center backdrop-blur-md px-4 transition-all">
+        <div class="bg-[#111] border border-white/10 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-8 relative">
+            <button onclick="toggleLogin()" class="absolute top-4 right-5 text-gray-500 hover:text-red-500 font-black text-3xl transition">&times;</button>
+            <h3 class="text-3xl font-black text-white mb-2 text-center">Login <span class="text-primary">.</span></h3>
+            <p class="text-gray-400 text-center text-sm font-medium mb-6">Enter credentials to access dashboard.</p>
+            
+            <div class="space-y-5">
                 <div>
                     <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Restaurant ID</label>
-                    <input type="text" id="login-id" placeholder="e.g., R1" class="w-full mt-1 px-4 py-3 border-2 border-gray-200 rounded-xl font-bold focus:border-indigo-600 outline-none uppercase transition">
+                    <input type="text" id="login-id" placeholder="e.g., R1" class="w-full mt-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none uppercase transition">
                 </div>
                 <div>
                     <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Passcode</label>
-                    <input type="password" id="login-pass" placeholder="••••" class="w-full mt-1 px-4 py-3 border-2 border-gray-200 rounded-xl font-bold focus:border-indigo-600 outline-none transition">
+                    <input type="password" id="login-pass" placeholder="••••" class="w-full mt-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none transition">
                 </div>
-                <button onclick="verifyLogin()" id="login-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl shadow-[0_5px_15px_rgba(79,70,229,0.4)] transition mt-4 text-lg">
+                <button onclick="verifyLogin()" id="login-btn" class="w-full bg-gradient-to-r from-primary to-secondary hover:scale-[1.02] text-white font-black py-4 rounded-xl shadow-lg shadow-primary/30 transition mt-4 text-lg">
                     ENTER DASHBOARD 🚀
                 </button>
-                <p id="login-error" class="text-red-500 text-sm font-bold text-center hidden mt-2 bg-red-50 py-2 rounded-lg border border-red-100">Wrong ID or Passcode! ❌</p>
+                <p id="login-error" class="text-red-400 text-sm font-bold text-center hidden mt-2 bg-red-500/10 py-2 rounded-lg border border-red-500/20">Wrong ID or Passcode! ❌</p>
             </div>
         </div>
     </div>
 
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
+        AOS.init({ once: true, offset: 50 });
+
         window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                window.location.reload();
-            }
+            if (event.persisted) window.location.reload();
         });
 
+        // 🚨 TERA SCRIPT URL YAHAN HAI
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
 
         function toggleLogin() {
@@ -110,7 +193,8 @@
                 return;
             }
 
-            btn.innerText = "Checking Code... ⏳";
+            btn.innerText = "Checking... ⏳";
+            btn.disabled = true;
             errorMsg.classList.add('hidden');
 
             let script = document.createElement('script');
@@ -121,6 +205,7 @@
                 errorMsg.innerText = "Network Error! Check Internet ❌";
                 errorMsg.classList.remove('hidden');
                 btn.innerText = "ENTER DASHBOARD 🚀";
+                btn.disabled = false;
                 document.body.removeChild(script); 
             };
 
@@ -137,15 +222,13 @@
 
             if (response.status === "SUCCESS") {
                 btn.innerText = "Entering... 🚀";
-                
-                // 🔥 NAYA JAADU: TICKET DE DO BROWSER KO 🔥
                 localStorage.setItem("entaurent_auth", id); 
-                
                 window.location.href = `dashboard.html?res=${id}`;
             } else {
                 errorMsg.innerText = "Wrong ID or Passcode! ❌";
                 errorMsg.classList.remove('hidden');
                 btn.innerText = "ENTER DASHBOARD 🚀";
+                btn.disabled = false;
             }
         }
     </script>
