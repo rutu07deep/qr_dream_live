@@ -210,7 +210,6 @@
 
         window.addEventListener('pageshow', function(event) { if (event.persisted) window.location.reload(); });
 
-        // 🚨 TERA SCRIPT URL YAHAN HAI
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
 
         function toggleLogin() {
@@ -218,7 +217,6 @@
             document.getElementById('login-error').classList.add('hidden');
         }
 
-        // 🔥 NAYA BULLETPROOF VERIFY LOGIN (MOBILE KE LIYE) 🔥
         function verifyLogin() {
             let id = document.getElementById('login-id').value.trim().toUpperCase();
             let pass = document.getElementById('login-pass').value.trim();
@@ -231,48 +229,45 @@
             btn.disabled = true; 
             errorMsg.classList.add('hidden');
 
-            let script = document.createElement('script');
-            script.type = 'text/javascript';
-            
-            // MAGIC HACK 1: Date.now() se cache buster lagaya
-            script.src = `${SCRIPT_URL}?action=login&res=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse&nocache=${Date.now()}`;
-            
-            script.onerror = function() {
-                errorMsg.innerText = "Network Error! ❌"; 
-                errorMsg.classList.remove('hidden');
-                btn.innerText = "ENTER DASHBOARD 🚀"; 
-                btn.disabled = false; 
-                script.remove(); 
-            };
-            
-            // MAGIC HACK 2: Body ki jagah HEAD me daalo, mobile me block nahi hoga
-            document.head.appendChild(script);
+            let targetUrl = `${SCRIPT_URL}?action=login&res=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse&nocache=${Date.now()}`;
 
-            // MAGIC HACK 3: Timeout Hack (Agar net slow hua toh button fasa nahi rahega)
-            setTimeout(() => {
-                if (btn.innerText === "Connecting... ⏳") {
-                    btn.innerText = "ENTER DASHBOARD 🚀"; 
-                    btn.disabled = false;
-                    errorMsg.innerText = "Slow Internet! Try Again ❌"; 
-                    errorMsg.classList.remove('hidden');
-                }
-            }, 8000);
+            // 🔥 ASLI CODE FIX: FETCH API (Bypasses Mobile Script Blockers) 🔥
+            fetch(targetUrl)
+                .then(response => response.text())
+                .then(text => {
+                    // Google se jo text aayega, usko eval karenge (No script tag needed!)
+                    eval(text); 
+                })
+                .catch(err => {
+                    // Agar Fetch block hua, toh Fallback Script Tag chalega
+                    console.log("Fetch failed, trying script injection...", err);
+                    let script = document.createElement('script');
+                    script.src = targetUrl;
+                    script.onerror = function() {
+                        errorMsg.innerText = "Network Error! ❌"; 
+                        errorMsg.classList.remove('hidden');
+                        btn.innerText = "ENTER DASHBOARD 🚀"; 
+                        btn.disabled = false;
+                    };
+                    document.head.appendChild(script);
+                });
         }
 
+        // Ye function wahi rahega, jisko Google ka data run karega
         function handleLoginResponse(response) {
             let id = document.getElementById('login-id').value.trim().toUpperCase();
             let btn = document.getElementById('login-btn');
             let errorMsg = document.getElementById('login-error');
-
-            document.querySelectorAll('script[src*="action=login"]').forEach(s => s.remove());
 
             if (response.status === "SUCCESS") {
                 btn.innerText = "Entering... 🚀";
                 localStorage.setItem("entaurent_auth", id); 
                 window.location.href = `dashboard.html?res=${id}`;
             } else {
-                errorMsg.innerText = "Wrong ID or Passcode! ❌"; errorMsg.classList.remove('hidden');
-                btn.innerText = "ENTER DASHBOARD 🚀"; btn.disabled = false;
+                errorMsg.innerText = "Wrong ID or Passcode! ❌"; 
+                errorMsg.classList.remove('hidden');
+                btn.innerText = "ENTER DASHBOARD 🚀"; 
+                btn.disabled = false;
             }
         }
     </script>
