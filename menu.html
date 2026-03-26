@@ -6,6 +6,11 @@
     <title>Live Menu - Entaurent</title>
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Horizontal scroll hide karne ke liye */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 pb-28">
 
@@ -31,8 +36,7 @@
     </nav>
 
     <main class="max-w-2xl mx-auto px-4 py-6">
-        <div id="menu-container" class="space-y-4">
-            </div>
+        <div id="menu-container"></div>
     </main>
 
     <div id="sticky-bottom-bar" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] z-40 p-4">
@@ -56,9 +60,7 @@
             </div>
             
             <div class="p-6 overflow-y-auto flex-1">
-                <div id="cart-items" class="space-y-3 mb-6">
-                    <p class="text-center text-slate-400 text-sm font-bold">Cart is empty.</p>
-                </div>
+                <div id="cart-items" class="space-y-3 mb-6"></div>
                 
                 <div class="border-t border-slate-200 pt-4 flex justify-between items-center bg-white">
                     <span class="text-sm font-bold text-slate-500">Total Amount:</span>
@@ -101,6 +103,9 @@
         let cart = {};
         let clientUpiId = "";
         let clientResName = "Restaurant " + resId;
+        
+        // 🔥 Active Filter Variable
+        let activeFilter = 'All';
 
         async function safeFetch(action, extraParams = "") {
             const noCacheUrl = `${SCRIPT_URL}?action=${action}&res=${resId}${extraParams}&t=${new Date().getTime()}`;
@@ -149,7 +154,13 @@
             }
         }
 
-        // 🔥 TERA NAYA CATEGORY WALA RENDER SYSTEM
+        // 🔥 Naya Filter Set karne ka function
+        function setFilter(filterType) {
+            activeFilter = filterType;
+            renderMenu();
+        }
+
+        // 🔥 Filter ke saath Menu Render
         function renderMenu() {
             const container = document.getElementById('menu-container');
             if(menuData.length === 0) {
@@ -157,86 +168,94 @@
                 return;
             }
 
-            let groupedMenu = {};
-            menuData.forEach(item => {
-                let cat = item.category ? item.category.trim() : "Veg"; 
-                if(!groupedMenu[cat]) groupedMenu[cat] = [];
-                groupedMenu[cat].push(item);
-            });
+            // 1. Data Filter Logic
+            let filteredData = menuData;
+            if (activeFilter !== 'All') {
+                filteredData = menuData.filter(item => {
+                    let cat = item.category ? item.category.trim().toLowerCase() : "";
+                    if (activeFilter === 'Veg') return cat === 'veg';
+                    if (activeFilter === 'Non-Veg') return cat === 'non-veg' || cat === 'non veg';
+                    if (activeFilter === 'Drinks') return cat === 'drinks' || cat === 'drink';
+                    return false;
+                });
+            }
 
-            let html = "";
-            for(let category in groupedMenu) {
+            // 2. Filter Buttons UI (Upar wale pill buttons)
+            let html = `
+            <div class="flex gap-3 overflow-x-auto pb-4 mb-2 hide-scrollbar">
+                <button onclick="setFilter('All')" class="whitespace-nowrap px-5 py-2 rounded-full font-black text-sm transition-all border-2 ${activeFilter === 'All' ? 'bg-slate-800 text-white border-slate-800 shadow-md scale-105' : 'bg-white text-slate-600 border-slate-200'}">All</button>
+                <button onclick="setFilter('Veg')" class="whitespace-nowrap px-4 py-2 rounded-full font-black text-sm transition-all border-2 flex items-center gap-2 ${activeFilter === 'Veg' ? 'bg-green-50 text-green-700 border-green-500 shadow-md scale-105' : 'bg-white text-slate-600 border-slate-200'}">🟢 Veg</button>
+                <button onclick="setFilter('Non-Veg')" class="whitespace-nowrap px-4 py-2 rounded-full font-black text-sm transition-all border-2 flex items-center gap-2 ${activeFilter === 'Non-Veg' ? 'bg-red-50 text-red-700 border-red-500 shadow-md scale-105' : 'bg-white text-slate-600 border-slate-200'}">🔴 Non-Veg</button>
+                <button onclick="setFilter('Drinks')" class="whitespace-nowrap px-4 py-2 rounded-full font-black text-sm transition-all border-2 flex items-center gap-2 ${activeFilter === 'Drinks' ? 'bg-blue-50 text-blue-700 border-blue-500 shadow-md scale-105' : 'bg-white text-slate-600 border-slate-200'}">🥤 Drinks</button>
+            </div>
+            <div class="space-y-4">
+            `;
+
+            // 3. Agar filter lagane pe kuch na mile
+            if (filteredData.length === 0) {
+                html += `<p class="text-center text-slate-400 mt-10 font-bold">No ${activeFilter} items found.</p></div>`;
+                container.innerHTML = html;
+                return;
+            }
+
+            // 4. Items List Render karna
+            filteredData.forEach(item => {
+                let isAvail = item.status === "Available";
+                let qtyInCart = cart[item.name] ? cart[item.name].qty : 0;
                 
-                // Smart Icon Set karna: Veg, Non-Veg ya Drinks
-                let catLower = category.toLowerCase();
-                let icon = "🟢"; // Default Veg
-                if(catLower.includes("non")) icon = "🔴";
-                if(catLower.includes("drink") || catLower.includes("beverage")) icon = "🥤";
+                let btnHtml = "";
+                if (isAvail) {
+                    if (qtyInCart > 0) {
+                        btnHtml = `
+                        <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-200 rounded-xl px-2 py-1 shadow-sm">
+                            <button onclick="decreaseQty('${item.name}')" class="text-indigo-700 font-black px-3 text-lg hover:scale-110">-</button>
+                            <span class="font-bold text-indigo-900 w-4 text-center">${qtyInCart}</span>
+                            <button onclick="addToCart('${item.name}', ${item.price})" class="text-indigo-700 font-black px-3 text-lg hover:scale-110">+</button>
+                        </div>`;
+                    } else {
+                        btnHtml = `<button onclick="addToCart('${item.name}', ${item.price})" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-2 rounded-xl text-sm font-black hover:bg-indigo-100 active:scale-95 transition shadow-sm">+ ADD</button>`;
+                    }
+                } else {
+                    btnHtml = `<span class="bg-slate-100 text-slate-400 px-3 py-1 rounded-lg text-xs font-black uppercase">Sold Out</span>`;
+                }
+
+                let defaultImg = 'https://cdn-icons-png.flaticon.com/512/3170/3170733.png';
+                let imgSrc = item.image ? item.image : defaultImg;
+                
+                // Chhota icon item ke aage uski category pe depend karega
+                let catCheck = item.category ? item.category.trim().toLowerCase() : "";
+                let itemIcon = "🟩"; // Default veg
+                if (catCheck.includes("non")) itemIcon = "🔺";
+                if (catCheck.includes("drink")) itemIcon = "🧊";
 
                 html += `
-                <div class="mt-8 mb-4 border-b border-slate-200 pb-2 flex items-center gap-2">
-                    <span class="text-xl">${icon}</span>
-                    <h2 class="text-2xl font-black text-slate-800 tracking-tight">${category}</h2>
-                </div>
-                <div class="space-y-4">`;
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-center transform transition">
+                    <img src="${imgSrc}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl border border-slate-100 shadow-sm ${!isAvail ? 'opacity-50 grayscale' : ''}">
+                    <div class="flex-1">
+                        <h3 class="font-bold text-slate-800 text-lg leading-tight ${!isAvail ? 'opacity-50' : ''}">
+                            <span class="text-[10px] mr-1">${itemIcon}</span>${item.name}
+                        </h3>
+                        <p class="font-black text-indigo-600 mt-1">₹${item.price}</p>
+                    </div>
+                    <div>${btnHtml}</div>
+                </div>`;
+            });
 
-                groupedMenu[category].forEach(item => {
-                    let isAvail = item.status === "Available";
-                    let qtyInCart = cart[item.name] ? cart[item.name].qty : 0;
-                    
-                    // 🔥 NAYA - / + LOGIC 
-                    let btnHtml = "";
-                    if (isAvail) {
-                        if (qtyInCart > 0) {
-                            btnHtml = `
-                            <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-200 rounded-xl px-2 py-1 shadow-sm">
-                                <button onclick="decreaseQty('${item.name}')" class="text-indigo-700 font-black px-3 text-lg hover:scale-110">-</button>
-                                <span class="font-bold text-indigo-900 w-4 text-center">${qtyInCart}</span>
-                                <button onclick="addToCart('${item.name}', ${item.price})" class="text-indigo-700 font-black px-3 text-lg hover:scale-110">+</button>
-                            </div>`;
-                        } else {
-                            btnHtml = `<button onclick="addToCart('${item.name}', ${item.price})" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-2 rounded-xl text-sm font-black hover:bg-indigo-100 active:scale-95 transition shadow-sm">+ ADD</button>`;
-                        }
-                    } else {
-                        btnHtml = `<span class="bg-slate-100 text-slate-400 px-3 py-1 rounded-lg text-xs font-black uppercase">Sold Out</span>`;
-                    }
-
-                    let defaultImg = 'https://cdn-icons-png.flaticon.com/512/3170/3170733.png';
-                    let imgSrc = item.image ? item.image : defaultImg;
-                    let itemIcon = (item.name.toLowerCase().includes("chicken") || item.name.toLowerCase().includes("mutton") || item.name.toLowerCase().includes("egg")) ? "🔺" : "🟩";
-
-                    html += `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-center transform transition">
-                        <img src="${imgSrc}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl border border-slate-100 shadow-sm ${!isAvail ? 'opacity-50 grayscale' : ''}">
-                        <div class="flex-1">
-                            <h3 class="font-bold text-slate-800 text-lg leading-tight ${!isAvail ? 'opacity-50' : ''}">
-                                <span class="text-[10px] mr-1">${itemIcon}</span>${item.name}
-                            </h3>
-                            <p class="font-black text-indigo-600 mt-1">₹${item.price}</p>
-                        </div>
-                        <div>${btnHtml}</div>
-                    </div>`;
-                });
-                html += `</div>`; 
-            }
+            html += `</div>`; 
             container.innerHTML = html;
         }
 
-        // 🔥 NAYA ADD TO CART 
         function addToCart(name, price) {
             if(cart[name]) cart[name].qty++;
             else cart[name] = { price: price, qty: 1 };
             updateCartUI();
-            renderMenu(); // Taki bahar button pe bhi count update ho jaye
+            renderMenu(); 
         }
 
-        // 🔥 NAYA DECREASE QUANTITY (Galti theek karne ke liye)
         function decreaseQty(name) {
             if(cart[name]) {
                 cart[name].qty--;
-                if(cart[name].qty <= 0) {
-                    delete cart[name]; // 0 hote hi cart se hata do
-                }
+                if(cart[name].qty <= 0) delete cart[name];
                 updateCartUI();
                 renderMenu();
             }
@@ -252,7 +271,6 @@
                 total += itemTotal;
                 totalItems += cart[key].qty;
                 
-                // Cart ke andar bhi - 1 + buttons lagaye hain
                 cartHtml += `
                 <div class="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-200">
                     <div class="flex-1">
@@ -318,7 +336,7 @@
                 cart = {};
                 updateCartUI();
                 toggleCart();
-                renderMenu(); // Taki sabhi buttons wapas '+ ADD' ban jaye
+                renderMenu();
                 btn.innerText = "PLACE ORDER 🚀";
             } catch(e) {
                 alert("Error! Please try again. Internet check karein.");
