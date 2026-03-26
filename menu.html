@@ -67,14 +67,12 @@
 
                 <div id="upi-section" class="hidden mt-6 bg-slate-50 p-5 rounded-2xl border border-indigo-100 text-center shadow-inner">
                     <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Pay via UPI</p>
-                    
                     <div class="bg-white p-3 rounded-xl inline-block shadow-md border border-slate-200 mb-2">
                         <img id="upi-qr-image" src="" alt="UPI QR" class="w-32 h-32 mx-auto">
                     </div>
                     <p class="text-sm font-bold text-slate-600">Scan QR - OR -</p>
-                    
                     <a id="upi-link-btn" href="#" class="mt-3 w-full block bg-white border-2 border-indigo-600 text-indigo-700 hover:bg-indigo-50 font-black py-3 rounded-xl shadow-sm transition">
-                        ⚡ TAP TO PAY (GPay/PhonePe)
+                        ⚡ TAP TO PAY
                     </a>
                 </div>
             </div>
@@ -84,17 +82,13 @@
                     PLACE ORDER 🚀
                 </button>
             </div>
-
         </div> 
     </div> 
 
     <script>
-        // 🔥 BACK BUTTON FIX
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) window.location.reload();
-        });
+        window.addEventListener('pageshow', function(event) { if (event.persisted) window.location.reload(); });
 
-        // 🚨 APNA SCRIPT URL YAHAN DAALNA 👇
+        // 🚨 APNA ASLI SCRIPT URL YAHAN DAAL 👇
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -108,13 +102,11 @@
         let clientUpiId = "";
         let clientResName = "Restaurant " + resId;
 
-        // 🔥 NINJA FETCH ENGINE (Bypasses CORS & Cache)
         async function safeFetch(action, extraParams = "") {
             const noCacheUrl = `${SCRIPT_URL}?action=${action}&res=${resId}${extraParams}&t=${new Date().getTime()}`;
             return await fetch(noCacheUrl, { redirect: "follow" });
         }
 
-        // Hides the premium loader smoothly
         function hideLoader() {
             const loader = document.getElementById('premium-loader');
             loader.style.opacity = '0';
@@ -122,13 +114,11 @@
         }
 
         async function fetchMenuAndSettings() {
-            // 🔥 INSTANT LOAD TRICK: Check agar phone me pehle se menu save hai
             const cachedMenu = localStorage.getItem("entaurent_menu_" + resId);
             const cachedName = localStorage.getItem("entaurent_name_" + resId);
             const cachedUpi = localStorage.getItem("entaurent_upi_" + resId);
 
             if (cachedMenu && cachedName) {
-                // Agar save hai toh turant (0.1 sec me) dikha do!
                 menuData = JSON.parse(cachedMenu);
                 clientResName = cachedName;
                 clientUpiId = cachedUpi || "";
@@ -138,26 +128,20 @@
             }
 
             try {
-                // Background me chup-chaap naya data check karo
                 const setRes = await safeFetch("getSettings");
                 const setData = await setRes.json();
                 clientResName = setData.name || "Restaurant " + resId;
                 clientUpiId = setData.upi || "";
-                
                 document.getElementById("res-title").innerText = clientResName;
                 localStorage.setItem("entaurent_name_" + resId, clientResName);
                 localStorage.setItem("entaurent_upi_" + resId, clientUpiId);
 
                 const menuRes = await safeFetch("getMenu");
                 menuData = await menuRes.json();
-                
-                // Naya menu save kar lo aur screen update kar do
                 localStorage.setItem("entaurent_menu_" + resId, JSON.stringify(menuData));
-                renderMenu();
                 
-                // Agar pehli baar load ho raha hai, toh loader hatao
+                renderMenu();
                 if (!cachedMenu) hideLoader();
-
             } catch (error) {
                 if (!cachedMenu) {
                     document.getElementById('premium-loader').innerHTML = "<h2 class='text-2xl font-black text-red-500'>Connection Error! ❌</h2><p class='text-slate-500 mt-2'>Please check your internet.</p>";
@@ -165,42 +149,97 @@
             }
         }
 
+        // 🔥 TERA NAYA CATEGORY WALA RENDER SYSTEM
         function renderMenu() {
             const container = document.getElementById('menu-container');
-            
             if(menuData.length === 0) {
-                container.innerHTML = "<p class='text-center text-slate-400 mt-5 font-bold'>No items available today.</p>";
+                container.innerHTML = "<p class='text-center text-slate-400 mt-5 font-bold'>No items available.</p>";
                 return;
             }
 
-            let html = "";
+            let groupedMenu = {};
             menuData.forEach(item => {
-                let isAvail = item.status === "Available";
-                let btnHtml = isAvail 
-                    ? `<button onclick="addToCart('${item.name}', ${item.price})" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-2 rounded-xl text-sm font-black hover:bg-indigo-100 active:scale-95 transition shadow-sm">+ ADD</button>`
-                    : `<span class="bg-slate-100 text-slate-400 px-4 py-2 rounded-xl text-[10px] font-black tracking-widest border border-slate-200 uppercase">Sold Out</span>`;
+                let cat = item.category ? item.category.trim() : "Veg"; 
+                if(!groupedMenu[cat]) groupedMenu[cat] = [];
+                groupedMenu[cat].push(item);
+            });
 
-                let defaultImg = 'https://cdn-icons-png.flaticon.com/512/3170/3170733.png';
-                let imgSrc = item.image ? item.image : defaultImg;
+            let html = "";
+            for(let category in groupedMenu) {
+                
+                // Smart Icon Set karna: Veg, Non-Veg ya Drinks
+                let catLower = category.toLowerCase();
+                let icon = "🟢"; // Default Veg
+                if(catLower.includes("non")) icon = "🔴";
+                if(catLower.includes("drink") || catLower.includes("beverage")) icon = "🥤";
 
                 html += `
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-center transform hover:-translate-y-1 transition-all duration-300">
-                    <img src="${imgSrc}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl border border-slate-100 shadow-sm ${!isAvail ? 'opacity-50 grayscale' : ''}">
+                <div class="mt-8 mb-4 border-b border-slate-200 pb-2 flex items-center gap-2">
+                    <span class="text-xl">${icon}</span>
+                    <h2 class="text-2xl font-black text-slate-800 tracking-tight">${category}</h2>
+                </div>
+                <div class="space-y-4">`;
+
+                groupedMenu[category].forEach(item => {
+                    let isAvail = item.status === "Available";
+                    let qtyInCart = cart[item.name] ? cart[item.name].qty : 0;
                     
-                    <div class="flex-1">
-                        <h3 class="font-bold text-slate-800 text-lg leading-tight ${!isAvail ? 'opacity-50 line-through' : ''}">${item.name}</h3>
-                        <p class="font-black text-indigo-600 mt-1 text-lg">₹${item.price}</p>
-                    </div>
-                    <div>${btnHtml}</div>
-                </div>`;
-            });
+                    // 🔥 NAYA - / + LOGIC 
+                    let btnHtml = "";
+                    if (isAvail) {
+                        if (qtyInCart > 0) {
+                            btnHtml = `
+                            <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-200 rounded-xl px-2 py-1 shadow-sm">
+                                <button onclick="decreaseQty('${item.name}')" class="text-indigo-700 font-black px-3 text-lg hover:scale-110">-</button>
+                                <span class="font-bold text-indigo-900 w-4 text-center">${qtyInCart}</span>
+                                <button onclick="addToCart('${item.name}', ${item.price})" class="text-indigo-700 font-black px-3 text-lg hover:scale-110">+</button>
+                            </div>`;
+                        } else {
+                            btnHtml = `<button onclick="addToCart('${item.name}', ${item.price})" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-2 rounded-xl text-sm font-black hover:bg-indigo-100 active:scale-95 transition shadow-sm">+ ADD</button>`;
+                        }
+                    } else {
+                        btnHtml = `<span class="bg-slate-100 text-slate-400 px-3 py-1 rounded-lg text-xs font-black uppercase">Sold Out</span>`;
+                    }
+
+                    let defaultImg = 'https://cdn-icons-png.flaticon.com/512/3170/3170733.png';
+                    let imgSrc = item.image ? item.image : defaultImg;
+                    let itemIcon = (item.name.toLowerCase().includes("chicken") || item.name.toLowerCase().includes("mutton") || item.name.toLowerCase().includes("egg")) ? "🔺" : "🟩";
+
+                    html += `
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-center transform transition">
+                        <img src="${imgSrc}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl border border-slate-100 shadow-sm ${!isAvail ? 'opacity-50 grayscale' : ''}">
+                        <div class="flex-1">
+                            <h3 class="font-bold text-slate-800 text-lg leading-tight ${!isAvail ? 'opacity-50' : ''}">
+                                <span class="text-[10px] mr-1">${itemIcon}</span>${item.name}
+                            </h3>
+                            <p class="font-black text-indigo-600 mt-1">₹${item.price}</p>
+                        </div>
+                        <div>${btnHtml}</div>
+                    </div>`;
+                });
+                html += `</div>`; 
+            }
             container.innerHTML = html;
         }
 
+        // 🔥 NAYA ADD TO CART 
         function addToCart(name, price) {
             if(cart[name]) cart[name].qty++;
             else cart[name] = { price: price, qty: 1 };
             updateCartUI();
+            renderMenu(); // Taki bahar button pe bhi count update ho jaye
+        }
+
+        // 🔥 NAYA DECREASE QUANTITY (Galti theek karne ke liye)
+        function decreaseQty(name) {
+            if(cart[name]) {
+                cart[name].qty--;
+                if(cart[name].qty <= 0) {
+                    delete cart[name]; // 0 hote hi cart se hata do
+                }
+                updateCartUI();
+                renderMenu();
+            }
         }
 
         function updateCartUI() {
@@ -212,18 +251,27 @@
                 let itemTotal = cart[key].qty * cart[key].price;
                 total += itemTotal;
                 totalItems += cart[key].qty;
+                
+                // Cart ke andar bhi - 1 + buttons lagaye hain
                 cartHtml += `
                 <div class="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-200">
                     <div class="flex-1">
-                        <p class="font-bold text-slate-800 text-base">${key}</p>
-                        <p class="text-sm font-black text-indigo-500">₹${cart[key].price} x ${cart[key].qty}</p>
+                        <p class="font-bold text-slate-800 text-sm">${key}</p>
+                        <p class="text-xs font-black text-slate-500">₹${cart[key].price}</p>
                     </div>
-                    <div class="font-black text-slate-800 text-lg">₹${itemTotal}</div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-lg shadow-sm">
+                            <button onclick="decreaseQty('${key}')" class="text-red-500 font-black px-3 py-1 hover:bg-slate-100 rounded-l-lg">-</button>
+                            <span class="font-bold text-slate-800 text-sm">${cart[key].qty}</span>
+                            <button onclick="addToCart('${key}', ${cart[key].price})" class="text-green-500 font-black px-3 py-1 hover:bg-slate-100 rounded-r-lg">+</button>
+                        </div>
+                        <div class="font-black text-slate-800 w-12 text-right">₹${itemTotal}</div>
+                    </div>
                 </div>`;
             }
 
             if(totalItems === 0) {
-                document.getElementById('cart-items').innerHTML = '<p class="text-center text-slate-400 font-bold">Cart is empty.</p>';
+                document.getElementById('cart-items').innerHTML = '<p class="text-center text-slate-400 font-bold mt-4">Cart is empty.</p>';
                 document.getElementById('place-order-btn').disabled = true;
                 document.getElementById('upi-section').classList.add('hidden'); 
                 document.getElementById('sticky-bottom-bar').classList.add('hidden');
@@ -248,8 +296,7 @@
         }
 
         function toggleCart() {
-            const modal = document.getElementById('cart-modal');
-            modal.classList.toggle('hidden');
+            document.getElementById('cart-modal').classList.toggle('hidden');
         }
 
         async function placeOrder() {
@@ -267,11 +314,11 @@
 
             try {
                 await safeFetch("placeOrder", `&table=${tableNo}&items=${encodeURIComponent(itemsStr)}&amount=${totalAmt}`);
-                
                 alert(`🎉 Order Placed Successfully! (Total: ₹${totalAmt})`);
                 cart = {};
                 updateCartUI();
                 toggleCart();
+                renderMenu(); // Taki sabhi buttons wapas '+ ADD' ban jaye
                 btn.innerText = "PLACE ORDER 🚀";
             } catch(e) {
                 alert("Error! Please try again. Internet check karein.");
