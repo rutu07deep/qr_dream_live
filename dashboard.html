@@ -46,6 +46,16 @@
             </div>
         </div>
 
+        <div id="ai-alert-box" class="hidden bg-yellow-50 border border-yellow-300 rounded-xl p-4 shadow-sm relative overflow-hidden">
+            <div class="flex items-start gap-4 relative z-10">
+                <div class="text-3xl animate-bounce">💡</div>
+                <div class="flex-1">
+                    <h3 class="text-sm font-black text-yellow-800 uppercase tracking-widest mb-1">Smart AI Alert</h3>
+                    <p id="ai-alert-text" class="text-yellow-900 font-bold text-sm leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="bg-white rounded-2xl p-6 border shadow-sm">
                 <p class="text-sm font-bold text-slate-500 uppercase">Total Sales</p>
@@ -156,7 +166,6 @@
             if (event.persisted) window.location.reload();
         });
 
-        // 🚨 SCRIPT URL (Tera latest deployed URL yahan zaroor daalna)
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
         
         const resId = new URLSearchParams(window.location.search).get('res') || "R1"; 
@@ -170,6 +179,23 @@
         async function safeFetch(action, extraParams = "") {
             const noCacheUrl = `${SCRIPT_URL}?action=${action}&res=${resId}${extraParams}&t=${new Date().getTime()}`;
             return await fetch(noCacheUrl, { redirect: "follow" });
+        }
+
+        // 🤖 NAYA FUNCTION: SMART ALERT PULL KARNE KE LIYE
+        async function fetchSmartAlert() {
+            try {
+                const res = await safeFetch("getSmartInsights");
+                const data = await res.json();
+                
+                if (data.alert.includes("🚨")) {
+                    document.getElementById("ai-alert-box").classList.remove("hidden");
+                    document.getElementById("ai-alert-text").innerText = data.alert.replace("🚨", "");
+                } else {
+                    document.getElementById("ai-alert-box").classList.add("hidden");
+                }
+            } catch (e) {
+                console.log("AI alert loading silently failed.");
+            }
         }
 
         async function loadDashboard() {
@@ -192,7 +218,6 @@
                 else data.list.forEach(order => {
                     let c = order.status === "Completed" ? "text-green-700 bg-green-100" : "text-orange-700 bg-orange-100";
                     
-                    // 🔥 YAHAN HAIN TERE TEENO BUTTONS (Print, WhatsApp, Cancel) 🔥
                     tableHtml += `<tr class="border-b hover:bg-slate-50">
                         <td class="p-4 text-slate-500">${order.time}</td>
                         <td class="p-4 font-bold">Table ${order.table}</td>
@@ -228,7 +253,7 @@
                         } else {
                             statusHtml = `<span class="text-green-600 font-bold">Safe ✅</span>`;
                             if(item.left <= 5 && item.name.trim() !== "") {
-                                lowStockItems.push(item.name.trim()); // Khali naam avoid karega
+                                lowStockItems.push(item.name.trim()); 
                             }
                         }
 
@@ -244,9 +269,7 @@
                 }
                 document.getElementById("inventory-list").innerHTML = invHtml;
 
-                // 🔥 LOW STOCK COMMA BUG FIX 🔥
                 if(lowStockItems.length > 0) {
-                    // Filter se confirm karenge ki koi empty string array mein na ho
                     document.getElementById("dash-lowstock").innerText = lowStockItems.filter(Boolean).join(", ");
                 } else {
                     document.getElementById("dash-lowstock").innerText = "All Good ✅";
@@ -266,15 +289,13 @@
             }
         }
 
-        // 🔥 NAYA: CANCEL ORDER FUNCTION 🔥
         async function cancelOrder(table, time) {
             let confirmCancel = confirm(`⚠️ Dhyan de! Kya aap sach mein Table ${table} ka order Cancel karna chahte hain?`);
             if(confirmCancel) {
                 try {
-                    // Ye call piche backend se Table No. aur Time match karke data udayega
                     await safeFetch("cancelOrder", `&table=${encodeURIComponent(table)}&time=${encodeURIComponent(time)}`);
                     alert("🚫 Order Cancel ho gaya!");
-                    loadDashboard(); // Auto-refresh table
+                    loadDashboard(); 
                 } catch(e) {
                     alert("Error! Order cancel nahi hua. Internet check karein.");
                 }
@@ -361,6 +382,7 @@
             await safeFetch("addWastage", `&name=${encodeURIComponent(item)}&qty=${qty}`);
             alert("🚨 Wastage Record ho gayi!");
             loadDashboard();
+            fetchSmartAlert(); // Wastage daalte hi AI alert wapas check karega
         }
 
        function openKitchen() {
@@ -402,7 +424,12 @@
 
         function closeMenuModal() { document.getElementById('menu-modal').classList.add('hidden'); }
 
-        window.onload = () => { loadDashboard(); setInterval(loadDashboard, 10000); };
+        window.onload = () => { 
+            loadDashboard(); 
+            fetchSmartAlert(); // 🤖 Load hote hi ek baar alert check karega
+            setInterval(loadDashboard, 10000); 
+            setInterval(fetchSmartAlert, 30000); // 🤖 Har 30 second me AI alert check karega
+        };
     </script>
 </body>
 </html>
