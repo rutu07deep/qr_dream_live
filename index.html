@@ -31,6 +31,17 @@
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
         .glow-text { text-shadow: 0 0 40px rgba(109, 40, 217, 0.4); }
         .step-number { font-size: 4rem; font-weight: 900; color: rgba(255,255,255,0.05); position: absolute; top: -10px; right: 10px; z-index: 0; }
+        
+        /* Loading Spinner */
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #6d28d9;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-midnight text-white font-sans antialiased selection:bg-primary selection:text-white overflow-x-hidden relative">
@@ -72,9 +83,9 @@
         </p>
 
         <div data-aos="fade-up" data-aos-delay="300" class="flex flex-col sm:flex-row gap-5 w-full sm:w-auto justify-center">
-            <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20to%20start%20Entaurant" target="_blank" class="bg-white text-black px-8 py-4 rounded-full text-lg font-black hover:bg-gray-200 hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+            <button onclick="openWizard()" class="bg-white text-black px-8 py-4 rounded-full text-lg font-black hover:bg-gray-200 hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]">
                 Start Saving Today
-            </a>
+            </button>
             <a href="menu.html?res=R1&table=Demo" class="glass-card text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-white/10 transition-all border border-white/20">
                 See Live Table Demo 🍕
             </a>
@@ -158,37 +169,32 @@
             <p class="text-xl text-gray-400 mb-12">Upgrade to AI. No hidden commissions or transaction fees.</p>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto items-end">
-                
                 <div data-aos="fade-up" data-aos-delay="100" class="bg-[#111] p-8 rounded-3xl border border-white/10 text-left hover:border-primary/50 transition-all">
                     <p class="text-gray-400 font-bold tracking-widest text-xs mb-2 uppercase">Trial</p>
                     <h3 class="text-3xl font-black text-white mb-1">Monthly</h3>
                     <p class="text-primary font-bold text-2xl mb-6">₹999<span class="text-sm text-gray-500">/mo</span></p>
-                    <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20the%20Monthly%20Plan" target="_blank" class="block w-full bg-white/10 text-white text-center py-3 rounded-xl font-bold hover:bg-white/20 transition-all border border-white/10">Get Started</a>
+                    <button onclick="openWizard()" class="w-full bg-white/10 text-white text-center py-3 rounded-xl font-bold hover:bg-white/20 transition-all border border-white/10">Get Started</button>
                 </div>
-
                 <div data-aos="fade-up" data-aos-delay="200" class="bg-[#111] p-8 rounded-3xl border border-white/10 text-left hover:border-primary/50 transition-all">
                     <p class="text-gray-400 font-bold tracking-widest text-xs mb-2 uppercase">Starter</p>
                     <h3 class="text-3xl font-black text-white mb-1">3 Months</h3>
                     <p class="text-primary font-bold text-2xl mb-6">₹2,499</p>
-                    <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20the%203%20Months%20Plan" target="_blank" class="block w-full bg-white/10 text-white text-center py-3 rounded-xl font-bold hover:bg-white/20 transition-all border border-white/10">Get Started</a>
+                    <button onclick="openWizard()" class="w-full bg-white/10 text-white text-center py-3 rounded-xl font-bold hover:bg-white/20 transition-all border border-white/10">Get Started</button>
                 </div>
-
                 <div data-aos="fade-up" data-aos-delay="300" class="bg-[#111] p-8 rounded-3xl border border-white/10 text-left hover:border-primary/50 transition-all">
                     <p class="text-gray-400 font-bold tracking-widest text-xs mb-2 uppercase">Growth</p>
                     <h3 class="text-3xl font-black text-white mb-1">6 Months</h3>
                     <p class="text-primary font-bold text-2xl mb-6">₹4,499</p>
-                    <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20the%206%20Months%20Plan" target="_blank" class="block w-full bg-white/10 text-white text-center py-3 rounded-xl font-bold hover:bg-white/20 transition-all border border-white/10">Get Started</a>
+                    <button onclick="openWizard()" class="w-full bg-white/10 text-white text-center py-3 rounded-xl font-bold hover:bg-white/20 transition-all border border-white/10">Get Started</button>
                 </div>
-
                 <div data-aos="fade-up" data-aos-delay="400" class="relative bg-[#111] p-8 rounded-3xl border-2 border-primary text-left transform lg:-translate-y-4 shadow-[0_0_30px_rgba(109,40,217,0.2)]">
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Best Value</div>
                     <p class="text-primary font-black tracking-widest text-xs mb-2 uppercase">Pro Business</p>
                     <h3 class="text-3xl font-black text-white mb-1">1 Year</h3>
                     <p class="text-white font-bold text-3xl mb-2">₹7,999</p>
                     <p class="text-green-400 text-xs font-bold mb-6">🔥 Just ₹666/mo</p>
-                    <a href="https://wa.me/919668546740?text=Hi!%20I%20want%20the%201%20Year%20Pro%20Plan" target="_blank" class="block w-full bg-white text-black text-center py-3 rounded-xl font-black text-sm hover:scale-[1.02] hover:bg-gray-200 transition-all">Claim Offer Now</a>
+                    <button onclick="openWizard()" class="w-full bg-white text-black text-center py-3 rounded-xl font-black text-sm hover:scale-[1.02] hover:bg-gray-200 transition-all">Claim Offer Now</button>
                 </div>
-
             </div>
             
             <div data-aos="fade-up" data-aos-delay="500" class="mt-12 inline-block bg-white/5 border border-white/10 px-6 py-3 rounded-full">
@@ -204,6 +210,66 @@
         <p class="mt-1 text-xs">© 2026 Entaurent Technologies.</p>
     </footer>
 
+    <div id="setup-wizard" class="hidden fixed inset-0 bg-black/90 z-[110] flex items-center justify-center backdrop-blur-md px-4 transition-all">
+        <div class="bg-[#0B1120] border border-white/10 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden relative flex flex-col max-h-[90vh]">
+            <button onclick="closeWizard()" class="absolute top-4 right-5 text-gray-500 hover:text-red-500 font-black text-3xl transition z-20">&times;</button>
+            
+            <div id="wizard-step-1" class="p-8 block overflow-y-auto">
+                <h3 class="text-3xl font-black text-white mb-2">Build Your OS <span class="text-primary">.</span></h3>
+                <p class="text-gray-400 text-sm font-medium mb-6">Tell us about your restaurant to start the AI configuration.</p>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Restaurant Name</label>
+                        <input type="text" id="wiz-cafe" placeholder="e.g. Sharma Ji Cafe" class="w-full mt-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none transition">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Your Name</label>
+                        <input type="text" id="wiz-name" placeholder="John Doe" class="w-full mt-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none transition">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">WhatsApp Number</label>
+                        <input type="number" id="wiz-phone" placeholder="9876543210" class="w-full mt-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none transition">
+                    </div>
+                    <button onclick="nextStep(2)" class="w-full bg-gradient-to-r from-primary to-secondary hover:scale-[1.02] text-white font-black py-4 rounded-xl shadow-lg shadow-primary/30 transition mt-6 text-lg">
+                        Continue to Menu ➔
+                    </button>
+                    <p id="wiz-err-1" class="text-red-400 text-sm font-bold text-center hidden mt-2">Please fill all fields! ❌</p>
+                </div>
+            </div>
+
+            <div id="wizard-step-2" class="p-8 hidden overflow-y-auto flex-1">
+                <h3 class="text-3xl font-black text-white mb-2 flex items-center gap-2">Feed The AI 🧠</h3>
+                <p class="text-gray-400 text-sm font-medium mb-4">Add your top items to train the initial OS. You can add more later.</p>
+                
+                <div id="menu-builder-list" class="space-y-3 mb-6">
+                    <div class="flex gap-3 menu-row">
+                        <input type="text" placeholder="Dish (e.g. Burger)" class="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none text-sm">
+                        <input type="number" placeholder="Price (₹)" class="w-24 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none text-sm">
+                    </div>
+                </div>
+
+                <button onclick="addMenuRow()" class="text-primary font-bold text-sm flex items-center gap-1 hover:text-white transition mb-6">
+                    <span>+</span> Add Another Item
+                </button>
+
+                <div class="flex gap-3 mt-auto">
+                    <button onclick="nextStep(1)" class="px-6 py-4 rounded-xl bg-white/5 text-gray-400 font-bold hover:bg-white/10 transition">Back</button>
+                    <button onclick="submitToAI()" class="flex-1 bg-gradient-to-r from-primary to-secondary hover:scale-[1.02] text-white font-black py-4 rounded-xl shadow-lg shadow-primary/30 transition text-lg flex items-center justify-center gap-2">
+                        Generate AI OS 🚀
+                    </button>
+                </div>
+            </div>
+
+            <div id="wizard-step-3" class="p-10 hidden flex-col items-center justify-center text-center h-[400px]">
+                <div id="loader-spinner" class="loader mb-6"></div>
+                <div id="success-icon" class="text-6xl mb-6 hidden">✅</div>
+                <h3 id="ai-status-title" class="text-2xl font-black text-white mb-3 glow-text">Initializing OS...</h3>
+                <p id="ai-status-desc" class="text-gray-400 text-sm font-medium px-4">Establishing secure connection to servers.</p>
+                
+                <button id="close-wizard-btn" onclick="closeWizard()" class="hidden mt-8 w-full bg-white/10 text-white py-3 rounded-xl font-bold hover:bg-white/20 transition">Close Wizard</button>
+            </div>
+        </div>
+    </div>
     <div id="login-modal" class="hidden fixed inset-0 bg-black/80 z-[100] flex items-center justify-center backdrop-blur-md px-4 transition-all">
         <div class="bg-[#111] border border-white/10 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-8 relative">
             <button onclick="toggleLogin()" class="absolute top-4 right-5 text-gray-500 hover:text-red-500 font-black text-3xl transition">&times;</button>
@@ -234,52 +300,107 @@
 
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
 
-        function toggleLogin() {
-            document.getElementById('login-modal').classList.toggle('hidden');
-            document.getElementById('login-error').classList.add('hidden');
-        }
-
-        // 🚨 FIXED LOGIN LOGIC: Wapas Purana Script Tag Method jo 100% chalta hai 🚨
+        // --- OLD LOGIN LOGIC ---
+        function toggleLogin() { document.getElementById('login-modal').classList.toggle('hidden'); document.getElementById('login-error').classList.add('hidden'); }
         function verifyLogin() {
-            let id = document.getElementById('login-id').value.trim().toUpperCase();
-            let pass = document.getElementById('login-pass').value.trim();
-            let btn = document.getElementById('login-btn');
-            let errorMsg = document.getElementById('login-error');
-
+            let id = document.getElementById('login-id').value.trim().toUpperCase(); let pass = document.getElementById('login-pass').value.trim();
+            let btn = document.getElementById('login-btn'); let errorMsg = document.getElementById('login-error');
             if (!id || !pass) { errorMsg.innerText = "Please fill all fields! ❌"; errorMsg.classList.remove('hidden'); return; }
-
-            btn.innerText = "Connecting... ⏳"; 
-            btn.disabled = true; 
-            errorMsg.classList.add('hidden');
+            btn.innerText = "Connecting... ⏳"; btn.disabled = true; errorMsg.classList.add('hidden');
 
             let script = document.createElement('script');
             script.src = `${SCRIPT_URL}?action=login&res=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse&nocache=${Date.now()}`;
-            
-            script.onerror = function() {
-                errorMsg.innerText = "Network Error! ❌"; 
-                errorMsg.classList.remove('hidden');
-                btn.innerText = "ENTER DASHBOARD 🚀"; 
-                btn.disabled = false;
-            };
-            
+            script.onerror = function() { errorMsg.innerText = "Network Error! ❌"; errorMsg.classList.remove('hidden'); btn.innerText = "ENTER DASHBOARD 🚀"; btn.disabled = false; };
             document.body.appendChild(script);
         }
-
         function handleLoginResponse(response) {
-            let id = document.getElementById('login-id').value.trim().toUpperCase();
-            let btn = document.getElementById('login-btn');
-            let errorMsg = document.getElementById('login-error');
+            let id = document.getElementById('login-id').value.trim().toUpperCase(); let btn = document.getElementById('login-btn'); let errorMsg = document.getElementById('login-error');
+            if (response.status === "SUCCESS") { btn.innerText = "Entering... 🚀"; localStorage.setItem("entaurent_auth", id); window.location.href = `dashboard.html?res=${id}`; } 
+            else { errorMsg.innerText = "Wrong ID or Passcode! ❌"; errorMsg.classList.remove('hidden'); btn.innerText = "ENTER DASHBOARD 🚀"; btn.disabled = false; }
+        }
 
-            if (response.status === "SUCCESS") {
-                btn.innerText = "Entering... 🚀";
-                localStorage.setItem("entaurent_auth", id); 
-                window.location.href = `dashboard.html?res=${id}`;
-            } else {
-                errorMsg.innerText = "Wrong ID or Passcode! ❌"; 
-                errorMsg.classList.remove('hidden');
-                btn.innerText = "ENTER DASHBOARD 🚀"; 
-                btn.disabled = false;
+        // ==========================================
+        // 🔥 NEW JAVASCRIPT: THE AI WIZARD LOGIC 🔥
+        // ==========================================
+        function openWizard() {
+            document.getElementById('setup-wizard').classList.remove('hidden');
+            nextStep(1); // Reset to step 1
+        }
+        function closeWizard() {
+            document.getElementById('setup-wizard').classList.add('hidden');
+        }
+
+        function nextStep(step) {
+            if(step === 2) {
+                let cafe = document.getElementById('wiz-cafe').value.trim();
+                let name = document.getElementById('wiz-name').value.trim();
+                let phone = document.getElementById('wiz-phone').value.trim();
+                if(!cafe || !name || !phone) { document.getElementById('wiz-err-1').classList.remove('hidden'); return; }
+                document.getElementById('wiz-err-1').classList.add('hidden');
             }
+            document.getElementById('wizard-step-1').classList.add('hidden');
+            document.getElementById('wizard-step-2').classList.add('hidden');
+            document.getElementById('wizard-step-3').classList.add('hidden');
+            document.getElementById('wizard-step-' + step).classList.remove('hidden');
+            if(step === 3) document.getElementById('wizard-step-3').classList.add('flex'); // Because step 3 uses flex
+        }
+
+        function addMenuRow() {
+            let row = document.createElement('div');
+            row.className = "flex gap-3 menu-row mt-3";
+            row.innerHTML = `
+                <input type="text" placeholder="Dish (e.g. Pasta)" class="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none text-sm">
+                <input type="number" placeholder="Price (₹)" class="w-24 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none text-sm">
+            `;
+            document.getElementById('menu-builder-list').appendChild(row);
+        }
+
+        function submitToAI() {
+            nextStep(3); // Go to loading screen
+
+            // 1. Gather Data (To send to your backend later)
+            let cafe = document.getElementById('wiz-cafe').value;
+            let name = document.getElementById('wiz-name').value;
+            let phone = document.getElementById('wiz-phone').value;
+            
+            let menuData = [];
+            document.querySelectorAll('.menu-row').forEach(row => {
+                let dish = row.children[0].value;
+                let price = row.children[1].value;
+                if(dish && price) menuData.push(`${dish} (₹${price})`);
+            });
+
+            // (Hidden: Here you send a 'no-cors' fetch to Google Apps script)
+            // Example: fetch(`${SCRIPT_URL}?action=newLead&cafe=${cafe}&phone=${phone}&menu=${menuData.join(',')}`, {mode: 'no-cors'});
+            
+            // 2. The Illusion Sequence (Fake AI Progress)
+            let title = document.getElementById('ai-status-title');
+            let desc = document.getElementById('ai-status-desc');
+            
+            setTimeout(() => {
+                title.innerText = "Analyzing Menu... 🤖";
+                desc.innerText = "Mapping " + (menuData.length || 1) + " items to database.";
+            }, 1500);
+
+            setTimeout(() => {
+                title.innerText = "Training AI Engine... 🧠";
+                desc.innerText = "Setting up predictive demand patterns.";
+            }, 3500);
+
+            setTimeout(() => {
+                title.innerText = "Securing Anti-Theft... 🛡️";
+                desc.innerText = "Creating secure inventory vaults.";
+            }, 5500);
+
+            setTimeout(() => {
+                // The Finale (Success)
+                document.getElementById('loader-spinner').classList.add('hidden');
+                document.getElementById('success-icon').classList.remove('hidden');
+                title.innerText = "OS Successfully Queued! 🎉";
+                title.classList.replace('text-white', 'text-green-400');
+                desc.innerText = "Due to security verification, your unique Login ID and Dashboard Link will be sent to your WhatsApp number ("+phone+") shortly.";
+                document.getElementById('close-wizard-btn').classList.remove('hidden');
+            }, 8000);
         }
     </script>
 </body>
