@@ -56,18 +56,18 @@
         </div>
     </nav>
 
-    <main class="relative z-10 pt-40 pb-20 lg:pt-48 lg:pb-32 px-6 text-center flex flex-col items-center">
-        <div data-aos="fade-up" class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card text-sm font-bold text-gray-300 mb-8 border border-white/10">
+    <main class="relative z-10 pt-32 pb-20 lg:pt-40 lg:pb-32 px-6 text-center flex flex-col items-center">
+        <div data-aos="fade-up" class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card text-sm font-bold text-gray-300 mb-8 border border-white/10 mt-10">
             <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span></span>
             Save ₹15,000+ monthly on overheads 💸
         </div>
         
-        <h1 data-aos="fade-up" data-aos-delay="100" class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-8 leading-[1.1] max-w-5xl glow-text">
+        <h1 data-aos="fade-up" data-aos-delay="100" class="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-6 leading-tight max-w-4xl mx-auto glow-text">
             Let AI Run Your Restaurant. <br>
             <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-primary to-secondary">Zero Food Wastage.</span>
         </h1>
         
-        <p data-aos="fade-up" data-aos-delay="200" class="text-lg md:text-xl text-gray-400 max-w-3xl font-medium mb-12 leading-relaxed">
+        <p data-aos="fade-up" data-aos-delay="200" class="text-base md:text-lg text-gray-400 max-w-2xl mx-auto font-medium mb-10 leading-relaxed">
             More than just a QR menu. Entaurent is your AI Restaurant Manager that tracks inventory, spots theft, and predicts demand, allowing you to manage weekend rushes with half the staff.
         </p>
 
@@ -239,6 +239,7 @@
             document.getElementById('login-error').classList.add('hidden');
         }
 
+        // 🚨 FIXED LOGIN LOGIC: Wapas Purana Script Tag Method jo 100% chalta hai 🚨
         function verifyLogin() {
             let id = document.getElementById('login-id').value.trim().toUpperCase();
             let pass = document.getElementById('login-pass').value.trim();
@@ -251,23 +252,17 @@
             btn.disabled = true; 
             errorMsg.classList.add('hidden');
 
-            let targetUrl = `${SCRIPT_URL}?action=login&res=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse&nocache=${Date.now()}`;
-
-            fetch(targetUrl)
-                .then(response => response.text())
-                .then(text => { eval(text); })
-                .catch(err => {
-                    console.log("Fetch failed, trying script injection...", err);
-                    let script = document.createElement('script');
-                    script.src = targetUrl;
-                    script.onerror = function() {
-                        errorMsg.innerText = "Network Error! ❌"; 
-                        errorMsg.classList.remove('hidden');
-                        btn.innerText = "ENTER DASHBOARD 🚀"; 
-                        btn.disabled = false;
-                    };
-                    document.head.appendChild(script);
-                });
+            let script = document.createElement('script');
+            script.src = `${SCRIPT_URL}?action=login&res=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse&nocache=${Date.now()}`;
+            
+            script.onerror = function() {
+                errorMsg.innerText = "Network Error! ❌"; 
+                errorMsg.classList.remove('hidden');
+                btn.innerText = "ENTER DASHBOARD 🚀"; 
+                btn.disabled = false;
+            };
+            
+            document.body.appendChild(script);
         }
 
         function handleLoginResponse(response) {
