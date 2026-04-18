@@ -196,12 +196,6 @@
                     <button onclick="openWizard()" class="w-full bg-white text-black text-center py-3 rounded-xl font-black text-sm hover:scale-[1.02] hover:bg-gray-200 transition-all">Claim Offer Now</button>
                 </div>
             </div>
-            
-            <div data-aos="fade-up" data-aos-delay="500" class="mt-12 inline-block bg-white/5 border border-white/10 px-6 py-3 rounded-full">
-                <p class="text-sm font-bold text-gray-400 flex items-center gap-2">
-                    <span>💡</span> Note: One-time Physical QR Stand & Installation fee charged extra at actual cost.
-                </p>
-            </div>
         </div>
     </section>
                     
@@ -214,59 +208,125 @@
         <div class="bg-[#0B1120] border border-white/10 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden relative flex flex-col max-h-[90vh]">
             <button onclick="closeWizard()" class="absolute top-4 right-5 text-gray-500 hover:text-red-500 font-black text-3xl transition z-20">&times;</button>
             
-            <div id="wizard-step-1" class="p-8 block overflow-y-auto">
-                <h3 class="text-3xl font-black text-white mb-2">Build Your OS <span class="text-primary">.</span></h3>
-                <p class="text-gray-400 text-sm font-medium mb-6">Tell us about your restaurant to start the AI configuration.</p>
+            <div id="wiz-step-1" class="p-8 block overflow-y-auto">
+                <h3 class="text-3xl font-black text-white mb-2">Start Free Trial <span class="text-primary">.</span></h3>
+                <p class="text-gray-400 text-sm font-medium mb-6">Let's set up your digital infrastructure in minutes.</p>
                 <div class="space-y-4">
                     <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Owner Name</label>
+                        <input type="text" id="lead-name" placeholder="John Doe" class="w-full mt-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none transition">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Phone Number</label>
+                        <input type="number" id="lead-phone" placeholder="9876543210" class="w-full mt-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none transition">
+                    </div>
+                    <div>
                         <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Restaurant Name</label>
-                        <input type="text" id="wiz-cafe" placeholder="e.g. Sharma Ji Cafe" class="w-full mt-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none transition">
+                        <input type="text" id="lead-cafe" placeholder="Sharma Ji Cafe" class="w-full mt-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none transition">
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Your Name</label>
-                        <input type="text" id="wiz-name" placeholder="John Doe" class="w-full mt-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none transition">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Tables</label>
+                        <input type="number" id="lead-tables" placeholder="e.g. 10" class="w-full mt-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none transition">
                     </div>
-                    <div>
-                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">WhatsApp Number</label>
-                        <input type="number" id="wiz-phone" placeholder="9876543210" class="w-full mt-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none transition">
-                    </div>
-                    <button onclick="nextStep(2)" class="w-full bg-gradient-to-r from-primary to-secondary hover:scale-[1.02] text-white font-black py-4 rounded-xl shadow-lg shadow-primary/30 transition mt-6 text-lg">
-                        Continue to Menu ➔
+                    <button onclick="captureLeadAndProceed()" class="w-full bg-gradient-to-r from-primary to-secondary hover:scale-[1.02] text-white font-black py-4 rounded-xl shadow-lg shadow-primary/30 transition mt-6 text-lg">
+                        🚀 Create My Restaurant
                     </button>
                     <p id="wiz-err-1" class="text-red-400 text-sm font-bold text-center hidden mt-2">Please fill all fields! ❌</p>
                 </div>
             </div>
 
-            <div id="wizard-step-2" class="p-8 hidden overflow-y-auto flex-1">
-                <h3 class="text-3xl font-black text-white mb-2 flex items-center gap-2">Feed The AI 🧠</h3>
-                <p class="text-gray-400 text-sm font-medium mb-4">Add your top items to train the initial OS. You can add more later.</p>
+            <div id="wiz-step-2" class="p-8 hidden overflow-y-auto">
+                <h3 class="text-2xl font-black text-white mb-2">Account Created! 🎉</h3>
+                <p class="text-gray-400 text-sm font-medium mb-6">How would you like to add your menu?</p>
                 
-                <div id="menu-builder-list" class="space-y-3 mb-6">
-                    <div class="flex gap-3 menu-row">
-                        <input type="text" placeholder="Dish (e.g. Burger)" class="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none text-sm">
-                        <input type="number" placeholder="Price (₹)" class="w-24 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none text-sm">
-                    </div>
-                </div>
+                <div class="space-y-4">
+                    <button onclick="showStep('wiz-fast-start')" class="w-full text-left cursor-pointer border border-white/10 bg-white/5 hover:bg-white/10 p-5 rounded-2xl transition-all">
+                        <h4 class="text-lg font-bold text-white mb-1">⚡ Fast Start Now</h4>
+                        <p class="text-sm text-gray-400">Add basic menu instantly. Get QR codes & start orders today.</p>
+                    </button>
+                    
+                    <button onclick="showStep('wiz-full-ai')" class="w-full text-left cursor-pointer border border-white/10 bg-white/5 hover:bg-white/10 p-5 rounded-2xl transition-all">
+                        <h4 class="text-lg font-bold text-white mb-1">🧠 Full AI Setup</h4>
+                        <p class="text-sm text-gray-400">Configure raw materials, stock, and recipes for anti-theft.</p>
+                    </button>
 
-                <button onclick="addMenuRow()" class="text-primary font-bold text-sm flex items-center gap-1 hover:text-white transition mb-6">
-                    <span>+</span> Add Another Item
-                </button>
-
-                <div class="flex gap-3 mt-auto">
-                    <button onclick="nextStep(1)" class="px-6 py-4 rounded-xl bg-white/5 text-gray-400 font-bold hover:bg-white/10 transition">Back</button>
-                    <button onclick="submitToAI()" class="flex-1 bg-gradient-to-r from-primary to-secondary hover:scale-[1.02] text-white font-black py-4 rounded-xl shadow-lg shadow-primary/30 transition text-lg flex items-center justify-center gap-2">
-                        Generate AI OS 🚀
+                    <button onclick="redirectToWhatsApp()" class="w-full text-left cursor-pointer border-2 border-green-500/50 bg-green-500/10 hover:bg-green-500/20 p-5 rounded-2xl transition-all relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 bg-green-500 text-white text-[10px] font-black px-3 py-1 rounded-bl-lg uppercase tracking-wider">Most Popular</div>
+                        <h4 class="text-lg font-bold text-white mb-1">📞 We Setup For You (Free)</h4>
+                        <p class="text-sm text-gray-400">Send menu on WhatsApp. Our team will manually configure your dashboard.</p>
                     </button>
                 </div>
             </div>
 
-            <div id="wizard-step-3" class="p-10 hidden flex-col items-center justify-center text-center h-[400px]">
+            <div id="wiz-fast-start" class="p-8 hidden overflow-y-auto">
+                <h3 class="text-2xl font-black text-white mb-2">⚡ Fast Start Setup</h3>
+                <p class="text-gray-400 text-sm font-medium mb-6">Choose how to add your menu items. You can upgrade to Advanced Setup later.</p>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <label class="border border-white/10 bg-white/5 hover:bg-white/10 p-4 rounded-xl text-center cursor-pointer transition">
+                        <div class="text-2xl mb-2">📸</div>
+                        <div class="text-sm font-bold text-white">Upload Photo</div>
+                        <input type="file" class="hidden" accept="image/*" onchange="submitFastStart('Photo')">
+                    </label>
+                    <label class="border border-white/10 bg-white/5 hover:bg-white/10 p-4 rounded-xl text-center cursor-pointer transition">
+                        <div class="text-2xl mb-2">📄</div>
+                        <div class="text-sm font-bold text-white">Upload PDF</div>
+                        <input type="file" class="hidden" accept=".pdf" onchange="submitFastStart('PDF')">
+                    </label>
+                    <div onclick="document.getElementById('paste-area').classList.toggle('hidden')" class="border border-white/10 bg-white/5 hover:bg-white/10 p-4 rounded-xl text-center cursor-pointer transition">
+                        <div class="text-2xl mb-2">📋</div>
+                        <div class="text-sm font-bold text-white">Paste Text</div>
+                    </div>
+                    <div onclick="document.getElementById('manual-area').classList.toggle('hidden')" class="border border-white/10 bg-white/5 hover:bg-white/10 p-4 rounded-xl text-center cursor-pointer transition">
+                        <div class="text-2xl mb-2">⌨️</div>
+                        <div class="text-sm font-bold text-white">Type Manual</div>
+                    </div>
+                </div>
+
+                <textarea id="paste-area" class="hidden w-full h-24 p-3 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:border-primary outline-none mb-4" placeholder="Paste menu items here..."></textarea>
+                
+                <div id="manual-area" class="hidden space-y-2 mb-4">
+                    <div class="flex gap-2">
+                        <input type="text" placeholder="Dish Name" class="flex-1 px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:border-primary outline-none">
+                        <input type="number" placeholder="₹ Price" class="w-24 px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:border-primary outline-none">
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="showStep('wiz-step-2')" class="px-6 py-3 rounded-xl bg-white/5 text-gray-400 font-bold hover:bg-white/10 transition">Back</button>
+                    <button onclick="submitFastStart('Text/Manual')" class="flex-1 bg-white text-black hover:bg-gray-200 font-black py-3 rounded-xl transition">Submit & Go Live</button>
+                </div>
+            </div>
+
+            <div id="wiz-full-ai" class="p-8 hidden overflow-y-auto">
+                <h3 class="text-2xl font-black text-white mb-2">🧠 Full AI Setup</h3>
+                <p class="text-gray-400 text-sm font-medium mb-6">Map ingredients to dishes to unlock theft alerts.</p>
+                
+                <div class="space-y-4 mb-6 bg-white/5 p-4 rounded-xl border border-white/10">
+                    <input type="text" placeholder="Dish Name (e.g., Pizza)" class="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:border-primary outline-none">
+                    <div class="flex gap-2">
+                        <input type="text" placeholder="Raw Material (e.g., Pizza Base)" class="flex-1 px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:border-primary outline-none">
+                        <input type="text" placeholder="Qty per dish (e.g., 1)" class="w-32 px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:border-primary outline-none">
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="number" placeholder="Opening Stock" class="flex-1 px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:border-primary outline-none">
+                        <input type="number" placeholder="Purchase Price" class="flex-1 px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:border-primary outline-none">
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="showStep('wiz-step-2')" class="px-6 py-3 rounded-xl bg-white/5 text-gray-400 font-bold hover:bg-white/10 transition">Back</button>
+                    <button onclick="triggerLoading('AI Setup Complete!')" class="flex-1 bg-gradient-to-r from-primary to-secondary text-white hover:scale-[1.02] font-black py-3 rounded-xl transition">Secure Database</button>
+                </div>
+            </div>
+
+            <div id="wiz-loading" class="p-10 hidden flex-col items-center justify-center text-center h-[400px]">
                 <div id="loader-spinner" class="loader mb-6"></div>
                 <div id="success-icon" class="text-6xl mb-6 hidden">✅</div>
-                <h3 id="ai-status-title" class="text-2xl font-black text-white mb-3 glow-text">Initializing OS...</h3>
-                <p id="ai-status-desc" class="text-gray-400 text-sm font-medium px-4">Establishing secure connection to servers.</p>
+                <h3 id="ai-status-title" class="text-2xl font-black text-white mb-3 glow-text">Generating QR Codes...</h3>
+                <p id="ai-status-desc" class="text-gray-400 text-sm font-medium px-4">Creating your unique tables and dashboard access.</p>
                 
-                <button id="close-wizard-btn" onclick="closeWizard()" class="hidden mt-8 w-full bg-white/10 text-white py-3 rounded-xl font-bold hover:bg-white/20 transition">Close Wizard</button>
+                <button id="close-wizard-btn" onclick="closeWizard()" class="hidden mt-8 w-full bg-white/10 text-white py-3 rounded-xl font-bold hover:bg-white/20 transition">Close & Check WhatsApp</button>
             </div>
         </div>
     </div>
@@ -275,7 +335,6 @@
             <button onclick="toggleLogin()" class="absolute top-4 right-5 text-gray-500 hover:text-red-500 font-black text-3xl transition">&times;</button>
             <h3 class="text-3xl font-black text-white mb-2 text-center">Login <span class="text-primary">.</span></h3>
             <p class="text-gray-400 text-center text-sm font-medium mb-6">Enter credentials to access the dashboard.</p>
-            
             <div class="space-y-5">
                 <div>
                     <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Restaurant ID</label>
@@ -296,18 +355,15 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({ once: true, offset: 50 });
-        window.addEventListener('pageshow', function(event) { if (event.persisted) window.location.reload(); });
-
+        
+        // --- LOGIN LOGIC ---
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
-
-        // --- OLD LOGIN LOGIC ---
         function toggleLogin() { document.getElementById('login-modal').classList.toggle('hidden'); document.getElementById('login-error').classList.add('hidden'); }
         function verifyLogin() {
             let id = document.getElementById('login-id').value.trim().toUpperCase(); let pass = document.getElementById('login-pass').value.trim();
             let btn = document.getElementById('login-btn'); let errorMsg = document.getElementById('login-error');
             if (!id || !pass) { errorMsg.innerText = "Please fill all fields! ❌"; errorMsg.classList.remove('hidden'); return; }
             btn.innerText = "Connecting... ⏳"; btn.disabled = true; errorMsg.classList.add('hidden');
-
             let script = document.createElement('script');
             script.src = `${SCRIPT_URL}?action=login&res=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse&nocache=${Date.now()}`;
             script.onerror = function() { errorMsg.innerText = "Network Error! ❌"; errorMsg.classList.remove('hidden'); btn.innerText = "ENTER DASHBOARD 🚀"; btn.disabled = false; };
@@ -319,88 +375,74 @@
             else { errorMsg.innerText = "Wrong ID or Passcode! ❌"; errorMsg.classList.remove('hidden'); btn.innerText = "ENTER DASHBOARD 🚀"; btn.disabled = false; }
         }
 
-        // ==========================================
-        // 🔥 NEW JAVASCRIPT: THE AI WIZARD LOGIC 🔥
-        // ==========================================
+        // --- NEW FUNNEL WIZARD LOGIC ---
+        let leadData = {}; // Stores lead data
+
         function openWizard() {
             document.getElementById('setup-wizard').classList.remove('hidden');
-            nextStep(1); // Reset to step 1
+            showStep('wiz-step-1');
         }
-        function closeWizard() {
-            document.getElementById('setup-wizard').classList.add('hidden');
-        }
+        function closeWizard() { document.getElementById('setup-wizard').classList.add('hidden'); }
 
-        function nextStep(step) {
-            if(step === 2) {
-                let cafe = document.getElementById('wiz-cafe').value.trim();
-                let name = document.getElementById('wiz-name').value.trim();
-                let phone = document.getElementById('wiz-phone').value.trim();
-                if(!cafe || !name || !phone) { document.getElementById('wiz-err-1').classList.remove('hidden'); return; }
-                document.getElementById('wiz-err-1').classList.add('hidden');
-            }
-            document.getElementById('wizard-step-1').classList.add('hidden');
-            document.getElementById('wizard-step-2').classList.add('hidden');
-            document.getElementById('wizard-step-3').classList.add('hidden');
-            document.getElementById('wizard-step-' + step).classList.remove('hidden');
-            if(step === 3) document.getElementById('wizard-step-3').classList.add('flex'); // Because step 3 uses flex
-        }
-
-        function addMenuRow() {
-            let row = document.createElement('div');
-            row.className = "flex gap-3 menu-row mt-3";
-            row.innerHTML = `
-                <input type="text" placeholder="Dish (e.g. Pasta)" class="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none text-sm">
-                <input type="number" placeholder="Price (₹)" class="w-24 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white font-bold focus:border-primary outline-none text-sm">
-            `;
-            document.getElementById('menu-builder-list').appendChild(row);
-        }
-
-        function submitToAI() {
-            nextStep(3); // Go to loading screen
-
-            // 1. Gather Data (To send to your backend later)
-            let cafe = document.getElementById('wiz-cafe').value;
-            let name = document.getElementById('wiz-name').value;
-            let phone = document.getElementById('wiz-phone').value;
-            
-            let menuData = [];
-            document.querySelectorAll('.menu-row').forEach(row => {
-                let dish = row.children[0].value;
-                let price = row.children[1].value;
-                if(dish && price) menuData.push(`${dish} (₹${price})`);
+        function showStep(stepId) {
+            ['wiz-step-1', 'wiz-step-2', 'wiz-fast-start', 'wiz-full-ai', 'wiz-loading'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+                document.getElementById(id).classList.remove('flex');
             });
+            let target = document.getElementById(stepId);
+            target.classList.remove('hidden');
+            if(stepId === 'wiz-loading') target.classList.add('flex');
+        }
 
-            // (Hidden: Here you send a 'no-cors' fetch to Google Apps script)
-            // Example: fetch(`${SCRIPT_URL}?action=newLead&cafe=${cafe}&phone=${phone}&menu=${menuData.join(',')}`, {mode: 'no-cors'});
+        function captureLeadAndProceed() {
+            let name = document.getElementById('lead-name').value.trim();
+            let phone = document.getElementById('lead-phone').value.trim();
+            let cafe = document.getElementById('lead-cafe').value.trim();
+            let tables = document.getElementById('lead-tables').value.trim();
+
+            if(!name || !phone || !cafe || !tables) {
+                document.getElementById('wiz-err-1').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('wiz-err-1').classList.add('hidden');
             
-            // 2. The Illusion Sequence (Fake AI Progress)
+            leadData = { name, phone, cafe, tables };
+            
+            // Here you can add the hidden fetch to Google Sheets to save lead immediately!
+            // fetch('NEW_LEAD_SCRIPT_URL', {mode: 'no-cors'});
+            
+            showStep('wiz-step-2'); // Show Setup Choice
+        }
+
+        function redirectToWhatsApp() {
+            let text = `Hi Entaurent! I am ${leadData.name} from ${leadData.cafe}.\nI have ${leadData.tables} tables.\nPlease setup my free dashboard. Attaching my menu photo below:`;
+            let url = `https://wa.me/919668546740?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+            closeWizard();
+        }
+
+        function submitFastStart(type) {
+            triggerLoading("QR Ready & Dashboard Open! 🎉");
+        }
+
+        function triggerLoading(successMessage) {
+            showStep('wiz-loading');
             let title = document.getElementById('ai-status-title');
             let desc = document.getElementById('ai-status-desc');
             
             setTimeout(() => {
-                title.innerText = "Analyzing Menu... 🤖";
-                desc.innerText = "Mapping " + (menuData.length || 1) + " items to database.";
+                title.innerText = "Provisioning Dashboard... 🚀";
+                desc.innerText = "Securing server space for " + leadData.cafe;
             }, 1500);
 
             setTimeout(() => {
-                title.innerText = "Training AI Engine... 🧠";
-                desc.innerText = "Setting up predictive demand patterns.";
-            }, 3500);
-
-            setTimeout(() => {
-                title.innerText = "Securing Anti-Theft... 🛡️";
-                desc.innerText = "Creating secure inventory vaults.";
-            }, 5500);
-
-            setTimeout(() => {
-                // The Finale (Success)
                 document.getElementById('loader-spinner').classList.add('hidden');
                 document.getElementById('success-icon').classList.remove('hidden');
-                title.innerText = "OS Successfully Queued! 🎉";
+                title.innerText = successMessage;
                 title.classList.replace('text-white', 'text-green-400');
-                desc.innerText = "Due to security verification, your unique Login ID and Dashboard Link will be sent to your WhatsApp number ("+phone+") shortly.";
+                desc.innerText = `Your unique Login ID and secure access link will be sent to your WhatsApp (${leadData.phone}) shortly. Start taking orders!`;
                 document.getElementById('close-wizard-btn').classList.remove('hidden');
-            }, 8000);
+            }, 4000);
         }
     </script>
 </body>
