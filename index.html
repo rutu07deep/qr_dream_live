@@ -84,7 +84,7 @@
 
         <div data-aos="fade-up" data-aos-delay="300" class="flex flex-col sm:flex-row gap-5 w-full sm:w-auto justify-center">
             <button onclick="openWizard()" class="bg-white text-black px-8 py-4 rounded-full text-lg font-black hover:bg-gray-200 hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-                Launch Free Dashboard
+                Setup My AI OS Free
             </button>
             <a href="menu.html?res=R1&table=Demo" class="glass-card text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-white/10 transition-all border border-white/20">
                 See Live Table Demo 🍕
@@ -273,12 +273,12 @@
                     <label class="border border-white/10 bg-white/5 hover:bg-white/10 p-4 rounded-xl text-center cursor-pointer transition">
                         <div class="text-2xl mb-2">📸</div>
                         <div class="text-sm font-bold text-white">Upload Photo</div>
-                        <input type="file" class="hidden" accept="image/*" onchange="submitFastStart('Photo')">
+                        <input type="file" class="hidden" accept="image/*" onchange="showStep('wiz-qr-studio')">
                     </label>
                     <label class="border border-white/10 bg-white/5 hover:bg-white/10 p-4 rounded-xl text-center cursor-pointer transition">
                         <div class="text-2xl mb-2">📄</div>
                         <div class="text-sm font-bold text-white">Upload PDF</div>
-                        <input type="file" class="hidden" accept=".pdf" onchange="submitFastStart('PDF')">
+                        <input type="file" class="hidden" accept=".pdf" onchange="showStep('wiz-qr-studio')">
                     </label>
                     <div onclick="document.getElementById('paste-area').classList.toggle('hidden')" class="border border-white/10 bg-white/5 hover:bg-white/10 p-4 rounded-xl text-center cursor-pointer transition">
                         <div class="text-2xl mb-2">📋</div>
@@ -301,32 +301,82 @@
 
                 <div class="flex gap-3">
                     <button onclick="showStep('wiz-step-2')" class="px-6 py-3 rounded-xl bg-white/5 text-gray-400 font-bold hover:bg-white/10 transition">Back</button>
-                    <button onclick="submitFastStart('Text/Manual')" class="flex-1 bg-white text-black hover:bg-gray-200 font-black py-3 rounded-xl transition">Submit & Go Live</button>
+                    <button onclick="showStep('wiz-qr-studio')" class="flex-1 bg-white text-black hover:bg-gray-200 font-black py-3 rounded-xl transition">Next: Design QRs ➔</button>
                 </div>
             </div>
 
             <div id="wiz-full-ai" class="p-8 hidden overflow-y-auto">
                 <h3 class="text-2xl font-black text-white mb-2">🧠 Full AI Setup</h3>
-                <p class="text-gray-400 text-sm font-medium mb-6">Let AI build your master inventory. No manual typing required.</p>
+                <p class="text-gray-400 text-sm font-medium mb-6">Follow the 3 steps below so our AI can map your inventory perfectly.</p>
                 
                 <div class="space-y-4 mb-8">
-                    <label class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-gray-500 hover:border-primary rounded-xl cursor-pointer bg-white/5 hover:bg-primary/5 transition">
-                        <span class="text-3xl mb-1">📸</span>
-                        <span class="text-sm text-gray-300 font-bold" id="ai-menu-file">Upload Menu Photo</span>
-                        <input type="file" class="hidden" accept="image/*,.pdf" multiple onchange="document.getElementById('ai-menu-file').innerText = this.files.length + ' file(s) selected'">
-                    </label>
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                        <h4 class="text-white font-bold mb-1">1️⃣ Menu Details</h4>
+                        <p class="text-xs text-gray-400 mb-3">We need Dish Names & Prices. <br><span class="text-gray-500 italic">e.g., Veg Pizza - ₹150</span></p>
+                        <label class="block w-full text-center bg-white/10 hover:bg-white/20 text-white text-sm font-bold py-3 rounded-lg cursor-pointer transition">
+                            📸 Upload Menu Photo
+                            <input type="file" class="hidden" accept="image/*,.pdf" multiple onchange="this.parentElement.innerHTML = '✅ Menu Photo Added'">
+                        </label>
+                    </div>
 
-                    <label class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-gray-500 hover:border-primary rounded-xl cursor-pointer bg-white/5 hover:bg-primary/5 transition">
-                        <span class="text-3xl mb-1">📝</span>
-                        <span class="text-sm text-gray-300 font-bold" id="ai-recipe-file">Upload Recipe/Stock Notes</span>
-                        <span class="text-xs text-gray-500 mt-1">(Diary page, register, or bill)</span>
-                        <input type="file" class="hidden" accept="image/*,.pdf" multiple onchange="document.getElementById('ai-recipe-file').innerText = this.files.length + ' file(s) selected'">
-                    </label>
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                        <h4 class="text-white font-bold mb-1">2️⃣ Master Inventory (Stock)</h4>
+                        <p class="text-xs text-gray-400 mb-3">We need Raw Materials, Total Stock & Purchase Price. <br><span class="text-gray-500 italic">e.g., Pizza Base | 50 Pcs | ₹20</span></p>
+                        <label class="block w-full text-center bg-white/10 hover:bg-white/20 text-white text-sm font-bold py-3 rounded-lg cursor-pointer transition">
+                            📦 Upload Stock Register / Bills
+                            <input type="file" class="hidden" accept="image/*,.pdf" multiple onchange="this.parentElement.innerHTML = '✅ Stock Details Added'">
+                        </label>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                        <h4 class="text-white font-bold mb-1">3️⃣ Kitchen Recipes</h4>
+                        <p class="text-xs text-gray-400 mb-3">We need to know what goes inside each dish to stop theft. <br><span class="text-gray-500 italic">e.g., 1 Veg Pizza = 1 Base, 50g Cheese</span></p>
+                        <label class="block w-full text-center bg-white/10 hover:bg-white/20 text-white text-sm font-bold py-3 rounded-lg cursor-pointer transition">
+                            📝 Upload Recipe Diary
+                            <input type="file" class="hidden" accept="image/*,.pdf" multiple onchange="this.parentElement.innerHTML = '✅ Recipe Notes Added'">
+                        </label>
+                    </div>
                 </div>
 
                 <div class="flex gap-3">
                     <button onclick="showStep('wiz-step-2')" class="px-6 py-3 rounded-xl bg-white/5 text-gray-400 font-bold hover:bg-white/10 transition">Back</button>
-                    <button onclick="triggerLoading('AI Engine Configured! 🎉')" class="flex-1 bg-gradient-to-r from-primary to-secondary text-white hover:scale-[1.02] font-black py-3 rounded-xl transition">Generate AI OS 🚀</button>
+                    <button onclick="showStep('wiz-qr-studio')" class="flex-1 bg-gradient-to-r from-primary to-secondary text-white hover:scale-[1.02] font-black py-3 rounded-xl transition">Next: Design QRs ➔</button>
+                </div>
+            </div>
+
+            <div id="wiz-qr-studio" class="p-8 hidden overflow-y-auto">
+                <h3 class="text-2xl font-black text-white mb-2">🎨 Table QR Studio</h3>
+                <p class="text-gray-400 text-sm font-medium mb-6">Choose how you want your table QR codes to look.</p>
+                
+                <div class="space-y-4 mb-6">
+                    <label class="flex items-center gap-4 p-4 border border-white/10 bg-white/5 rounded-xl cursor-pointer hover:bg-white/10 transition has-[:checked]:border-primary has-[:checked]:bg-primary/10">
+                        <input type="radio" name="qr_type" value="basic" class="w-5 h-5 accent-primary" checked>
+                        <div>
+                            <h4 class="text-white font-bold">⬛ Standard Black & White</h4>
+                            <p class="text-xs text-gray-400">Basic, instant, and ready to print yourself.</p>
+                        </div>
+                    </label>
+
+                    <label class="flex items-center gap-4 p-4 border border-white/10 bg-white/5 rounded-xl cursor-pointer hover:bg-white/10 transition has-[:checked]:border-primary has-[:checked]:bg-primary/10">
+                        <input type="radio" name="qr_type" value="premium" class="w-5 h-5 accent-primary">
+                        <div>
+                            <h4 class="text-white font-bold flex items-center gap-2">🌟 Premium Aesthetic <span class="text-[10px] bg-primary text-white px-2 py-0.5 rounded uppercase">Free</span></h4>
+                            <p class="text-xs text-gray-400">Custom designed to match your cafe's theme and logo.</p>
+                        </div>
+                    </label>
+                </div>
+
+                <label class="flex items-start gap-3 p-4 border-2 border-green-500/30 bg-green-500/10 rounded-xl cursor-pointer mb-8">
+                    <input type="checkbox" class="mt-1 w-5 h-5 accent-green-500">
+                    <div>
+                        <h4 class="text-green-400 font-bold text-sm">Yes, deliver Physical Acrylic QR Stands!</h4>
+                        <p class="text-xs text-gray-400 mt-1">Our team will contact you with the best prices for premium acrylic table stands.</p>
+                    </div>
+                </label>
+
+                <div class="flex gap-3">
+                    <button onclick="showStep('wiz-step-2')" class="px-6 py-3 rounded-xl bg-white/5 text-gray-400 font-bold hover:bg-white/10 transition">Back</button>
+                    <button onclick="triggerLoading('OS & QRs Ready! 🎉')" class="flex-1 bg-white text-black hover:bg-gray-200 hover:scale-[1.02] font-black py-3 rounded-xl transition">Generate OS & Go Live 🚀</button>
                 </div>
             </div>
 
@@ -334,7 +384,7 @@
                 <div id="loader-spinner" class="loader mb-6"></div>
                 <div id="success-icon" class="text-6xl mb-6 hidden">✅</div>
                 <h3 id="ai-status-title" class="text-2xl font-black text-white mb-3 glow-text">Generating AI Models...</h3>
-                <p id="ai-status-desc" class="text-gray-400 text-sm font-medium px-4">Mapping ingredients to predict daily demand.</p>
+                <p id="ai-status-desc" class="text-gray-400 text-sm font-medium px-4">Mapping ingredients & designing custom QR codes.</p>
                 
                 <button id="close-wizard-btn" onclick="closeWizard()" class="hidden mt-8 w-full bg-white/10 text-white py-3 rounded-xl font-bold hover:bg-white/20 transition">Close & Check WhatsApp</button>
             </div>
@@ -396,7 +446,8 @@
         function closeWizard() { document.getElementById('setup-wizard').classList.add('hidden'); }
 
         function showStep(stepId) {
-            ['wiz-step-1', 'wiz-step-2', 'wiz-fast-start', 'wiz-full-ai', 'wiz-loading'].forEach(id => {
+            // Added 'wiz-qr-studio' to the clear list
+            ['wiz-step-1', 'wiz-step-2', 'wiz-fast-start', 'wiz-full-ai', 'wiz-qr-studio', 'wiz-loading'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
                 document.getElementById(id).classList.remove('flex');
             });
@@ -427,10 +478,6 @@
             let url = `https://wa.me/919668546740?text=${encodeURIComponent(text)}`;
             window.open(url, '_blank');
             closeWizard();
-        }
-
-        function submitFastStart(type) {
-            triggerLoading("QR Ready & Dashboard Open! 🎉");
         }
 
         function triggerLoading(successMessage) {
