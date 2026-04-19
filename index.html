@@ -84,7 +84,7 @@
 
         <div data-aos="fade-up" data-aos-delay="300" class="flex flex-col sm:flex-row gap-5 w-full sm:w-auto justify-center">
             <button onclick="openWizard()" class="bg-white text-black px-8 py-4 rounded-full text-lg font-black hover:bg-gray-200 hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-                Start Saving Today
+                Launch Free Dashboard
             </button>
             <a href="menu.html?res=R1&table=Demo" class="glass-card text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-white/10 transition-all border border-white/20">
                 See Live Table Demo 🍕
@@ -173,19 +173,19 @@
                     <p class="text-gray-400 font-bold tracking-widest text-xs mb-2 uppercase">Trial</p>
                     <h3 class="text-3xl font-black text-white mb-1">Monthly</h3>
                     <p class="text-primary font-bold text-2xl mb-6">₹999<span class="text-sm text-gray-500">/mo</span></p>
-                    <button onclick="openWizard()" class="w-full bg-white/10 text-white text-center py-3 rounded-xl font-bold hover:bg-white/20 transition-all border border-white/10">Get Started</button>
+                    <button onclick="openWizard()" class="w-full bg-white/10 text-white text-center py-3 rounded-xl font-bold hover:bg-white/20 transition-all border border-white/10">Build My OS</button>
                 </div>
                 <div data-aos="fade-up" data-aos-delay="200" class="bg-[#111] p-8 rounded-3xl border border-white/10 text-left hover:border-primary/50 transition-all">
                     <p class="text-gray-400 font-bold tracking-widest text-xs mb-2 uppercase">Starter</p>
                     <h3 class="text-3xl font-black text-white mb-1">3 Months</h3>
                     <p class="text-primary font-bold text-2xl mb-6">₹2,499</p>
-                    <button onclick="openWizard()" class="w-full bg-white/10 text-white text-center py-3 rounded-xl font-bold hover:bg-white/20 transition-all border border-white/10">Get Started</button>
+                    <button onclick="openWizard()" class="w-full bg-white/10 text-white text-center py-3 rounded-xl font-bold hover:bg-white/20 transition-all border border-white/10">Build My OS</button>
                 </div>
                 <div data-aos="fade-up" data-aos-delay="300" class="bg-[#111] p-8 rounded-3xl border border-white/10 text-left hover:border-primary/50 transition-all">
                     <p class="text-gray-400 font-bold tracking-widest text-xs mb-2 uppercase">Growth</p>
                     <h3 class="text-3xl font-black text-white mb-1">6 Months</h3>
                     <p class="text-primary font-bold text-2xl mb-6">₹4,499</p>
-                    <button onclick="openWizard()" class="w-full bg-white/10 text-white text-center py-3 rounded-xl font-bold hover:bg-white/20 transition-all border border-white/10">Get Started</button>
+                    <button onclick="openWizard()" class="w-full bg-white/10 text-white text-center py-3 rounded-xl font-bold hover:bg-white/20 transition-all border border-white/10">Build My OS</button>
                 </div>
                 <div data-aos="fade-up" data-aos-delay="400" class="relative bg-[#111] p-8 rounded-3xl border-2 border-primary text-left transform lg:-translate-y-4 shadow-[0_0_30px_rgba(109,40,217,0.2)]">
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Best Value</div>
@@ -237,23 +237,30 @@
 
             <div id="wiz-step-2" class="p-8 hidden overflow-y-auto">
                 <h3 class="text-2xl font-black text-white mb-2">Account Created! 🎉</h3>
-                <p class="text-gray-400 text-sm font-medium mb-6">How would you like to add your menu?</p>
+                <p class="text-gray-400 text-sm font-medium mb-6">Choose your AI power level to proceed.</p>
                 
                 <div class="space-y-4">
-                    <button onclick="showStep('wiz-fast-start')" class="w-full text-left cursor-pointer border border-white/10 bg-white/5 hover:bg-white/10 p-5 rounded-2xl transition-all">
-                        <h4 class="text-lg font-bold text-white mb-1">⚡ Fast Start Now</h4>
-                        <p class="text-sm text-gray-400">Add basic menu instantly. Get QR codes & start orders today.</p>
+                    <button onclick="showStep('wiz-fast-start')" class="w-full text-left cursor-pointer border border-white/10 bg-white/5 hover:bg-white/10 p-4 rounded-2xl transition-all">
+                        <h4 class="text-lg font-bold text-white mb-1">⚡ Fast Start (Basic QR)</h4>
+                        <p class="text-xs text-gray-400 mb-2">Only upload menu. Get QR codes & start taking orders instantly.</p>
+                        <div class="text-[11px] text-yellow-500 font-semibold bg-yellow-500/10 px-2 py-1 rounded inline-block">Note: Inventory & Combos disabled</div>
                     </button>
                     
-                    <button onclick="showStep('wiz-full-ai')" class="w-full text-left cursor-pointer border border-white/10 bg-white/5 hover:bg-white/10 p-5 rounded-2xl transition-all">
-                        <h4 class="text-lg font-bold text-white mb-1">🧠 Full AI Setup</h4>
-                        <p class="text-sm text-gray-400">Configure raw materials, stock, and recipes for anti-theft.</p>
+                    <button onclick="showStep('wiz-full-ai')" class="w-full text-left cursor-pointer border border-primary/50 bg-primary/10 hover:bg-primary/20 p-4 rounded-2xl transition-all relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 bg-primary text-white text-[10px] font-black px-3 py-1 rounded-bl-lg uppercase tracking-wider">Recommended</div>
+                        <h4 class="text-lg font-bold text-white mb-1">🧠 Full AI Setup (Profit Engine)</h4>
+                        <p class="text-xs text-gray-400 mb-2">Upload menu + recipe notes. AI maps everything.</p>
+                        <ul class="text-[11px] text-green-400 font-semibold space-y-1">
+                            <li>✓ Smart Combos to clear dead stock</li>
+                            <li>✓ Demand Prediction & Prep alerts</li>
+                            <li>✓ Live Theft Guard tracking</li>
+                        </ul>
                     </button>
 
-                    <button onclick="redirectToWhatsApp()" class="w-full text-left cursor-pointer border-2 border-green-500/50 bg-green-500/10 hover:bg-green-500/20 p-5 rounded-2xl transition-all relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 bg-green-500 text-white text-[10px] font-black px-3 py-1 rounded-bl-lg uppercase tracking-wider">Most Popular</div>
-                        <h4 class="text-lg font-bold text-white mb-1">📞 We Setup For You (Free)</h4>
-                        <p class="text-sm text-gray-400">Send menu on WhatsApp. Our team will manually configure your dashboard.</p>
+                    <button onclick="redirectToWhatsApp()" class="w-full text-left cursor-pointer border border-green-500/50 bg-green-500/10 hover:bg-green-500/20 p-4 rounded-2xl transition-all">
+                        <h4 class="text-lg font-bold text-white mb-1">📞 We Setup For You (Free VIP)</h4>
+                        <p class="text-xs text-gray-400 mb-2">Send photos on WhatsApp. Our team builds your entire AI OS manually.</p>
+                        <div class="text-[11px] text-green-400 font-semibold bg-green-500/10 px-2 py-1 rounded inline-block">✓ Zero effort. Fully configured.</div>
                     </button>
                 </div>
             </div>
@@ -300,36 +307,40 @@
 
             <div id="wiz-full-ai" class="p-8 hidden overflow-y-auto">
                 <h3 class="text-2xl font-black text-white mb-2">🧠 Full AI Setup</h3>
-                <p class="text-gray-400 text-sm font-medium mb-6">Map ingredients to dishes to unlock theft alerts.</p>
+                <p class="text-gray-400 text-sm font-medium mb-6">Let AI build your master inventory. No manual typing required.</p>
                 
-                <div class="space-y-4 mb-6 bg-white/5 p-4 rounded-xl border border-white/10">
-                    <input type="text" placeholder="Dish Name (e.g., Pizza)" class="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:border-primary outline-none">
-                    <div class="flex gap-2">
-                        <input type="text" placeholder="Raw Material (e.g., Pizza Base)" class="flex-1 px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:border-primary outline-none">
-                        <input type="text" placeholder="Qty per dish (e.g., 1)" class="w-32 px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:border-primary outline-none">
-                    </div>
-                    <div class="flex gap-2">
-                        <input type="number" placeholder="Opening Stock" class="flex-1 px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:border-primary outline-none">
-                        <input type="number" placeholder="Purchase Price" class="flex-1 px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:border-primary outline-none">
-                    </div>
+                <div class="space-y-4 mb-8">
+                    <label class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-gray-500 hover:border-primary rounded-xl cursor-pointer bg-white/5 hover:bg-primary/5 transition">
+                        <span class="text-3xl mb-1">📸</span>
+                        <span class="text-sm text-gray-300 font-bold" id="ai-menu-file">Upload Menu Photo</span>
+                        <input type="file" class="hidden" accept="image/*,.pdf" multiple onchange="document.getElementById('ai-menu-file').innerText = this.files.length + ' file(s) selected'">
+                    </label>
+
+                    <label class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-gray-500 hover:border-primary rounded-xl cursor-pointer bg-white/5 hover:bg-primary/5 transition">
+                        <span class="text-3xl mb-1">📝</span>
+                        <span class="text-sm text-gray-300 font-bold" id="ai-recipe-file">Upload Recipe/Stock Notes</span>
+                        <span class="text-xs text-gray-500 mt-1">(Diary page, register, or bill)</span>
+                        <input type="file" class="hidden" accept="image/*,.pdf" multiple onchange="document.getElementById('ai-recipe-file').innerText = this.files.length + ' file(s) selected'">
+                    </label>
                 </div>
 
                 <div class="flex gap-3">
                     <button onclick="showStep('wiz-step-2')" class="px-6 py-3 rounded-xl bg-white/5 text-gray-400 font-bold hover:bg-white/10 transition">Back</button>
-                    <button onclick="triggerLoading('AI Setup Complete!')" class="flex-1 bg-gradient-to-r from-primary to-secondary text-white hover:scale-[1.02] font-black py-3 rounded-xl transition">Secure Database</button>
+                    <button onclick="triggerLoading('AI Engine Configured! 🎉')" class="flex-1 bg-gradient-to-r from-primary to-secondary text-white hover:scale-[1.02] font-black py-3 rounded-xl transition">Generate AI OS 🚀</button>
                 </div>
             </div>
 
             <div id="wiz-loading" class="p-10 hidden flex-col items-center justify-center text-center h-[400px]">
                 <div id="loader-spinner" class="loader mb-6"></div>
                 <div id="success-icon" class="text-6xl mb-6 hidden">✅</div>
-                <h3 id="ai-status-title" class="text-2xl font-black text-white mb-3 glow-text">Generating QR Codes...</h3>
-                <p id="ai-status-desc" class="text-gray-400 text-sm font-medium px-4">Creating your unique tables and dashboard access.</p>
+                <h3 id="ai-status-title" class="text-2xl font-black text-white mb-3 glow-text">Generating AI Models...</h3>
+                <p id="ai-status-desc" class="text-gray-400 text-sm font-medium px-4">Mapping ingredients to predict daily demand.</p>
                 
                 <button id="close-wizard-btn" onclick="closeWizard()" class="hidden mt-8 w-full bg-white/10 text-white py-3 rounded-xl font-bold hover:bg-white/20 transition">Close & Check WhatsApp</button>
             </div>
         </div>
     </div>
+
     <div id="login-modal" class="hidden fixed inset-0 bg-black/80 z-[100] flex items-center justify-center backdrop-blur-md px-4 transition-all">
         <div class="bg-[#111] border border-white/10 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-8 relative">
             <button onclick="toggleLogin()" class="absolute top-4 right-5 text-gray-500 hover:text-red-500 font-black text-3xl transition">&times;</button>
@@ -376,7 +387,7 @@
         }
 
         // --- NEW FUNNEL WIZARD LOGIC ---
-        let leadData = {}; // Stores lead data
+        let leadData = {}; 
 
         function openWizard() {
             document.getElementById('setup-wizard').classList.remove('hidden');
@@ -408,10 +419,7 @@
             
             leadData = { name, phone, cafe, tables };
             
-            // Here you can add the hidden fetch to Google Sheets to save lead immediately!
-            // fetch('NEW_LEAD_SCRIPT_URL', {mode: 'no-cors'});
-            
-            showStep('wiz-step-2'); // Show Setup Choice
+            showStep('wiz-step-2'); 
         }
 
         function redirectToWhatsApp() {
@@ -431,7 +439,7 @@
             let desc = document.getElementById('ai-status-desc');
             
             setTimeout(() => {
-                title.innerText = "Provisioning Dashboard... 🚀";
+                title.innerText = "Processing Data... 🚀";
                 desc.innerText = "Securing server space for " + leadData.cafe;
             }, 1500);
 
@@ -440,7 +448,7 @@
                 document.getElementById('success-icon').classList.remove('hidden');
                 title.innerText = successMessage;
                 title.classList.replace('text-white', 'text-green-400');
-                desc.innerText = `Your unique Login ID and secure access link will be sent to your WhatsApp (${leadData.phone}) shortly. Start taking orders!`;
+                desc.innerText = `Your unique Login ID and secure access link will be sent to your WhatsApp (${leadData.phone}) shortly.`;
                 document.getElementById('close-wizard-btn').classList.remove('hidden');
             }, 4000);
         }
