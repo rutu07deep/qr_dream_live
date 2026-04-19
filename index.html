@@ -240,13 +240,13 @@
                 <p class="text-gray-400 text-sm font-medium mb-6">Choose your AI power level to proceed.</p>
                 
                 <div class="space-y-4">
-                    <button onclick="showStep('wiz-fast-start')" class="w-full text-left cursor-pointer border border-white/10 bg-white/5 hover:bg-white/10 p-4 rounded-2xl transition-all">
+                    <button onclick="setSetupType('Fast Start'); showStep('wiz-fast-start');" class="w-full text-left cursor-pointer border border-white/10 bg-white/5 hover:bg-white/10 p-4 rounded-2xl transition-all">
                         <h4 class="text-lg font-bold text-white mb-1">⚡ Fast Start (Basic QR)</h4>
                         <p class="text-xs text-gray-400 mb-2">Only upload menu. Get QR codes & start taking orders instantly.</p>
                         <div class="text-[11px] text-yellow-500 font-semibold bg-yellow-500/10 px-2 py-1 rounded inline-block">Note: Inventory & Combos disabled</div>
                     </button>
                     
-                    <button onclick="showStep('wiz-full-ai')" class="w-full text-left cursor-pointer border border-primary/50 bg-primary/10 hover:bg-primary/20 p-4 rounded-2xl transition-all relative overflow-hidden group">
+                    <button onclick="setSetupType('Full AI'); showStep('wiz-full-ai');" class="w-full text-left cursor-pointer border border-primary/50 bg-primary/10 hover:bg-primary/20 p-4 rounded-2xl transition-all relative overflow-hidden group">
                         <div class="absolute top-0 right-0 bg-primary text-white text-[10px] font-black px-3 py-1 rounded-bl-lg uppercase tracking-wider">Recommended</div>
                         <h4 class="text-lg font-bold text-white mb-1">🧠 Full AI Setup (Profit Engine)</h4>
                         <p class="text-xs text-gray-400 mb-2">Upload menu + recipe notes. AI maps everything.</p>
@@ -272,13 +272,13 @@
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <label class="border border-white/10 bg-white/5 hover:bg-white/10 p-4 rounded-xl text-center cursor-pointer transition">
                         <div class="text-2xl mb-2">📸</div>
-                        <div class="text-sm font-bold text-white">Upload Photo</div>
-                        <input type="file" class="hidden" accept="image/*" onchange="showStep('wiz-qr-studio')">
+                        <div class="text-sm font-bold text-white" id="fast-photo-text">Upload Photo</div>
+                        <input type="file" id="fast-menu-file" class="hidden" accept="image/*" onchange="document.getElementById('fast-photo-text').innerText = '✅ Added'">
                     </label>
                     <label class="border border-white/10 bg-white/5 hover:bg-white/10 p-4 rounded-xl text-center cursor-pointer transition">
                         <div class="text-2xl mb-2">📄</div>
                         <div class="text-sm font-bold text-white">Upload PDF</div>
-                        <input type="file" class="hidden" accept=".pdf" onchange="showStep('wiz-qr-studio')">
+                        <input type="file" class="hidden" accept=".pdf">
                     </label>
                     <div onclick="document.getElementById('paste-area').classList.toggle('hidden')" class="border border-white/10 bg-white/5 hover:bg-white/10 p-4 rounded-xl text-center cursor-pointer transition">
                         <div class="text-2xl mb-2">📋</div>
@@ -314,8 +314,8 @@
                         <h4 class="text-white font-bold mb-1">1️⃣ Menu Details</h4>
                         <p class="text-xs text-gray-400 mb-3">We need Dish Names & Prices. <br><span class="text-gray-500 italic">e.g., Veg Pizza - ₹150</span></p>
                         <label class="block w-full text-center bg-white/10 hover:bg-white/20 text-white text-sm font-bold py-3 rounded-lg cursor-pointer transition">
-                            📸 Upload Menu Photo
-                            <input type="file" class="hidden" accept="image/*,.pdf" multiple onchange="this.parentElement.innerHTML = '✅ Menu Photo Added'">
+                            <span id="full-menu-text">📸 Upload Menu Photo</span>
+                            <input type="file" id="full-menu-file" class="hidden" accept="image/*,.pdf" multiple onchange="document.getElementById('full-menu-text').innerText = '✅ Menu Photo Added'">
                         </label>
                     </div>
 
@@ -323,8 +323,8 @@
                         <h4 class="text-white font-bold mb-1">2️⃣ Master Inventory (Stock)</h4>
                         <p class="text-xs text-gray-400 mb-3">We need Raw Materials, Total Stock & Purchase Price. <br><span class="text-gray-500 italic">e.g., Pizza Base | 50 Pcs | ₹20</span></p>
                         <label class="block w-full text-center bg-white/10 hover:bg-white/20 text-white text-sm font-bold py-3 rounded-lg cursor-pointer transition">
-                            📦 Upload Stock Register / Bills
-                            <input type="file" class="hidden" accept="image/*,.pdf" multiple onchange="this.parentElement.innerHTML = '✅ Stock Details Added'">
+                            <span id="full-stock-text">📦 Upload Stock Register / Bills</span>
+                            <input type="file" id="full-stock-file" class="hidden" accept="image/*,.pdf" multiple onchange="document.getElementById('full-stock-text').innerText = '✅ Stock Details Added'">
                         </label>
                     </div>
 
@@ -332,8 +332,8 @@
                         <h4 class="text-white font-bold mb-1">3️⃣ Kitchen Recipes</h4>
                         <p class="text-xs text-gray-400 mb-3">We need to know what goes inside each dish to stop theft. <br><span class="text-gray-500 italic">e.g., 1 Veg Pizza = 1 Base, 50g Cheese</span></p>
                         <label class="block w-full text-center bg-white/10 hover:bg-white/20 text-white text-sm font-bold py-3 rounded-lg cursor-pointer transition">
-                            📝 Upload Recipe Diary
-                            <input type="file" class="hidden" accept="image/*,.pdf" multiple onchange="this.parentElement.innerHTML = '✅ Recipe Notes Added'">
+                            <span id="full-recipe-text">📝 Upload Recipe Diary</span>
+                            <input type="file" id="full-recipe-file" class="hidden" accept="image/*,.pdf" multiple onchange="document.getElementById('full-recipe-text').innerText = '✅ Recipe Notes Added'">
                         </label>
                     </div>
                 </div>
@@ -367,7 +367,7 @@
                 </div>
 
                 <label class="flex items-start gap-3 p-4 border-2 border-green-500/30 bg-green-500/10 rounded-xl cursor-pointer mb-8">
-                    <input type="checkbox" class="mt-1 w-5 h-5 accent-green-500">
+                    <input type="checkbox" id="stand-upsell" class="mt-1 w-5 h-5 accent-green-500">
                     <div>
                         <h4 class="text-green-400 font-bold text-sm">Yes, deliver Physical Acrylic QR Stands!</h4>
                         <p class="text-xs text-gray-400 mt-1">Our team will contact you with the best prices for premium acrylic table stands.</p>
@@ -376,17 +376,16 @@
 
                 <div class="flex gap-3">
                     <button onclick="showStep('wiz-step-2')" class="px-6 py-3 rounded-xl bg-white/5 text-gray-400 font-bold hover:bg-white/10 transition">Back</button>
-                    <button onclick="triggerLoading('OS & QRs Ready! 🎉')" class="flex-1 bg-white text-black hover:bg-gray-200 hover:scale-[1.02] font-black py-3 rounded-xl transition">Generate OS & Go Live 🚀</button>
+                    <button onclick="submitFinalData()" class="flex-1 bg-white text-black hover:bg-gray-200 hover:scale-[1.02] font-black py-3 rounded-xl transition">Generate OS & Go Live 🚀</button>
                 </div>
             </div>
 
             <div id="wiz-loading" class="p-10 hidden flex-col items-center justify-center text-center h-[400px]">
                 <div id="loader-spinner" class="loader mb-6"></div>
                 <div id="success-icon" class="text-6xl mb-6 hidden">✅</div>
-                <h3 id="ai-status-title" class="text-2xl font-black text-white mb-3 glow-text">Generating AI Models...</h3>
-                <p id="ai-status-desc" class="text-gray-400 text-sm font-medium px-4">Mapping ingredients & designing custom QR codes.</p>
-                
-                <button id="close-wizard-btn" onclick="closeWizard()" class="hidden mt-8 w-full bg-white/10 text-white py-3 rounded-xl font-bold hover:bg-white/20 transition">Close & Check WhatsApp</button>
+                <h3 id="ai-status-title" class="text-2xl font-black text-white mb-3 glow-text">Establishing Connection...</h3>
+                <p id="ai-status-desc" class="text-gray-400 text-sm font-medium px-4">Securely uploading data to your Entaurent Dashboard.</p>
+                <button id="close-wizard-btn" onclick="closeWizard()" class="hidden mt-8 w-full bg-white/10 text-white py-3 rounded-xl font-bold">Finish & Check WhatsApp</button>
             </div>
         </div>
     </div>
@@ -418,7 +417,7 @@
         AOS.init({ once: true, offset: 50 });
         
         // --- LOGIN LOGIC ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
+        const LOGIN_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWzheI6kH3Ly_l56c9Kfx0yczbF7hbEtTy24IXxzzfZA6XjVQikGKRAqNyII8PvSXa/exec"; 
         function toggleLogin() { document.getElementById('login-modal').classList.toggle('hidden'); document.getElementById('login-error').classList.add('hidden'); }
         function verifyLogin() {
             let id = document.getElementById('login-id').value.trim().toUpperCase(); let pass = document.getElementById('login-pass').value.trim();
@@ -426,7 +425,7 @@
             if (!id || !pass) { errorMsg.innerText = "Please fill all fields! ❌"; errorMsg.classList.remove('hidden'); return; }
             btn.innerText = "Connecting... ⏳"; btn.disabled = true; errorMsg.classList.add('hidden');
             let script = document.createElement('script');
-            script.src = `${SCRIPT_URL}?action=login&res=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse&nocache=${Date.now()}`;
+            script.src = `${LOGIN_SCRIPT_URL}?action=login&res=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse&nocache=${Date.now()}`;
             script.onerror = function() { errorMsg.innerText = "Network Error! ❌"; errorMsg.classList.remove('hidden'); btn.innerText = "ENTER DASHBOARD 🚀"; btn.disabled = false; };
             document.body.appendChild(script);
         }
@@ -437,7 +436,9 @@
         }
 
         // --- NEW FUNNEL WIZARD LOGIC ---
+        const LEADS_URL = "https://script.google.com/macros/s/AKfycbzD_4zsaElYzhfDbN_T6DtDpZRg3lTocNbX_Fay2fimijjrztwVk0dB3ENdWRufqAUN_Q/exec";
         let leadData = {}; 
+        let activeSetupType = "Full AI";
 
         function openWizard() {
             document.getElementById('setup-wizard').classList.remove('hidden');
@@ -446,7 +447,6 @@
         function closeWizard() { document.getElementById('setup-wizard').classList.add('hidden'); }
 
         function showStep(stepId) {
-            // Added 'wiz-qr-studio' to the clear list
             ['wiz-step-1', 'wiz-step-2', 'wiz-fast-start', 'wiz-full-ai', 'wiz-qr-studio', 'wiz-loading'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
                 document.getElementById(id).classList.remove('flex');
@@ -454,6 +454,10 @@
             let target = document.getElementById(stepId);
             target.classList.remove('hidden');
             if(stepId === 'wiz-loading') target.classList.add('flex');
+        }
+
+        function setSetupType(type) {
+            activeSetupType = type;
         }
 
         function captureLeadAndProceed() {
@@ -469,7 +473,6 @@
             document.getElementById('wiz-err-1').classList.add('hidden');
             
             leadData = { name, phone, cafe, tables };
-            
             showStep('wiz-step-2'); 
         }
 
@@ -480,24 +483,64 @@
             closeWizard();
         }
 
-        function triggerLoading(successMessage) {
+        async function toBase64(file) {
+            if (!file) return null;
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function submitFinalData() {
             showStep('wiz-loading');
             let title = document.getElementById('ai-status-title');
             let desc = document.getElementById('ai-status-desc');
             
-            setTimeout(() => {
-                title.innerText = "Processing Data... 🚀";
-                desc.innerText = "Securing server space for " + leadData.cafe;
-            }, 1500);
+            title.innerText = "Uploading Files... 🚀";
+            desc.innerText = "Please wait, securely transferring data to Entaurent servers.";
 
-            setTimeout(() => {
+            let menuFile, stockFile, recipeFile;
+            
+            if(activeSetupType === "Fast Start") {
+                menuFile = document.getElementById('fast-menu-file').files[0];
+            } else {
+                menuFile = document.getElementById('full-menu-file').files[0];
+                stockFile = document.getElementById('full-stock-file').files[0];
+                recipeFile = document.getElementById('full-recipe-file').files[0];
+            }
+
+            const payload = {
+                ...leadData,
+                setup_type: activeSetupType,
+                qr_type: document.querySelector('input[name="qr_type"]:checked').value,
+                stand_upsell: document.getElementById('stand-upsell').checked ? "Yes" : "No",
+                menuFile: await toBase64(menuFile),
+                stockFile: await toBase64(stockFile),
+                recipeFile: await toBase64(recipeFile)
+            };
+
+            fetch(LEADS_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(response => {
                 document.getElementById('loader-spinner').classList.add('hidden');
                 document.getElementById('success-icon').classList.remove('hidden');
-                title.innerText = successMessage;
+                title.innerText = "OS Successfully Queued! 🎉";
                 title.classList.replace('text-white', 'text-green-400');
-                desc.innerText = `Your unique Login ID and secure access link will be sent to your WhatsApp (${leadData.phone}) shortly.`;
+                desc.innerText = `Your unique Login ID will be sent to your WhatsApp (${leadData.phone}) shortly.`;
                 document.getElementById('close-wizard-btn').classList.remove('hidden');
-            }, 4000);
+            })
+            .catch(error => {
+                title.innerText = "Error Occurred ❌";
+                desc.innerText = "Check your connection and try again.";
+                document.getElementById('loader-spinner').classList.add('hidden');
+                document.getElementById('close-wizard-btn').classList.remove('hidden');
+                document.getElementById('close-wizard-btn').innerText = "Close";
+            });
         }
     </script>
 </body>
