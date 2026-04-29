@@ -60,7 +60,12 @@
             </div>
             
             <div class="p-6 overflow-y-auto flex-1">
-                <div id="cart-items" class="space-y-3 mb-6"></div>
+                <div id="cart-items" class="space-y-3 mb-4"></div>
+                
+                <div id="address-section" class="hidden mb-4 bg-slate-50 p-4 rounded-xl border border-indigo-100">
+                    <label class="text-xs font-black text-indigo-600 uppercase tracking-wider">Delivery Details 🛵</label>
+                    <textarea id="delivery-address" rows="2" placeholder="Aapka Pura Address (e.g. House No, Gali, Landmark...)" class="w-full mt-2 p-3 border border-slate-200 rounded-xl text-sm focus:border-indigo-500 outline-none shadow-inner"></textarea>
+                </div>
                 
                 <div class="border-t border-slate-200 pt-4 flex justify-between items-center bg-white">
                     <span class="text-sm font-bold text-slate-500">Total Amount:</span>
@@ -101,8 +106,12 @@
 
         let menuData = [];
         let cart = {};
+        
+        // Settings variables
         let clientUpiId = "";
         let clientResName = "Restaurant " + resId;
+        let clientPlanType = "PRO"; // Default
+        let clientWhatsapp = "";
         
         // 🔥 Active Filter Variable
         let activeFilter = 'All';
@@ -119,48 +128,39 @@
         }
 
         async function fetchMenuAndSettings() {
-            const cachedMenu = localStorage.getItem("entaurent_menu_" + resId);
-            const cachedName = localStorage.getItem("entaurent_name_" + resId);
-            const cachedUpi = localStorage.getItem("entaurent_upi_" + resId);
-
-            if (cachedMenu && cachedName) {
-                menuData = JSON.parse(cachedMenu);
-                clientResName = cachedName;
-                clientUpiId = cachedUpi || "";
-                document.getElementById("res-title").innerText = clientResName;
-                renderMenu();
-                hideLoader(); 
-            }
-
+            // LocalStorage clear karna temporarily theek rehta hai testing me
+            // but for now, we will read fresh every time to ensure LITE/PRO plan changes reflect instantly.
             try {
                 const setRes = await safeFetch("getSettings");
                 const setData = await setRes.json();
+                
                 clientResName = setData.name || "Restaurant " + resId;
                 clientUpiId = setData.upi || "";
+                clientPlanType = setData.plan || "PRO";
+                clientWhatsapp = setData.whatsapp || "";
+
                 document.getElementById("res-title").innerText = clientResName;
-                localStorage.setItem("entaurent_name_" + resId, clientResName);
-                localStorage.setItem("entaurent_upi_" + resId, clientUpiId);
+                
+                // Agar LITE plan hai, toh address box dikhao cart me
+                if(clientPlanType.toUpperCase() === "LITE") {
+                    document.getElementById("address-section").classList.remove("hidden");
+                }
 
                 const menuRes = await safeFetch("getMenu");
                 menuData = await menuRes.json();
-                localStorage.setItem("entaurent_menu_" + resId, JSON.stringify(menuData));
                 
                 renderMenu();
-                if (!cachedMenu) hideLoader();
+                hideLoader();
             } catch (error) {
-                if (!cachedMenu) {
-                    document.getElementById('premium-loader').innerHTML = "<h2 class='text-2xl font-black text-red-500'>Connection Error! ❌</h2><p class='text-slate-500 mt-2'>Please check your internet.</p>";
-                }
+                document.getElementById('premium-loader').innerHTML = "<h2 class='text-2xl font-black text-red-500'>Connection Error! ❌</h2><p class='text-slate-500 mt-2'>Please check your internet.</p>";
             }
         }
 
-        // 🔥 Naya Filter Set karne ka function
         function setFilter(filterType) {
             activeFilter = filterType;
             renderMenu();
         }
 
-        // 🔥 Filter ke saath Menu Render
         function renderMenu() {
             const container = document.getElementById('menu-container');
             if(menuData.length === 0) {
@@ -168,7 +168,6 @@
                 return;
             }
 
-            // 1. Data Filter Logic
             let filteredData = menuData;
             if (activeFilter !== 'All') {
                 filteredData = menuData.filter(item => {
@@ -180,7 +179,6 @@
                 });
             }
 
-            // 2. Filter Buttons UI (Upar wale pill buttons)
             let html = `
             <div class="flex gap-3 overflow-x-auto pb-4 mb-2 hide-scrollbar">
                 <button onclick="setFilter('All')" class="whitespace-nowrap px-5 py-2 rounded-full font-black text-sm transition-all border-2 ${activeFilter === 'All' ? 'bg-slate-800 text-white border-slate-800 shadow-md scale-105' : 'bg-white text-slate-600 border-slate-200'}">All</button>
@@ -191,14 +189,12 @@
             <div class="space-y-4">
             `;
 
-            // 3. Agar filter lagane pe kuch na mile
             if (filteredData.length === 0) {
                 html += `<p class="text-center text-slate-400 mt-10 font-bold">No ${activeFilter} items found.</p></div>`;
                 container.innerHTML = html;
                 return;
             }
 
-            // 4. Items List Render karna
             filteredData.forEach(item => {
                 let isAvail = item.status === "Available";
                 let qtyInCart = cart[item.name] ? cart[item.name].qty : 0;
@@ -222,9 +218,8 @@
                 let defaultImg = 'https://cdn-icons-png.flaticon.com/512/3170/3170733.png';
                 let imgSrc = item.image ? item.image : defaultImg;
                 
-                // Chhota icon item ke aage uski category pe depend karega
                 let catCheck = item.category ? item.category.trim().toLowerCase() : "";
-                let itemIcon = "🟩"; // Default veg
+                let itemIcon = "🟩"; 
                 if (catCheck.includes("non")) itemIcon = "🔺";
                 if (catCheck.includes("drink")) itemIcon = "🧊";
 
@@ -241,7 +236,14 @@
                 </div>`;
             });
 
-            html += `</div>`; 
+            // Branding Footer at the end of the menu
+            html += `
+                <div class="mt-8 text-center pb-8 border-t border-slate-200 pt-6">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">⚡ Powered by</p>
+                    <p class="text-lg font-black text-indigo-500 tracking-tight">Entaurent<span class="text-slate-400">.com</span></p>
+                    <p class="text-[10px] text-slate-400 mt-1">Free Ordering System for Local Food Brands</p>
+                </div>
+            </div>`; 
             container.innerHTML = html;
         }
 
@@ -319,9 +321,8 @@
 
         async function placeOrder() {
             let btn = document.getElementById('place-order-btn');
-            btn.innerText = "Sending Order... ⏳";
-            btn.disabled = true;
-
+            
+            // Build items list
             let itemsArr = [];
             let totalAmt = 0;
             for(let key in cart) {
@@ -330,18 +331,57 @@
             }
             let itemsStr = itemsArr.join(", ");
 
-            try {
-                await safeFetch("placeOrder", `&table=${tableNo}&items=${encodeURIComponent(itemsStr)}&amount=${totalAmt}`);
-                alert(`🎉 Order Placed Successfully! (Total: ₹${totalAmt})`);
+            // 🔥 LOGIC ROUTING: PRO vs LITE
+            if (clientPlanType.toUpperCase() === "LITE") {
+                // LITE PLAN -> WHATSAPP DELIVERY FLOW
+                let address = document.getElementById('delivery-address').value.trim();
+                if(!address) {
+                    alert("Bhaiya, Delivery Address toh daalo tabhi order jayega! 🛵");
+                    return;
+                }
+
+                // WhatsApp message format banana with Branding
+                let waText = `*Naya Order!* 🍲\n\n`;
+                waText += `*Items:*\n${itemsArr.join("\n")}\n\n`;
+                waText += `*Total Bill:* ₹${totalAmt}\n`;
+                waText += `*Delivery Address:* ${address}\n\n`;
+                waText += `---------------------\n`;
+                waText += `🚀 Order via *Entaurent.com*\n`;
+                waText += `Dukandaro, apna khud ka FREE ordering system banwaye aaj hi!`;
+
+                if(!clientWhatsapp) {
+                    alert("Restaurant ne apna WhatsApp number set nahi kiya hai. Order fail.");
+                    return;
+                }
+
+                let waUrl = `https://wa.me/${clientWhatsapp}?text=${encodeURIComponent(waText)}`;
+                window.open(waUrl, '_blank'); // Opens WhatsApp
+
+                alert(`🎉 Order routed to WhatsApp successfully!`);
                 cart = {};
+                document.getElementById('delivery-address').value = ""; // clear
                 updateCartUI();
                 toggleCart();
                 renderMenu();
-                btn.innerText = "PLACE ORDER 🚀";
-            } catch(e) {
-                alert("Error! Please try again. Internet check karein.");
-                btn.innerText = "PLACE ORDER 🚀";
-                btn.disabled = false;
+
+            } else {
+                // PRO PLAN -> DASHBOARD KITCHEN BEEP FLOW
+                btn.innerText = "Sending Order... ⏳";
+                btn.disabled = true;
+
+                try {
+                    await safeFetch("placeOrder", `&table=${tableNo}&items=${encodeURIComponent(itemsStr)}&amount=${totalAmt}`);
+                    alert(`🎉 Order Placed Successfully! (Total: ₹${totalAmt})`);
+                    cart = {};
+                    updateCartUI();
+                    toggleCart();
+                    renderMenu();
+                    btn.innerText = "PLACE ORDER 🚀";
+                } catch(e) {
+                    alert("Error! Please try again. Internet check karein.");
+                    btn.innerText = "PLACE ORDER 🚀";
+                    btn.disabled = false;
+                }
             }
         }
 
